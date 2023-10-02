@@ -4,7 +4,7 @@ import {
     JsonRpcProvider,
     SignedTransaction,
     SuiTransactionBlockResponseOptions,
-} from '@mysten/sui.js';
+} from '@mysten/sui.js/client';
 
 interface ExecuteSignedTransactionBlockProps {
     signedTx: SignedTransaction;
