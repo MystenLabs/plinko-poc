@@ -41,7 +41,7 @@ module plinko::plinko {
     const EStakeTooHigh: u64 = 1;
     const EInvalidBlsSig: u64 = 2;
     const ECanNotChallengeYet: u64 = 3;
-    const EInvalidGuess: u64 = 4;
+    // const EInvalidGuess: u64 = 4;
     const EInsufficientHouseBalance: u64 = 5;
     const EGameDoesNotExist: u64 = 6;
 
@@ -91,7 +91,7 @@ module plinko::plinko {
         id
     }
 
-    public fun finish_game(game_id: ID, bls_sig: vector<u8>, house_data: &mut HouseData, ctx: &mut TxContext): (u64, address) {
+    public fun finish_game(game_id: ID, bls_sig: vector<u8>, house_data: &mut HouseData, ctx: &mut TxContext): (u64, address, vector<u8>) {
         // Ensure that the game exists.
         assert!(game_exists(house_data, game_id), EGameDoesNotExist);
 
@@ -111,14 +111,16 @@ module plinko::plinko {
         let is_sig_valid = bls12381_min_pk_verify(&bls_sig, &hd::public_key(house_data), &vrf_input);
         assert!(is_sig_valid, EInvalidBlsSig);
 
-        // Hash the beacon before taking the 1st byte.
+        // Hash the beacon before taking the 12 byte.
         let hashed_beacon = blake2b256(&bls_sig);
+        let trace = vector::empty<u8>();
         // Step 2: Determine result.
         let i = 0;
         let state = (ball_place as u64);
         while (i < 11) {
             let byte = *vector::borrow(&hashed_beacon, i);
-            state = 10 + (byte as u64);
+            state = state + 10 + (byte as u64);
+            vector::push_back<u8>(&mut trace, byte);
         };
 
         let multiplier_index = state - 110;
@@ -139,7 +141,7 @@ module plinko::plinko {
         });
 
         // return the amount to be sent to the player, (and the player address) the transaction will happen by a PTB
-        (funds_amount, player)
+        (funds_amount, player, trace)
     }
     
     public fun dispute_and_return(house_data: &mut HouseData, game_id: ID, ctx: &mut TxContext) {

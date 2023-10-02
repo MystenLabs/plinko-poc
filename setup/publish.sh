@@ -12,7 +12,7 @@ NETWORK=http://localhost:9000
 BACKEND_API=http://localhost:3000
 FAUCET=https://localhost:9000/gas
 
-MOVE_PACKAGE_PATH=../move/poc
+MOVE_PACKAGE_PATH=../plinko
 
 if [ $# -ne 0 ]; then
   if [ $1 = "testnet" ]; then
