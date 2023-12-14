@@ -71,17 +71,49 @@ const MatterSim: React.FC = () => {
         const pinY = 100 + l * pinGap;
         const pin = Bodies.circle(pinX, pinY, pinSize, { isStatic: true });
         pins.push(pin);
-
         // Create buckets at the bottom
         if (l === pinLines - 1 && i < linePins - 1) {
           const bucketX = pinX + pinGap / 2;
-          const bucketY = pinY + pinGap / 4;
-          const bucket = Bodies.rectangle(bucketX, bucketY, pinGap, pinGap, {
-            isStatic: true,
-          });
-          Composite.add(engine.world, bucket);
+          const bucketY = pinY + pinGap; // Position for the bottom of the bucket
+          const bucketWidth = pinGap; // Width of the bucket
+          const bucketHeight = 30; // Height of the bucket sides
+
+          // Create left side of the bucket
+          const leftSide = Bodies.rectangle(
+            bucketX - bucketWidth / 2,
+            bucketY + bucketHeight / 2,
+            5,
+            bucketHeight,
+            {
+              isStatic: true,
+            }
+          );
+
+          // Create right side of the bucket
+          const rightSide = Bodies.rectangle(
+            bucketX + bucketWidth / 2,
+            bucketY + bucketHeight / 2,
+            5,
+            bucketHeight,
+            {
+              isStatic: true,
+            }
+          );
+
+          // Create bottom of the bucket
+          const bottom = Bodies.rectangle(
+            bucketX,
+            bucketY + bucketHeight,
+            bucketWidth,
+            5,
+            {
+              isStatic: true,
+            }
+          );
+
+          // Add bucket parts to the world
+          Composite.add(engine.world, [leftSide, rightSide, bottom]);
         }
-        pinPositions[l].push(pinX);
       }
     }
 
@@ -91,7 +123,7 @@ const MatterSim: React.FC = () => {
     // Path following logic
     let followingPredefinedPath = false;
     let currentStep = 0;
-    const predefinedPath = [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]; // Predefined path for the ball
+    const predefinedPath = [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]; // Predefined path for the ball 3
 
     // Event: Start following the path on the first collision
     Events.on(engine, "collisionStart", (event) => {
