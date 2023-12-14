@@ -24,8 +24,11 @@ const MatterSim: React.FC = () => {
     const worldWidth = 800;
     const startPins = 3;
     const pinLines = 12;
-    const pinSize = 13; // Adjusted pin size to accommodate the ball
+    const pinSize = 12.3; // Adjusted pin size to accommodate the ball
     const pinGap = 39;
+
+    // Flag to indicate if the initial extra force has been applied
+    let initialForceApplied = false;
 
     // Setup the rendering context
     const container = document.getElementById("matter-canvas-container");
@@ -88,7 +91,7 @@ const MatterSim: React.FC = () => {
     // Path following logic
     let followingPredefinedPath = false;
     let currentStep = 0;
-    const predefinedPath = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]; // Predefined path for the ball
+    const predefinedPath = [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0]; // Predefined path for the ball
 
     // Event: Start following the path on the first collision
     Events.on(engine, "collisionStart", (event) => {
@@ -112,6 +115,21 @@ const MatterSim: React.FC = () => {
     Events.on(engine, "beforeUpdate", () => {
       if (followingPredefinedPath && currentRow < predefinedPath.length) {
         const newRow = Math.floor((ball.position.y - 100) / pinGap);
+
+        // Apply an initial extra force when the ball starts moving
+        if (!initialForceApplied) {
+          console.log("initialForceApplied");
+          initialForceApplied = true; // Ensure the force is applied only once
+          const initialDirection = predefinedPath[0] === 0 ? -1 : 1;
+          //remove the first element from the array
+          predefinedPath.shift();
+          const initialForceMagnitude = 0.07; // Adjust as needed
+          const initialForce = Vector.create(
+            initialForceMagnitude * initialDirection,
+            0
+          );
+          Body.applyForce(ball, ball.position, initialForce);
+        }
 
         if (newRow > currentRow) {
           currentRow = newRow;
