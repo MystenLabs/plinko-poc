@@ -33,12 +33,13 @@ const MatterSim: React.FC = () => {
     // Setup the rendering context
     const container = document.getElementById("matter-canvas-container");
     const render = Render.create({
+      // @ts-ignore
       element: container,
       engine: engine,
       options: {
         width: 800,
         height: 600,
-        background: "white",
+        background: "red",
         showVelocity: true,
         showAngleIndicator: true,
       },
@@ -123,7 +124,7 @@ const MatterSim: React.FC = () => {
     // Path following logic
     let followingPredefinedPath = false;
     let currentStep = 0;
-    const predefinedPath = [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0]; // Predefined path for the ball 3
+    const predefinedPath = [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0]; // Predefined path for the ball 3
 
     // Event: Start following the path on the first collision
     Events.on(engine, "collisionStart", (event) => {
