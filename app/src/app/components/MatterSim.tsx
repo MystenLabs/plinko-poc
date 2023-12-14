@@ -1,123 +1,190 @@
-import React, { useEffect } from 'react';
-import Matter, { Engine, Render, Runner, Bodies, Composite, Vector } from 'matter-js';
+import React, { useEffect } from "react";
+import Matter, {
+  Engine,
+  Render,
+  Runner,
+  Bodies,
+  Composite,
+  Vector,
+  Events,
+  Body,
+} from "matter-js";
 
 const MatterSim: React.FC = () => {
+  // Create a physics engine
   const engine = Engine.create();
-  const ballSize = 7;
-  const ballElasticity = 0.1;
-  const ballSpeed = 3;
-  const ballCategory = 0x0001;
 
-  // [0,1,0,1,0,1,0,1,0,1,0,1]
+  // Ball properties
+  const ballSize = 7;
+  const ballElasticity = 0.1; // Reduced ball restitution for less bounce
+  const ballFriction = 0.01;
 
   useEffect(() => {
-    console.log('MatterSim component is rendering.');
-
+    // Canvas dimensions and pin settings
     const worldWidth = 800;
     const startPins = 3;
     const pinLines = 12;
-    const pinSize = 5;
-    const pinGap = 40;
-    const desiredGapIndex = 2; // Index of the desired gap (0-based)
-    const gapWidth = pinGap;
-    const desiredBoxX = -250;//(desiredGapIndex + 0.5) * gapWidth; // X-coordinate of the center of the desired box
+    const pinSize = 13; // Adjusted pin size to accommodate the ball
+    const pinGap = 39;
 
-    const container = document.getElementById('matter-canvas-container');
-
+    // Setup the rendering context
+    const container = document.getElementById("matter-canvas-container");
     const render = Render.create({
       element: container,
       engine: engine,
       options: {
         width: 800,
         height: 600,
-        background: 'white',
+        background: "white",
         showVelocity: true,
         showAngleIndicator: true,
       },
     });
 
+    // Create pins and buckets
     const pins: Matter.Body[] = [];
-    const ball = Bodies.circle(362, 0, ballSize, {
+    const centerPinX = worldWidth / 2.095;
+    const ballStartY = 50; // Starting Y position of the ball
+    const ball = Bodies.circle(centerPinX, ballStartY, ballSize, {
       restitution: ballElasticity,
-      friction: 1,
-      density: 0.1,
-      frictionStatic: 0,
-      render: {
-        fillStyle: 'blue',
-      },
+      friction: ballFriction,
+      density: 0.4,
+      render: { fillStyle: "blue" },
     });
-    ball.collisionFilter.category = ballCategory;
 
+    // Set gravity for the simulation
+    engine.gravity = { x: 0, y: 0.06, scale: 0.001 };
+
+    // Store the X positions of the pins
+    let pinPositions = [];
+
+    // Create pins and add them to the world
     for (let l = 0; l < pinLines; l++) {
       const linePins = startPins + l;
       const lineWidth = linePins * pinGap;
+      pinPositions[l] = [];
       for (let i = 0; i < linePins; i++) {
         const pinX = worldWidth / 2 - lineWidth / 2 + i * pinGap;
         const pinY = 100 + l * pinGap;
-        const pin = Bodies.circle(pinX, pinY, pinSize, {
-          isStatic: true,
-          collisionFilter: {
-            group: -1,
-          },
-        });
+        const pin = Bodies.circle(pinX, pinY, pinSize, { isStatic: true });
         pins.push(pin);
 
+        // Create buckets at the bottom
         if (l === pinLines - 1 && i < linePins - 1) {
           const bucketX = pinX + pinGap / 2;
-          const bucketY = pinY + pinGap / 2;
+          const bucketY = pinY + pinGap / 4;
           const bucket = Bodies.rectangle(bucketX, bucketY, pinGap, pinGap, {
             isStatic: true,
           });
-
           Composite.add(engine.world, bucket);
         }
+        pinPositions[l].push(pinX);
       }
     }
-
-    // function findDesiredBoxX(boxIndex: number) {
-
-
-    // };
-
-    console.log(pins.length);
-    console.log(pins[88]);
-    console.log(desiredBoxX);
 
     Composite.add(engine.world, pins);
     Composite.add(engine.world, [ball]);
 
-    Matter.Events.on(engine, 'collisionStart', (event) => {
+    // Path following logic
+    let followingPredefinedPath = false;
+    let currentStep = 0;
+    const predefinedPath = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]; // Predefined path for the ball
+
+    // Event: Start following the path on the first collision
+    Events.on(engine, "collisionStart", (event) => {
       event.pairs.forEach((pair) => {
-        if (pair.bodyA === ball || pair.bodyB === ball) {
-          const pin = pair.bodyA === ball ? pair.bodyB : pair.bodyA;
-          const pinX = pin.position.x;
-          const ballX = ball.position.x;
-
-          // Calculate the direction based on the ball's position relative to the pin
-          const direction = ballX > desiredBoxX ? 1 : -1;
-
-          engine.gravity = {x:0.1, y:0.1, scale: 0.001}; // prepei na kano kati me to gravity sto x gia na kano to auto me to desiredPath isos
-          // kai meta na to setato sto kanoniko pali gia na min fainetai oti to pirazo?
-
-          // Calculate the forceMagnitude based on your desired speed
-          const forceMagnitude = 0.0037 * (desiredBoxX - ballX);
-
-          // Set the velocity to move the ball towards the desired box
-          const velocity = Vector.create(direction * forceMagnitude, ball.velocity.y);
-          Matter.Body.setVelocity(ball, velocity);
+        if (
+          (pair.bodyA === ball || pair.bodyB === ball) &&
+          !followingPredefinedPath
+        ) {
+          followingPredefinedPath = true;
+          currentStep = 0;
         }
       });
     });
 
-    Render.run(render);
+    // Track the current row and last row's Y position
+    let currentRow = 0;
+    let lastRowYPosition = 100;
+    let lastAppliedForce = { x: 0, y: 0 };
 
+    // Event: Apply force based on the predefined path
+    Events.on(engine, "beforeUpdate", () => {
+      if (followingPredefinedPath && currentRow < predefinedPath.length) {
+        const newRow = Math.floor((ball.position.y - 100) / pinGap);
+
+        if (newRow > currentRow) {
+          currentRow = newRow;
+          lastRowYPosition = 100 + currentRow * pinGap;
+          console.log("currentRow", currentRow);
+        }
+
+        const distanceFromLastRow = ball.position.y - lastRowYPosition;
+        const normalizedDistance = Math.min(
+          distanceFromLastRow / (pinGap / 2),
+          1
+        );
+
+        // Quadratic decrease in force magnitude
+        const baseForceMagnitude = 0.003;
+        const forceMagnitude =
+          baseForceMagnitude * (1 - normalizedDistance ** 2);
+
+        // Adjust the angle of the force
+        const angle = (Math.PI / 2) * normalizedDistance; // From 0 (horizontal) to PI/2 (vertical)
+        const direction = predefinedPath[currentRow] === 0 ? -1 : 1;
+        const forceX = Math.cos(angle) * direction * forceMagnitude;
+        const forceY = Math.sin(angle) * forceMagnitude;
+
+        const force = Vector.create(forceX, forceY);
+        Body.applyForce(ball, ball.position, force);
+        lastAppliedForce = force;
+      }
+    });
+
+    Events.on(engine, "collisionEnd", (event) => {
+      event.pairs.forEach((pair) => {
+        if (pair.bodyA === ball || pair.bodyB === ball) {
+          if (currentStep < predefinedPath.length - 1) {
+            currentStep++; // Move to the next step in the path after each collision
+          }
+        }
+      });
+    });
+
+    Render.lookAt(render, {
+      min: { x: 0, y: 0 },
+      max: { x: worldWidth, y: 600 },
+    });
+
+    Events.on(render, "afterRender", () => {
+      // ... (existing rendering logic)
+
+      // Draw the force vector
+      const context = render.context;
+      const startPoint = ball.position;
+      const endPoint = {
+        x: startPoint.x + lastAppliedForce.x * 5000, // Scale factor for visualization
+        y: startPoint.y + lastAppliedForce.y * 5000, // Scale factor for visualization
+      };
+
+      context.beginPath();
+      context.moveTo(startPoint.x, startPoint.y);
+      context.lineTo(endPoint.x, endPoint.y);
+      context.strokeStyle = "#ff0000";
+      context.lineWidth = 2;
+      context.stroke();
+    });
+
+    // Start the engine
     const runner = Runner.create();
     Runner.run(runner, engine);
+    Render.run(render);
 
     return () => {
-      Render.stop(render);
+      // Clear the runner and stop the render on unmount
       Runner.stop(runner);
-      document.body.removeChild(render.canvas);
+      Render.stop(render);
     };
   }, []);
 
