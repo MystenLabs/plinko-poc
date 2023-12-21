@@ -11,16 +11,21 @@ import Matter, {
 } from "matter-js";
 
 const MatterSim: React.FC = () => {
-  const [ballFloors, setBallFloors] = useState({ firstBall: 0, secondBall: 0 });
-  //state for matrix
-  const [dropBallPosision, setDropBallPosision] = useState({
-    firstBall: 0,
-    secondBall: 0,
-  });
+  const [ballFloors, setBallFloors] = useState<number[]>([0, 0]);
+  // State for matrix
+  const [dropBallPosision, setDropBallPosision] = useState<number[]>([0, 0]);
   // Create a physics engine
   const engine = Engine.create();
-  const predefinedPath = [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0]; // Predefined path for the ball 3
-  const predefinedPath_2 = [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; // Example path for second ball
+  const predefinedPaths: number[][] = [
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ];
 
   // Ball properties
   const ballSize = 7;
@@ -53,16 +58,27 @@ const MatterSim: React.FC = () => {
     // Create pins and buckets
     const pins: Matter.Body[] = [];
 
-    // const centerPinX = dropBallPosision;
-    const centerPinX = worldWidth / 2.095 - 19 + predefinedPath[0] * 28;
-    const centerPinX_2 = worldWidth / 2.095 - 19 + predefinedPath_2[0] * 28;
-    const ballStartY = 50; // Starting Y position of the ball
-    const ball = Bodies.circle(centerPinX, ballStartY, ballSize, {
-      restitution: ballElasticity,
-      friction: ballFriction,
-      density: 0.4,
-      render: { fillStyle: "blue" },
-    });
+    const balls: Matter.Body[] = [];
+
+    const forceTrackers: { x: number; y: number }[] = [];
+
+    for (let i = 0; i < predefinedPaths.length; i++) {
+      const centerPinX = worldWidth / 2.095 - 19 + predefinedPaths[i][0] * 28;
+      const ballStartY = 50; // Starting Y position of the ball
+      const ball = Bodies.circle(centerPinX, ballStartY, ballSize, {
+        restitution: ballElasticity,
+        friction: ballFriction,
+        density: 0.4,
+        render: { fillStyle: "blue" },
+      });
+      // Add balls with a delay of 1000ms
+      setTimeout(() => {
+        Composite.add(engine.world, [ball]);
+      }, 4000 * i);
+
+      balls.push(ball);
+      forceTrackers.push({ x: 0, y: 0 });
+    }
 
     // Set gravity for the simulation
     engine.gravity = { x: 0, y: 0.06, scale: 0.001 };
@@ -127,134 +143,76 @@ const MatterSim: React.FC = () => {
     }
 
     Composite.add(engine.world, pins);
-    Composite.add(engine.world, [ball]);
-
-    ///
-    // Additional ball properties
-    const secondBall = Bodies.circle(centerPinX_2, ballStartY, ballSize, {
-      restitution: ballElasticity,
-      friction: ballFriction,
-      density: 0.4,
-      render: { fillStyle: "blue" },
-    });
-    //add second ball with delay
-    setTimeout(() => {
-      Composite.add(engine.world, [secondBall]);
-    }, 5000);
-
-    ///
 
     // Path following logic
-    let followingPredefinedPath = false;
-    let followingPredefinedPath_2 = false;
-    let currentStep = 0;
-    let currentStep_2 = 0;
+    let followingPredefinedPath = Array(predefinedPaths.length).fill(false);
+    let currentSteps = Array(predefinedPaths.length).fill(0);
 
     // Event: Start following the path on the first collision
     Events.on(engine, "collisionStart", (event) => {
       event.pairs.forEach((pair) => {
-        if (
-          (pair.bodyA === ball || pair.bodyB === ball) &&
-          !followingPredefinedPath
-        ) {
-          followingPredefinedPath = true;
-          currentStep = 0;
-        }
-        if (
-          (pair.bodyA === secondBall || pair.bodyB === secondBall) &&
-          !followingPredefinedPath_2
-        ) {
-          followingPredefinedPath_2 = true;
-          currentStep_2 = 0;
+        for (let i = 0; i < predefinedPaths.length; i++) {
+          if (
+            (pair.bodyA === balls[i] || pair.bodyB === balls[i]) &&
+            !followingPredefinedPath[i]
+          ) {
+            followingPredefinedPath[i] = true;
+            currentSteps[i] = 0;
+          }
         }
       });
     });
 
     // Track the current row and last row's Y position
-    let currentRow = 0;
-    let currentRow_2 = 0;
-    let lastRowYPosition = 100;
-    let lastRowYPosition_2 = 100;
-    let lastAppliedForce = { x: 0, y: 0 };
-    let lastAppliedForce_2 = { x: 0, y: 0 };
+    let currentRows = Array(predefinedPaths.length).fill(0);
+    let lastRowYPositions = Array(predefinedPaths.length).fill(100);
 
     // Event: Apply force based on the predefined path
     Events.on(engine, "beforeUpdate", () => {
-      if (followingPredefinedPath && currentRow < predefinedPath.length) {
-        const newRow = Math.floor((ball.position.y - 100) / pinGap);
+      for (let i = 0; i < predefinedPaths.length; i++) {
+        if (
+          followingPredefinedPath[i] &&
+          currentRows[i] < predefinedPaths[i].length
+        ) {
+          const newRow = Math.floor((balls[i].position.y - 100) / pinGap);
 
-        if (newRow > currentRow) {
-          currentRow = newRow;
-          lastRowYPosition = 100 + currentRow * pinGap;
-          console.log("currentRow", currentRow);
+          if (newRow > currentRows[i]) {
+            currentRows[i] = newRow;
+            lastRowYPositions[i] = 100 + currentRows[i] * pinGap;
+          }
+
+          const distanceFromLastRow =
+            balls[i].position.y - lastRowYPositions[i];
+          const normalizedDistance = Math.min(
+            distanceFromLastRow / (pinGap / 2),
+            1
+          );
+
+          // Quadratic decrease in force magnitude
+          const baseForceMagnitude = 0.003;
+          const forceMagnitude =
+            baseForceMagnitude * (1 - normalizedDistance ** 2);
+
+          // Adjust the angle of the force
+          const angle = (Math.PI / 2) * normalizedDistance; // From 0 (horizontal) to PI/2 (vertical)
+          const direction = predefinedPaths[i][currentRows[i]] === 0 ? -1 : 1;
+          const forceX = Math.cos(angle) * direction * forceMagnitude;
+          const forceY = Math.sin(angle) * forceMagnitude;
+
+          const force = Vector.create(forceX, forceY);
+          Body.applyForce(balls[i], balls[i].position, force);
+          forceTrackers[i] = force;
         }
-
-        const distanceFromLastRow = ball.position.y - lastRowYPosition;
-        const normalizedDistance = Math.min(
-          distanceFromLastRow / (pinGap / 2),
-          1
-        );
-
-        // Quadratic decrease in force magnitude
-        const baseForceMagnitude = 0.003;
-        const forceMagnitude =
-          baseForceMagnitude * (1 - normalizedDistance ** 2);
-
-        // Adjust the angle of the force
-        const angle = (Math.PI / 2) * normalizedDistance; // From 0 (horizontal) to PI/2 (vertical)
-        const direction = predefinedPath[currentRow] === 0 ? -1 : 1;
-        const forceX = Math.cos(angle) * direction * forceMagnitude;
-        const forceY = Math.sin(angle) * forceMagnitude;
-
-        const force = Vector.create(forceX, forceY);
-        Body.applyForce(ball, ball.position, force);
-        lastAppliedForce = force;
-      }
-
-      if (followingPredefinedPath_2 && currentRow_2 < predefinedPath_2.length) {
-        const newRow_2 = Math.floor((secondBall.position.y - 100) / pinGap);
-
-        if (newRow_2 > currentRow_2) {
-          currentRow_2 = newRow_2;
-          lastRowYPosition_2 = 100 + currentRow_2 * pinGap;
-          console.log("currentRow_2", currentRow_2);
-        }
-
-        const distanceFromLastRow_2 =
-          secondBall.position.y - lastRowYPosition_2;
-        const normalizedDistance_2 = Math.min(
-          distanceFromLastRow_2 / (pinGap / 2),
-          1
-        );
-
-        // Quadratic decrease in force magnitude
-        const baseForceMagnitude_2 = 0.003;
-        const forceMagnitude_2 =
-          baseForceMagnitude_2 * (1 - normalizedDistance_2 ** 2);
-
-        // Adjust the angle of the force
-        const angle_2 = (Math.PI / 2) * normalizedDistance_2; // From 0 (horizontal) to PI/2 (vertical)
-        const direction_2 = predefinedPath_2[currentRow_2] === 0 ? -1 : 1;
-        const forceX_2 = Math.cos(angle_2) * direction_2 * forceMagnitude_2;
-        const forceY_2 = Math.sin(angle_2) * forceMagnitude_2;
-
-        const force_2 = Vector.create(forceX_2, forceY_2);
-
-        Body.applyForce(secondBall, secondBall.position, force_2);
-        lastAppliedForce_2 = force_2;
       }
     });
 
     Events.on(engine, "collisionEnd", (event) => {
       event.pairs.forEach((pair) => {
-        if (pair.bodyA === ball || pair.bodyB === ball) {
-          if (currentStep < predefinedPath.length - 1) {
-            currentStep++; // Move to the next step in the path after each collision
-          }
-        }
-        if (pair.bodyA === secondBall || pair.bodyB === secondBall) {
-          if (currentStep_2 < predefinedPath_2.length - 1) {
-            currentStep_2++; // Move to the next step in the path after each collision
+        for (let i = 0; i < predefinedPaths.length; i++) {
+          if (pair.bodyA === balls[i] || pair.bodyB === balls[i]) {
+            if (currentSteps[i] < predefinedPaths[i].length - 1) {
+              currentSteps[i]++; // Move to the next step in the path after each collision
+            }
           }
         }
       });
@@ -266,33 +224,22 @@ const MatterSim: React.FC = () => {
     });
 
     Events.on(render, "afterRender", () => {
-      // Draw the force vector
+      // Draw the force vectors
       const context = render.context;
-      const startPoint = ball.position;
-      const endPoint = {
-        x: startPoint.x + lastAppliedForce.x * 5000, // Scale factor for visualization
-        y: startPoint.y + lastAppliedForce.y * 5000, // Scale factor for visualization
-      };
+      for (let i = 0; i < predefinedPaths.length; i++) {
+        const startPoint = balls[i].position;
+        const endPoint = {
+          x: startPoint.x + forceTrackers[i].x * 5000, // Scale factor for visualization
+          y: startPoint.y + forceTrackers[i].y * 5000, // Scale factor for visualization
+        };
 
-      context.beginPath();
-      context.moveTo(startPoint.x, startPoint.y);
-      context.lineTo(endPoint.x, endPoint.y);
-      context.strokeStyle = "#ff0000";
-      context.lineWidth = 2;
-      context.stroke();
-      //draw second ball force vector
-      const startPoint_2 = secondBall.position;
-      const endPoint_2 = {
-        x: startPoint_2.x + lastAppliedForce_2.x * 5000, // Scale factor for visualization
-        y: startPoint_2.y + lastAppliedForce_2.y * 5000, // Scale factor for visualization
-      };
-
-      context.beginPath();
-      context.moveTo(startPoint_2.x, startPoint_2.y);
-      context.lineTo(endPoint_2.x, endPoint_2.y);
-      context.strokeStyle = "#ff0000";
-      context.lineWidth = 2;
-      context.stroke();
+        context.beginPath();
+        context.moveTo(startPoint.x, startPoint.y);
+        context.lineTo(endPoint.x, endPoint.y);
+        context.strokeStyle = "#ff0000";
+        context.lineWidth = 2;
+        context.stroke();
+      }
     });
 
     // Start the engine
