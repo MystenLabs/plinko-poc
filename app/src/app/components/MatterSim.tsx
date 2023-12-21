@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Matter, {
   Engine,
   Render,
@@ -11,6 +11,7 @@ import Matter, {
 } from "matter-js";
 
 const MatterSim: React.FC = () => {
+  const [ballFloors, setBallFloors] = useState({ firstBall: 0, secondBall: 0 });
   // Create a physics engine
   const engine = Engine.create();
 
@@ -121,6 +122,23 @@ const MatterSim: React.FC = () => {
     Composite.add(engine.world, pins);
     Composite.add(engine.world, [ball]);
 
+    ///
+    // Additional ball properties
+    const secondBall = Bodies.circle(centerPinX, ballStartY, ballSize, {
+      restitution: ballElasticity,
+      friction: ballFriction,
+      density: 0.4,
+      render: { fillStyle: "blue" },
+    });
+    //add second ball with delay
+    setTimeout(() => {
+      Composite.add(engine.world, [secondBall]);
+    }, 5000);
+
+    // Second predefined path
+    const secondPredefinedPath = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0]; // Example path for second ball
+    ///
+
     // Path following logic
     let followingPredefinedPath = false;
     let currentStep = 0;
@@ -141,7 +159,9 @@ const MatterSim: React.FC = () => {
 
     // Track the current row and last row's Y position
     let currentRow = 0;
+    let currentRow_2 = 0;
     let lastRowYPosition = 100;
+    let lastRowYPosition_2 = 100;
     let lastAppliedForce = { x: 0, y: 0 };
 
     // Event: Apply force based on the predefined path
@@ -190,6 +210,57 @@ const MatterSim: React.FC = () => {
         const force = Vector.create(forceX, forceY);
         Body.applyForce(ball, ball.position, force);
         lastAppliedForce = force;
+      }
+
+      if (followingPredefinedPath && currentRow_2 < predefinedPath.length) {
+        const newRow_2 = Math.floor((secondBall.position.y - 100) / pinGap);
+
+        // Apply an initial extra force when the secondBall starts moving
+        if (!initialForceApplied) {
+          console.log("initialForceApplied");
+          initialForceApplied = true; // Ensure the force is applied only once
+          const initialDirection = predefinedPath[0] === 0 ? -1 : 1;
+          //remove the first element from the array
+          predefinedPath.shift();
+          const initialForceMagnitude = 0.07; // Adjust as needed
+          const initialForce = Vector.create(
+            initialForceMagnitude * initialDirection,
+            0
+          );
+          Body.applyForce(secondBall, secondBall.position, initialForce);
+        }
+
+        if (newRow_2 > currentRow_2) {
+          currentRow_2 = newRow_2;
+          lastRowYPosition_2 = 100 + currentRow_2 * pinGap;
+          console.log("currentRow_2", currentRow_2);
+        }
+
+        const distanceFromLastRow_2 =
+          secondBall.position.y - lastRowYPosition_2;
+        const normalizedDistance_2 = Math.min(
+          distanceFromLastRow_2 / (pinGap / 2),
+          1
+        );
+
+        // Quadratic decrease in force magnitude
+        const baseForceMagnitude_2 = 0.003;
+        const forceMagnitude_2 =
+          baseForceMagnitude_2 * (1 - normalizedDistance_2 ** 2);
+
+        // Adjust the angle of the force
+        const angle = (Math.PI / 2) * normalizedDistance_2; // From 0 (horizontal) to PI/2 (vertical)
+        const direction = predefinedPath[currentRow] === 0 ? -1 : 1;
+        const forceX = Math.cos(angle) * direction * forceMagnitude_2;
+        const forceY = Math.sin(angle) * forceMagnitude_2;
+
+        const force = Vector.create(forceX, forceY);
+        // delay the force
+        // setTimeout(() => {
+        //   Body.applyForce(secondBall, secondBall.position, force);
+        // }, 5000);
+        // Body.applyForce(secondBall, secondBall.position, force);
+        // lastAppliedForce = force;
       }
     });
 
