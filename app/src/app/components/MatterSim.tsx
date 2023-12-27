@@ -12,19 +12,39 @@ import Matter, {
 
 const MatterSim: React.FC = () => {
   const [ballFloors, setBallFloors] = useState<number[]>([0, 0]);
+  // Array to store positions for the multiplier text
+  const multiplierPositions = [];
+  // Define the multipliers for each spot
+  const multipliers = [
+    "9.0x",
+    "8.2x",
+    "6.5x",
+    "3.8x",
+    "1.0x",
+    "0.6x",
+    "0.4x",
+    "0.6x",
+    "1.0x",
+    "3.8x",
+    "6.5x",
+    "8.2x",
+    "9.0x",
+  ];
   // State for matrix
   const [dropBallPosision, setDropBallPosision] = useState<number[]>([0, 0]);
   // Create a physics engine
   const engine = Engine.create();
   const predefinedPaths: number[][] = [
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
     [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
     [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], // Example path for the second ball
     [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
+    [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
   ];
 
   // Ball properties
@@ -135,6 +155,14 @@ const MatterSim: React.FC = () => {
               isStatic: true,
             }
           );
+          // Calculate and store the position for the multiplier text
+          const textX = bucketX + bucketWidth / 2;
+          const textY = bucketY + bucketHeight + 20; // 20 is an offset, adjust as needed
+          multiplierPositions.push({
+            x: textX,
+            y: textY,
+            value: multipliers[i],
+          });
 
           // Add bucket parts to the world
           Composite.add(engine.world, [leftSide, rightSide, bottom]);
@@ -226,6 +254,12 @@ const MatterSim: React.FC = () => {
     Events.on(render, "afterRender", () => {
       // Draw the force vectors
       const context = render.context;
+      context.font = "16px Arial"; // Adjust the font size and style as needed
+      context.fillStyle = "green"; // Set the text color
+
+      multiplierPositions.forEach((pos) => {
+        context.fillText(pos.value, pos.x - 35, pos.y - 50);
+      });
       for (let i = 0; i < predefinedPaths.length; i++) {
         const startPoint = balls[i].position;
         const endPoint = {
