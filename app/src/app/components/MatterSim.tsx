@@ -22,7 +22,7 @@ const MatterSim: React.FC = () => {
   ];
   const [ballFloors, setBallFloors] = useState<number[]>([0, 0]);
   // Array to store positions for the multiplier text
-  const multiplierPositions = [];
+  const multiplierPositions: any = [];
   // Define the multipliers for each spot
   const multipliers = [
     "9.0x",
@@ -288,7 +288,7 @@ const MatterSim: React.FC = () => {
       context.font = "16px Arial"; // Adjust the font size and style as needed
       context.fillStyle = "green"; // Set the text color
 
-      multiplierPositions.forEach((pos) => {
+      multiplierPositions.forEach((pos: any) => {
         context.fillText(pos.value, pos.x - 35, pos.y - 50);
       });
       for (let i = 0; i < predefinedPaths.length; i++) {
