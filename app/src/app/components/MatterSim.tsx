@@ -50,9 +50,9 @@ const MatterSim: React.FC = () => {
   // Ball properties
   const ballSize = 7;
   const ballElasticity = 0.9; // Reduced ball restitution for less bounce
-  const ballFriction = 0.0005; // Reduced ball friction for more speed
+  const ballFriction = 0.00068; // Reduced ball friction for more speed
 
-  const pinRestitution = 0.1;
+  const pinRestitution = 0.8;
 
   useEffect(() => {
     // Canvas dimensions and pin settings
@@ -104,14 +104,14 @@ const MatterSim: React.FC = () => {
       // Add balls with a delay of 1000ms
       setTimeout(() => {
         Composite.add(engine.world, [ball]);
-      }, 4000 * i);
+      }, 1950 * i);
 
       balls.push(ball);
       forceTrackers.push({ x: 0, y: 0 });
     }
 
     // Set gravity for the simulation
-    engine.gravity = { x: 0, y: 0.06, scale: 0.0015 };
+    engine.gravity = { x: 0, y: 0.06, scale: 0.0018 };
 
     // Store the X positions of the pins
     let pinPositions = [];
@@ -127,6 +127,11 @@ const MatterSim: React.FC = () => {
         const pin = Bodies.circle(pinX, pinY, pinSize, {
           isStatic: true,
           restitution: pinRestitution,
+          render: {
+            fillStyle: "red",
+            strokeStyle: "blue",
+            lineWidth: 3,
+          },
         });
         pins.push(pin);
         // Create buckets at the bottom
@@ -237,8 +242,9 @@ const MatterSim: React.FC = () => {
           // Adjust the angle of the force
           const angle = (Math.PI / 2) * normalizedDistance; // From 0 (horizontal) to PI/2 (vertical)
           const direction = predefinedPaths[i][currentRows[i]] === 0 ? -1 : 1;
-          const forceX = Math.cos(angle - 6) * direction * forceMagnitude * 1.4;
-          const forceY = Math.sin(angle) * forceMagnitude;
+          const forceX =
+            Math.cos(angle - 6) * direction * forceMagnitude * 1.45;
+          const forceY = Math.sin(angle) * forceMagnitude * 1.13;
 
           const force = Vector.create(forceX, forceY);
           Body.applyForce(balls[i], balls[i].position, force);
@@ -280,12 +286,12 @@ const MatterSim: React.FC = () => {
           y: startPoint.y + forceTrackers[i].y * 5000, // Scale factor for visualization
         };
 
-        context.beginPath();
-        context.moveTo(startPoint.x, startPoint.y);
-        context.lineTo(endPoint.x, endPoint.y);
-        context.strokeStyle = "#ff0000";
-        context.lineWidth = 2;
-        context.stroke();
+        // context.beginPath();
+        // context.moveTo(startPoint.x, startPoint.y);
+        // context.lineTo(endPoint.x, endPoint.y);
+        // context.strokeStyle = "#ff0000";
+        // context.lineWidth = 2;
+        // context.stroke();
       }
     });
 
