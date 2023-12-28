@@ -35,8 +35,8 @@ const MatterSim: React.FC = () => {
   // Create a physics engine
   const engine = Engine.create();
   const predefinedPaths: number[][] = [
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
+    [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
+    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
     [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
     [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
     [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
@@ -49,8 +49,10 @@ const MatterSim: React.FC = () => {
 
   // Ball properties
   const ballSize = 7;
-  const ballElasticity = 0.1; // Reduced ball restitution for less bounce
-  const ballFriction = 0.01;
+  const ballElasticity = 0.9; // Reduced ball restitution for less bounce
+  const ballFriction = 0.0005; // Reduced ball friction for more speed
+
+  const pinRestitution = 0.1;
 
   useEffect(() => {
     // Canvas dimensions and pin settings
@@ -83,7 +85,15 @@ const MatterSim: React.FC = () => {
     const forceTrackers: { x: number; y: number }[] = [];
 
     for (let i = 0; i < predefinedPaths.length; i++) {
-      const centerPinX = worldWidth / 2.095 - 19 + predefinedPaths[i][0] * 28;
+      let dropBallPosision = 0;
+      if (predefinedPaths[i][0] === 1) {
+        dropBallPosision = worldWidth / 2.095 + 17;
+      } else {
+        dropBallPosision = worldWidth / 2.095 - 20;
+      }
+      const centerPinX = dropBallPosision;
+      //remove the predefinedPaths[i][0]
+      predefinedPaths[i].shift(); // because we drop the ball from the top and takes the first value of the array as a starting point
       const ballStartY = 50; // Starting Y position of the ball
       const ball = Bodies.circle(centerPinX, ballStartY, ballSize, {
         restitution: ballElasticity,
@@ -101,7 +111,7 @@ const MatterSim: React.FC = () => {
     }
 
     // Set gravity for the simulation
-    engine.gravity = { x: 0, y: 0.06, scale: 0.001 };
+    engine.gravity = { x: 0, y: 0.06, scale: 0.0015 };
 
     // Store the X positions of the pins
     let pinPositions = [];
@@ -114,7 +124,10 @@ const MatterSim: React.FC = () => {
       for (let i = 0; i < linePins; i++) {
         const pinX = worldWidth / 2 - lineWidth / 2 + i * pinGap;
         const pinY = 100 + l * pinGap;
-        const pin = Bodies.circle(pinX, pinY, pinSize, { isStatic: true });
+        const pin = Bodies.circle(pinX, pinY, pinSize, {
+          isStatic: true,
+          restitution: pinRestitution,
+        });
         pins.push(pin);
         // Create buckets at the bottom
         if (l === pinLines - 1 && i < linePins - 1) {
@@ -224,7 +237,7 @@ const MatterSim: React.FC = () => {
           // Adjust the angle of the force
           const angle = (Math.PI / 2) * normalizedDistance; // From 0 (horizontal) to PI/2 (vertical)
           const direction = predefinedPaths[i][currentRows[i]] === 0 ? -1 : 1;
-          const forceX = Math.cos(angle) * direction * forceMagnitude;
+          const forceX = Math.cos(angle - 6) * direction * forceMagnitude * 1.4;
           const forceY = Math.sin(angle) * forceMagnitude;
 
           const force = Vector.create(forceX, forceY);
