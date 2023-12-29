@@ -117,7 +117,7 @@ const MatterSim: React.FC = () => {
       // Add balls with a delay of 1000ms
       setTimeout(() => {
         Composite.add(engine.world, [ball]);
-      }, 2350 * i);
+      }, 750 * i);
 
       balls.push(ball);
       forceTrackers.push({ x: 0, y: 0 });
@@ -246,15 +246,16 @@ const MatterSim: React.FC = () => {
           );
 
           // Quadratic decrease in force magnitude
-          const baseForceMagnitude = 0.003;
+          const baseForceMagnitude = 0.006;
           const forceMagnitude =
             baseForceMagnitude * (1 - normalizedDistance ** 2);
 
           // Adjust the angle of the force
-          const angle = (Math.PI / 2) * normalizedDistance - 0.2; // From 0 (horizontal) to PI/2 (vertical)
+          const angle = (Math.PI / 2) * normalizedDistance - 0.4; // From 0 (horizontal) to PI/2 (vertical)
           const direction = predefinedPaths[i][currentRows[i]] === 0 ? -1 : 1;
           const forceX = Math.cos(angle - 6) * direction * forceMagnitude * 2.3;
-          const forceY = Math.sin(angle) * forceMagnitude * 1.2;
+
+          const forceY = Math.sin(angle + 1) * forceMagnitude * 1.2;
 
           const force = Vector.create(forceX, forceY);
           Body.applyForce(balls[i], balls[i].position, force);
@@ -296,17 +297,18 @@ const MatterSim: React.FC = () => {
           y: startPoint.y + forceTrackers[i].y * 5000, // Scale factor for visualization
         };
 
-        context.beginPath();
-        context.moveTo(startPoint.x, startPoint.y);
-        context.lineTo(endPoint.x, endPoint.y);
-        context.strokeStyle = "#ff0000";
-        context.lineWidth = 2;
-        context.stroke();
+        // context.beginPath();
+        // context.moveTo(startPoint.x, startPoint.y);
+        // context.lineTo(endPoint.x, endPoint.y);
+        // context.strokeStyle = "#ff0000";
+        // context.lineWidth = 2;
+        // context.stroke();
       }
     });
 
     // // Start the engine
     const runner = Runner.create();
+    engine.timing.timeScale = 2;
     Runner.run(runner, engine);
     Render.run(render);
 
