@@ -58,8 +58,8 @@ const MatterSim: React.FC = () => {
 
   // Ball properties
   const ballSize = 7;
-  const ballElasticity = 0.9; // Reduced ball restitution for less bounce
-  const ballFriction = 0.00068; // Reduced ball friction for more speed
+  const ballElasticity = 0.01; // Reduced ball restitution for less bounce
+  const ballFriction = 0.0002; // Reduced ball friction for more speed
 
   const pinRestitution = 0.8;
 
@@ -68,7 +68,7 @@ const MatterSim: React.FC = () => {
     const worldWidth = 800;
     const startPins = 3;
     const pinLines = 12;
-    const pinSize = 12.3; // Adjusted pin size to accommodate the ball
+    const pinSize = 12.82; // Adjusted pin size to accommodate the ball
     const pinGap = 39;
 
     // Setup the rendering context
@@ -117,7 +117,7 @@ const MatterSim: React.FC = () => {
       // Add balls with a delay of 1000ms
       setTimeout(() => {
         Composite.add(engine.world, [ball]);
-      }, 1950 * i);
+      }, 2350 * i);
 
       balls.push(ball);
       forceTrackers.push({ x: 0, y: 0 });
@@ -139,8 +139,6 @@ const MatterSim: React.FC = () => {
         const pinY = 100 + l * pinGap;
         const pin = Bodies.circle(pinX, pinY, pinSize, {
           isStatic: true,
-          restitution: pinRestitution,
-          // friction: 0.0001,
           render: {
             visible: true,
             // lineWidth: 100,
@@ -253,10 +251,10 @@ const MatterSim: React.FC = () => {
             baseForceMagnitude * (1 - normalizedDistance ** 2);
 
           // Adjust the angle of the force
-          const angle = (Math.PI / 2) * normalizedDistance; // From 0 (horizontal) to PI/2 (vertical)
+          const angle = (Math.PI / 2) * normalizedDistance - 0.2; // From 0 (horizontal) to PI/2 (vertical)
           const direction = predefinedPaths[i][currentRows[i]] === 0 ? -1 : 1;
-          const forceX = Math.cos(angle - 6) * direction * forceMagnitude * 2;
-          const forceY = Math.sin(angle) * forceMagnitude * 1.13;
+          const forceX = Math.cos(angle - 6) * direction * forceMagnitude * 2.3;
+          const forceY = Math.sin(angle) * forceMagnitude * 1.2;
 
           const force = Vector.create(forceX, forceY);
           Body.applyForce(balls[i], balls[i].position, force);
