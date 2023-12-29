@@ -44,6 +44,8 @@ const MatterSim: React.FC = () => {
   // Create a physics engine
   const engine = Engine.create();
   const predefinedPaths: number[][] = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
     [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
     [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
@@ -80,7 +82,7 @@ const MatterSim: React.FC = () => {
       options: {
         width: 800,
         height: 600,
-        background: "red",
+        background: "#36454F",
         showVelocity: true,
         showAngleIndicator: true,
       },
@@ -109,8 +111,7 @@ const MatterSim: React.FC = () => {
         friction: ballFriction,
         density: 0.4,
         render: {
-          fillStyle: "red",
-          strokeStyle: "#FF5733",
+          fillStyle: "#77DD77",
         },
       });
 
@@ -141,6 +142,7 @@ const MatterSim: React.FC = () => {
           isStatic: true,
           render: {
             visible: true,
+            fillStyle: "#87CEEB",
             // lineWidth: 100,
           },
         });
@@ -309,6 +311,7 @@ const MatterSim: React.FC = () => {
     // // Start the engine
     const runner = Runner.create();
     engine.timing.timeScale = 2;
+    render.options.wireframes = false;
     Runner.run(runner, engine);
     Render.run(render);
 
