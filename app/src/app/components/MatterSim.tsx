@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom";
 
 import Matter, {
   Engine,
@@ -217,6 +216,37 @@ const MatterSim: React.FC = () => {
           ) {
             followingPredefinedPath[i] = true;
             currentSteps[i] = 0;
+          }
+        }
+
+        // Determine if the collision involves a ball and a pin
+        let ball = null;
+        let pin = null;
+
+        if (balls.includes(pair.bodyA)) {
+          ball = pair.bodyA;
+          pin = pair.bodyB;
+        } else if (balls.includes(pair.bodyB)) {
+          ball = pair.bodyB;
+          pin = pair.bodyA;
+        }
+
+        if (ball && pin) {
+          // Calculate the approximate collision point
+          const collisionPointY = (ball.position.y + pin.position.y) / 2;
+
+          // Define the top region of the pin (you might need to adjust this threshold)
+          const topOfPin = pin.position.y - pin.circleRadius! / 2;
+
+          // Check if the collision is near the top of the pin
+          if (collisionPointY <= topOfPin) {
+            // Change pin color to red
+            pin.render.fillStyle = "#6CA4Bf";
+
+            // Reset pin color after 1 second
+            setTimeout(() => {
+              pin.render.fillStyle = "#87CEEB"; // Original color
+            }, 100);
           }
         }
       });
