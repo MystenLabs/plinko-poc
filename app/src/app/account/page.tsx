@@ -1,32 +1,26 @@
 "use client";
 
-import { useGetOwnedObjects } from "../hooks/useGetOwnedObjects";
+import { Paper } from "@/components/general/Paper";
+import { useAuthentication } from "@/contexts/Authentication";
+import { UserAvatar } from "@/components/general/UserAvatar";
+import { UserProfileMenu } from "@/components/general/UserProfileMenu";
+import { USER_ROLES } from "@/constants/USER_ROLES";
 
 export default function Account() {
-  const { data, isLoading, isError, currentAccount } = useGetOwnedObjects();
+  const { user, isLoading } = useAuthentication();
 
-  if (!currentAccount) {
-    return <h3>Wallet not connected</h3>;
+  if (!isLoading && user.role === USER_ROLES.ROLE_4) {
+    return <Paper className="text-center">Not logged in</Paper>;
   }
-
-  const renderContent = () => {
-    if (isLoading) {
-      return <h3>Loading...</h3>;
-    }
-    if (isError) {
-      return <h3>Error</h3>;
-    }
-    return (
-      <div style={{ whiteSpace: "pre-wrap" }}>
-        {JSON.stringify(data, null, 2)}
-      </div>
-    );
-  };
 
   return (
     <div className="flex flex-col items-center gap-y-[10px]">
-      <h3>Your first 5 owned objects</h3>
-      {renderContent()}
+      <div className="bg-primary rounded-xl p-2">
+        <div className="flex justify-between items-center">
+          <UserAvatar user={user} />
+          <UserProfileMenu />
+        </div>
+      </div>
     </div>
   );
 }

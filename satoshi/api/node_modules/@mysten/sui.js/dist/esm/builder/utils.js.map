@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/builder/utils.ts"],
+  "sourcesContent": ["// Copyright (c) Mysten Labs, Inc.\n// SPDX-License-Identifier: Apache-2.0\n\nimport type { Struct } from 'superstruct';\nimport { create as superstructCreate } from 'superstruct';\n\nexport function create<T, S>(value: T, struct: Struct<T, S>): T {\n\treturn superstructCreate(value, struct);\n}\n\nexport type WellKnownEncoding =\n\t| {\n\t\t\tkind: 'object';\n\t  }\n\t| {\n\t\t\tkind: 'pure';\n\t\t\ttype: string;\n\t  };\n\nexport const TRANSACTION_TYPE = Symbol('transaction-argument-type');\n"],
+  "mappings": "AAIA,SAAS,UAAU,yBAAyB;AAErC,SAAS,OAAa,OAAU,QAAyB;AAC/D,SAAO,kBAAkB,OAAO,MAAM;AACvC;AAWO,MAAM,mBAAmB,OAAO,2BAA2B;",
+  "names": []
+}
