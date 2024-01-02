@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/framework/index.ts"],
+  "sourcesContent": ["// Copyright (c) Mysten Labs, Inc.\n// SPDX-License-Identifier: Apache-2.0\n\nexport * from './framework.js';\nexport * from './sui-system-state.js';\n"],
+  "mappings": "AAGA,cAAc;AACd,cAAc;",
+  "names": []
+}

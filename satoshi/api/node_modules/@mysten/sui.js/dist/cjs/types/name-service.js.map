@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/types/name-service.ts"],
+  "sourcesContent": ["// Copyright (c) Mysten Labs, Inc.\n// SPDX-License-Identifier: Apache-2.0\n\nimport type { Infer } from 'superstruct';\nimport { array, boolean, nullable, object, string } from 'superstruct';\n\nexport const ResolvedNameServiceNames = object({\n\tdata: array(string()),\n\thasNextPage: boolean(),\n\tnextCursor: nullable(string()),\n});\nexport type ResolvedNameServiceNames = Infer<typeof ResolvedNameServiceNames>;\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAIA,yBAAyD;AAElD,MAAM,+BAA2B,2BAAO;AAAA,EAC9C,UAAM,8BAAM,2BAAO,CAAC;AAAA,EACpB,iBAAa,4BAAQ;AAAA,EACrB,gBAAY,iCAAS,2BAAO,CAAC;AAC9B,CAAC;",
+  "names": []
+}
