@@ -27,13 +27,13 @@ if [ $# -ne 0 ]; then
   fi
 fi
 
-echo "- Admin Address is: ${ADMIN_ADDRESS}"
+echo "- Admin Address is: ${PLINKO_HOME_ADDRESS}"
 
-import_address=$(sui keytool import "$ADMIN_PHRASE" ed25519)
+import_address=$(sui keytool import "$PLINKO_HOME_ADDRESS" ed25519)
 
-switch_res=$(sui client switch --address ${ADMIN_ADDRESS})
+switch_res=$(sui client switch --address ${PLINKO_HOME_ADDRESS})
 
-#faucet_res=$(curl --location --request POST "$FAUCET" --header 'Content-Type: application/json' --data-raw '{"FixedAmountRequest": { "recipient": '$ADMIN_ADDRESS'}}')
+#faucet_res=$(curl --location --request POST "$FAUCET" --header 'Content-Type: application/json' --data-raw '{"FixedAmountRequest": { "recipient": '$PLINKO_HOME_ADDRESS'}}')
 
 publish_res=$(sui client publish --skip-fetch-latest-git-deps --gas-budget 2000000000 --json ${MOVE_PACKAGE_PATH})
 
@@ -52,6 +52,8 @@ PACKAGE_ID=$(echo "$publishedObjs" | jq -r '.packageId')
 
 newObjs=$(echo "$publish_res" | jq -r '.objectChanges[] | select(.type == "created")')
 
+HOUSE_CAP=$(echo "$newObjs" | jq -r 'select (.objectType | contains("house_data::HouseCap")).objectId')
+
 # PUBLISHER_ID=$(echo "$newObjs" | jq -r 'select (.objectType | contains("package::Publisher")).objectId')
 
 
@@ -64,7 +66,9 @@ cat >.env<<-API_ENV
 SUI_NETWORK=$NETWORK
 BACKEND_API=$BACKEND_API
 PACKAGE_ADDRESS=$PACKAGE_ID
-ADMIN_ADDRESS=$ADMIN_ADDRESS
+HOUSE_ADMIN_CAP=$HOUSE_CAP
+PLINKO_HOME_ADDRESS=$PLINKO_HOME_ADDRESS
+PLINKO_HOME_PRIVATE_KEY=$PLINKO_HOME_PRIVATE_KEY
 API_ENV
 
 cat >../app/.env$suffix<<-VITE_API_ENV
