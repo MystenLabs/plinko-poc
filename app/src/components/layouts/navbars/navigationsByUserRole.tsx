@@ -12,6 +12,12 @@ import {
 import { NavigationLink } from "@/types/NavigationLink";
 import { USER_ROLES } from "@/constants/USER_ROLES";
 
+const playNavigation: NavigationLink = {
+  title: "Play",
+  href: "/play",
+  icon: <LightningBoltIcon />,
+};
+
 const aboutNavigation: NavigationLink = {
   title: "About",
   href: "/about",
@@ -65,7 +71,10 @@ const globalNavigations: NavigationLink[] = [
   aboutNavigation,
   ...apiNavigations,
   pwaShowcaseNavigation,
+  playNavigation
 ];
+
+
 
 export const navigationsByUserRole = {
   anonymous: [

@@ -3,7 +3,7 @@
 
 /// This module implements a simple, non transferable counter NFT.
 /// Creates a counter object that can be incremented and burned.
-/// Utilized as a unique VRF input for each satoshi coin flip game.
+/// Utilized as a unique VRF input for each Plinko round.
 module plinko::counter_nft {
     use std::vector;
     use sui::object::{Self, UID};
@@ -11,7 +11,7 @@ module plinko::counter_nft {
     use sui::transfer::{Self};
     use sui::bcs::{Self};
 
-    /// Counter object that is used as a unique VRF input for each satoshi coin flip game.
+    /// Counter object that is used as a unique VRF input for each Plinko round.
     /// To achieve this, the Counter NFT is flattened into a vector<u64> value containing the Counter NFT ID + the current count.
     struct Counter has key {
         id: UID,
