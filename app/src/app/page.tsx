@@ -1,28 +1,19 @@
-"use client";
+import "server-only";
+import { Paper } from "@/components/general/Paper";
+import { LoginForm } from "@/components/forms/LoginForm";
+import { Metadata } from "next";
 
-import { USER_ROLES } from "./constants/USER_ROLES";
-import { useAuthentication } from "./hooks/useAuthentication";
+export const metadata: Metadata = {
+  title: "PoC Template",
+  description: "A NextJS app to bootstrap PoCs faster",
+};
 
 export default function Home() {
-  const { handleLoginAs } = useAuthentication();
+  console.log("page.tsx is on server:", !!process.env.IS_SERVER_SIDE);
 
   return (
-    <div className="space-y-5">
-      <h3 className="text-center">This is the home page</h3>
-      <h3 className="text-center">Login as</h3>
-      <div className="flex justify-center items-center space-x-2">
-        {Object.values(USER_ROLES)
-          .filter((role) => role !== "anonymous")
-          .map((role) => (
-            <button
-              key={role}
-              onClick={() => handleLoginAs(role)}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              {role.slice(0, 1).toUpperCase().concat(role.slice(1))}
-            </button>
-          ))}
-      </div>
-    </div>
+    <Paper className="max-w-[600px] mx-auto">
+      <LoginForm />
+    </Paper>
   );
 }
