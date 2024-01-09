@@ -1,15 +1,19 @@
 "use client";
 
-import { useAuthentication } from "../hooks/useAuthentication";
+import { ChildrenProps } from "@/types/ChildrenProps";
+import { useAuthentication } from "@/contexts/Authentication";
+import { Spinner } from "@/components/general/Spinner";
 
-export default function AdminRootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { user } = useAuthentication();
+export default function AdminRootLayout({ children }: ChildrenProps) {
+  const { user, isLoading } = useAuthentication();
+
+  if (isLoading) {
+    return <Spinner />;
+  }
+
   if (user?.role !== "admin") {
     return "Not allowed";
   }
+
   return children;
 }
