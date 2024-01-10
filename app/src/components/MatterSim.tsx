@@ -115,7 +115,7 @@ const MatterSim: React.FC = () => {
           Composite.add(engine.world, [balls[ballsSpawned]]);
           ballsSpawned++;
         } else {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1200));
         }
       }
     };
