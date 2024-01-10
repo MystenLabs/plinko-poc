@@ -13,13 +13,23 @@ import Matter, {
 } from "matter-js";
 
 const MatterSim: React.FC = () => {
-  const ballColors = [
-    "bg-red-500",
-    "bg-blue-500",
-    "bg-green-500",
-    "bg-yellow-500",
-    "bg-purple-500",
+  // Define bucket colors
+  const bucketColors = [
+    "#FF0000", // Red
+    "#FF3000", // Reddish-Orange
+    "#FF6000", // Orange-Red
+    "#FF9000", // Dark Orange
+    "#FFC000", // Light Orange
+    "#FFD800", // Yellow-Orange
+    "#FFFF00", // Yellow (central color)
+    "#FFD800", // Yellow-Orange
+    "#FFC000", // Light Orange
+    "#FF9000", // Dark Orange
+    "#FF6000", // Orange-Red
+    "#FF3000", // Reddish-Orange
+    "#FF0000", // Red
   ];
+
   const [ballFloors, setBallFloors] = useState<number[]>([0, 0]);
   // Array to store positions for the multiplier text
   const multiplierPositions: any = [];
@@ -195,8 +205,31 @@ const MatterSim: React.FC = () => {
             value: multipliers[i],
           });
 
+          // Assign a color to each bucket area from the array
+          const bucketColor = bucketColors[i % bucketColors.length];
+          // Create the bottom area of the bucket
+          const bottomArea = Bodies.rectangle(
+            bucketX,
+            bucketY + bucketHeight / 2,
+            bucketWidth - 10, // slightly less width than the bucket itself
+            bucketHeight,
+            {
+              isStatic: true,
+              isSensor: true, // Make it a sensor so it doesn't physically interact
+              render: {
+                fillStyle: bucketColor,
+              },
+            }
+          );
+
+          // Store the reference to the bottomArea body and its multiplier
+          multiplierPositions[i] = {
+            body: bottomArea, // Reference to the bottomArea body
+            value: multipliers[i], // Corresponding multiplier value
+          };
+
           // Add bucket parts to the world
-          Composite.add(engine.world, [leftSide, rightSide, bottom]);
+          Composite.add(engine.world, [leftSide, rightSide, bottomArea]);
         }
       }
     }
@@ -220,7 +253,7 @@ const MatterSim: React.FC = () => {
           }
         }
 
-        // Determine if the collision involves a ball and a pin
+        // Check if the collision involves a ball and a pin
         let ball = null;
         let pin: Matter.Body | null = null;
 
@@ -236,22 +269,41 @@ const MatterSim: React.FC = () => {
           // Calculate the approximate collision point
           const collisionPointY = (ball.position.y + pin.position.y) / 2;
 
-          // Define the top region of the pin (you might need to adjust this threshold)
+          // Define the top region of the pin (adjust as needed)
           const topOfPin = pin.position.y - pin.circleRadius! / 2;
 
-          // Check if the collision is near the top of the pin
-          if (collisionPointY <= topOfPin) {
+          // Check if the collision is near the top of the pin and if the pin is not a sensor
+          if (collisionPointY <= topOfPin && !pin.isSensor) {
             // Change pin color to red
             pin.render.fillStyle = "#6CA4Bf";
 
             // Reset pin color after 1 second
             setTimeout(() => {
-            if (pin) {
+              if (pin && !pin.isSensor) {
+                // Check again to ensure it's not a sensor
                 pin.render.fillStyle = "#87CEEB"; // Original color
-            }
+              }
             }, 100);
           }
         }
+        // Check if the collision involves a ball and a bottomArea
+        balls.forEach((ball) => {
+          if (
+            (pair.bodyA === ball && pair.bodyB.isSensor) ||
+            (pair.bodyB === ball && pair.bodyA.isSensor)
+          ) {
+            // Identify the bottomArea in the collision
+            const bottomArea = pair.bodyA.isSensor ? pair.bodyA : pair.bodyB;
+
+            // Temporarily increase the size of the bottomArea
+            Body.scale(bottomArea, 1.1, 1.1); // Increase by 10%
+
+            // Restore the original size after 1 second
+            setTimeout(() => {
+              Body.scale(bottomArea, 1 / 1.1, 1 / 1.1); // Scale back to original size
+            }, 625);
+          }
+        });
       });
     });
 
@@ -332,6 +384,20 @@ const MatterSim: React.FC = () => {
           y: startPoint.y + forceTrackers[i].y * 5000, // Scale factor for visualization
         };
 
+        const context = render.context;
+        context.font = "14px Arial";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillStyle = "black"; // Use a contrasting color for better visibility
+
+        multiplierPositions.forEach((pos: any) => {
+          // Get the current position of the bottomArea body
+          const bodyPosition = pos.body.position;
+
+          // Render the text at the body's position
+          context.fillText(pos.value, bodyPosition.x, bodyPosition.y);
+        });
+
         // context.beginPath();
         // context.moveTo(startPoint.x, startPoint.y);
         // context.lineTo(endPoint.x, endPoint.y);
@@ -350,8 +416,8 @@ const MatterSim: React.FC = () => {
 
     return () => {
       // Clear the runner and stop the render on unmount
-      // Runner.stop(runner);
-      // Render.stop(render);
+      Runner.stop(runner);
+      Render.stop(render);
     };
   }, []);
 
