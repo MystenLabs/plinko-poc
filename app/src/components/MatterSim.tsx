@@ -222,6 +222,12 @@ const MatterSim: React.FC = () => {
             }
           );
 
+          // Store the reference to the bottomArea body and its multiplier
+          multiplierPositions[i] = {
+            body: bottomArea, // Reference to the bottomArea body
+            value: multipliers[i], // Corresponding multiplier value
+          };
+
           // Add bucket parts to the world
           Composite.add(engine.world, [leftSide, rightSide, bottomArea]);
         }
@@ -377,6 +383,20 @@ const MatterSim: React.FC = () => {
           x: startPoint.x + forceTrackers[i].x * 5000, // Scale factor for visualization
           y: startPoint.y + forceTrackers[i].y * 5000, // Scale factor for visualization
         };
+
+        const context = render.context;
+        context.font = "14px Arial";
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.fillStyle = "black"; // Use a contrasting color for better visibility
+
+        multiplierPositions.forEach((pos: any) => {
+          // Get the current position of the bottomArea body
+          const bodyPosition = pos.body.position;
+
+          // Render the text at the body's position
+          context.fillText(pos.value, bodyPosition.x, bodyPosition.y);
+        });
 
         // context.beginPath();
         // context.moveTo(startPoint.x, startPoint.y);
