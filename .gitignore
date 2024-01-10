@@ -25,8 +25,12 @@ node_modules/
 dist/
 build/
 
-move/blackjack/Move.lock
-move/blackjack/build
+# Move related files
+plinko/build/
+plinko/Move.lock
+
+app/.env.localnet
+pnpm-lock.yaml
 
 # env files under the setup directory
 setup/*.env
