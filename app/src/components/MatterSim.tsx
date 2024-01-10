@@ -11,6 +11,7 @@ import Matter, {
   Events,
   Body,
 } from "matter-js";
+import { date } from "zod";
 
 const MatterSim: React.FC = () => {
   // Define bucket colors
@@ -82,6 +83,7 @@ const MatterSim: React.FC = () => {
     const pinLines = 12;
     const pinSize = 12.82; // Adjusted pin size to accommodate the ball
     const pinGap = 39;
+    let ballsSpawned = 0;
 
     // Setup the rendering context
     const container = document.getElementById("matter-canvas-container");
@@ -105,6 +107,19 @@ const MatterSim: React.FC = () => {
 
     const forceTrackers: { x: number; y: number }[] = [];
 
+    //between each ball spawn i want to wait 750ms
+    const asyncCompositeBallAdd = async (balls: Matter.Body[]) => {
+      while (balls.length > ballsSpawned) {
+        if (document.visibilityState === "visible") {
+          await new Promise((resolve) => setTimeout(resolve, 750));
+          Composite.add(engine.world, [balls[ballsSpawned]]);
+          ballsSpawned++;
+        } else {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
+    };
+
     for (let i = 0; i < predefinedPaths.length; i++) {
       let dropBallPosision = 0;
       if (predefinedPaths[i][0] === 1) {
@@ -126,13 +141,11 @@ const MatterSim: React.FC = () => {
       });
 
       // Add balls with a delay of 1000ms
-      setTimeout(() => {
-        Composite.add(engine.world, [ball]);
-      }, 750 * i);
 
       balls.push(ball);
       forceTrackers.push({ x: 0, y: 0 });
     }
+    asyncCompositeBallAdd(balls);
 
     // Set gravity for the simulation
     engine.gravity = { x: 0, y: 0.06, scale: 0.0018 };
