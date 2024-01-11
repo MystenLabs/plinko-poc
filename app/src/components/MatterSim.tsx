@@ -12,10 +12,12 @@ import Matter, {
   Body,
 } from "matter-js";
 import { usePlayContext } from "../contexts/PlayContext";
-import { set } from "zod";
+
+import { useGameHistory } from "@/contexts/GameHistoryContext";
 
 const MatterSim: React.FC = () => {
   const { isPlaying, setPlaying } = usePlayContext();
+  const { addColor, colors } = useGameHistory();
   // Define bucket colors
   const bucketColors = [
     "#FF0000", // Red
@@ -318,6 +320,10 @@ const MatterSim: React.FC = () => {
             // Identify the bottomArea in the collision
             const bottomArea = pair.bodyA.isSensor ? pair.bodyA : pair.bodyB;
 
+            // Get the color of the bottomArea and add it to the history
+            const color = bottomArea.render.fillStyle;
+            console.log("bottomArea.render.fillStyle:", color);
+            addColor(color);
             // Temporarily increase the size of the bottomArea
             Body.scale(bottomArea, 1.1, 1.1); // Increase by 10%
 
@@ -443,7 +449,8 @@ const MatterSim: React.FC = () => {
     if (finishedBalls === predefinedPaths.length) {
       setPlaying(false);
     }
-  }, [finishedBalls, predefinedPaths.length, setPlaying]);
+    console.log("bottomArea.render.fillStyle:", colors);
+  }, [finishedBalls, predefinedPaths.length, setPlaying, colors]);
 
   return (
     <div>
