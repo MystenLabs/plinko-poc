@@ -1,7 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { usePlayContext } from "../contexts/PlayContext";
 
 const PlinkoSettings = () => {
+  const { isPlaying, setPlaying } = usePlayContext();
   const [betSize, setBetSize] = useState(0.0);
   const [numberOfBalls, setNumberOfBalls] = useState(0);
   const [currentBet, setCurrentBet] = useState(0);
@@ -14,6 +16,9 @@ const PlinkoSettings = () => {
   }, [betSize, numberOfBalls]);
 
   const handlePlayClick = () => {
+    if (isPlaying) return;
+    setPlaying(true);
+    console.log("Play Clicked", isPlaying);
     console.log(
       "Current Bet:",
       currentBet.toFixed(2),
@@ -149,7 +154,11 @@ const PlinkoSettings = () => {
         <button
           type="button"
           onClick={handlePlayClick}
-          className="px-6 py-3 bg-blue-500 text-white text-lg rounded-full hover:bg-blue-700"
+          className={`px-6 py-3 text-lg rounded-full ${
+            isPlaying
+              ? "bg-gray-500 hover:bg-gray-500 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-700"
+          } text-white`}
         >
           Play
         </button>
