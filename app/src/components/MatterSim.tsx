@@ -11,9 +11,11 @@ import Matter, {
   Events,
   Body,
 } from "matter-js";
-import { date } from "zod";
+import { usePlayContext } from "../contexts/PlayContext";
+import { set } from "zod";
 
 const MatterSim: React.FC = () => {
+  const { isPlaying, setPlaying } = usePlayContext();
   // Define bucket colors
   const bucketColors = [
     "#FF0000", // Red
@@ -73,10 +75,17 @@ const MatterSim: React.FC = () => {
   const ballSize = 7;
   const ballElasticity = 0.01; // Reduced ball restitution for less bounce
   const ballFriction = 0.0002; // Reduced ball friction for more speed
+  // State for finished balls
+  const [finishedBalls, setFinishedBalls] = useState(0);
 
   const pinRestitution = 0.8;
 
   useEffect(() => {
+    //Restart the container
+    const container = document.getElementById("matter-canvas-container");
+    container!.innerHTML = "";
+    setFinishedBalls(0);
+
     // Canvas dimensions and pin settings
     const worldWidth = 800;
     const startPins = 3;
@@ -86,7 +95,7 @@ const MatterSim: React.FC = () => {
     let ballsSpawned = 0;
 
     // Setup the rendering context
-    const container = document.getElementById("matter-canvas-container");
+    // const container = document.getElementById("matter-canvas-container");
     const render = Render.create({
       // @ts-ignore
       element: container,
@@ -110,7 +119,8 @@ const MatterSim: React.FC = () => {
     //between each ball spawn i want to wait 750ms
     const asyncCompositeBallAdd = async (balls: Matter.Body[]) => {
       while (balls.length > ballsSpawned) {
-        if (document.visibilityState === "visible") {
+        if (document.visibilityState === "visible" && isPlaying) {
+          console.log("isPlaying:", isPlaying);
           await new Promise((resolve) => setTimeout(resolve, 750));
           Composite.add(engine.world, [balls[ballsSpawned]]);
           ballsSpawned++;
@@ -315,6 +325,8 @@ const MatterSim: React.FC = () => {
             setTimeout(() => {
               Body.scale(bottomArea, 1 / 1.1, 1 / 1.1); // Scale back to original size
             }, 625);
+            // Increase the finishedBalls count
+            setFinishedBalls((prev) => prev + 1);
           }
         });
       });
@@ -410,13 +422,6 @@ const MatterSim: React.FC = () => {
           // Render the text at the body's position
           context.fillText(pos.value, bodyPosition.x, bodyPosition.y);
         });
-
-        // context.beginPath();
-        // context.moveTo(startPoint.x, startPoint.y);
-        // context.lineTo(endPoint.x, endPoint.y);
-        // context.strokeStyle = "#ff0000";
-        // context.lineWidth = 2;
-        // context.stroke();
       }
     });
 
@@ -432,7 +437,13 @@ const MatterSim: React.FC = () => {
       Runner.stop(runner);
       Render.stop(render);
     };
-  }, []);
+  }, [isPlaying]);
+
+  useEffect(() => {
+    if (finishedBalls === predefinedPaths.length) {
+      setPlaying(false);
+    }
+  }, [finishedBalls, predefinedPaths.length, setPlaying]);
 
   return (
     <div>
