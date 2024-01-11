@@ -33,7 +33,7 @@ import_address=$(sui keytool import "$PLINKO_HOME_ADDRESS" ed25519)
 
 switch_res=$(sui client switch --address ${PLINKO_HOME_ADDRESS})
 
-#faucet_res=$(curl --location --request POST "$FAUCET" --header 'Content-Type: application/json' --data-raw '{"FixedAmountRequest": { "recipient": '$PLINKO_HOME_ADDRESS'}}')
+#faucet_res=$(curl --location --request POST "$FAUCET" --header 'Content-Type: application/json' --data-raw '{"FixedAmountRequest": { "recipient": '$PLINKO_HOUSE_ADDRESS'}}')
 
 publish_res=$(sui client publish --skip-fetch-latest-git-deps --gas-budget 2000000000 --json ${MOVE_PACKAGE_PATH})
 
@@ -62,13 +62,13 @@ if [ $# -eq 0 ]; then
   suffix=".localnet"
 fi
 
-cat >.env<<-API_ENV
+cat >.env.local<<-API_ENV
 SUI_NETWORK=$NETWORK
 BACKEND_API=$BACKEND_API
 PACKAGE_ADDRESS=$PACKAGE_ID
 HOUSE_ADMIN_CAP=$HOUSE_CAP
-PLINKO_HOME_ADDRESS=$PLINKO_HOME_ADDRESS
-PLINKO_HOME_PRIVATE_KEY=$PLINKO_HOME_PRIVATE_KEY
+PLINKO_HOUSE_ADDRESS=$PLINKO_HOME_ADDRESS
+PLINKO_HOUSE_PRIVATE_KEY=$PLINKO_HOME_PRIVATE_KEY
 API_ENV
 
 cat >../app/.env$suffix<<-VITE_API_ENV
