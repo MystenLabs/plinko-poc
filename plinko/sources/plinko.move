@@ -28,20 +28,12 @@ module plinko::plinko {
     use plinko::house_data::{Self as hd, HouseData};
 
     // Consts
-    const EPOCHS_CANCEL_AFTER: u64 = 7;
     const GAME_RETURN: u8 = 2;
-    // const PLAYER_WON_STATE: u8 = 1;
-    // const HOUSE_WON_STATE: u8 = 2;
-    // const CHALLENGED_STATE: u8 = 3;
-    // const HEADS: vector<u8> = b"H";
-    // const TAILS: vector<u8> = b"T";
 
     // Errors
     const EStakeTooLow: u64 = 0;
     const EStakeTooHigh: u64 = 1;
     const EInvalidBlsSig: u64 = 2;
-    const ECanNotChallengeYet: u64 = 3;
-    // const EInvalidGuess: u64 = 4;
     const EInsufficientHouseBalance: u64 = 5;
     const EGameDoesNotExist: u64 = 6;
 
@@ -53,7 +45,6 @@ module plinko::plinko {
         game_id: ID,
         player: address,
         vrf_input: vector<u8>,
-        ball_place: u8,
         user_stake: u64,
         fee_bp: u16
         // is it worth it to save the multiplier vector
@@ -73,9 +64,8 @@ module plinko::plinko {
     // Makes it easier for the user to assess if a selection they made on a DApp matches with the txn they are signing on their wallet.
     struct Game has key, store {
         id: UID,
-        ball_placed_epoch: u64,
+        game_start_epoch: u64,
         stake: Balance<SUI>,
-        ball_place: u8,
         player: address,
         vrf_input: vector<u8>,
         fee_bp: u16
@@ -83,113 +73,92 @@ module plinko::plinko {
 
     /// Function used to create a new game. The player must provide a guess and a Counter NFT.
     /// Stake is taken from the player's coin and added to the game's stake. The house's stake is also added to the game's stake.
-    public fun start_game(ball_place: u8, counter: &mut Counter, coin: Coin<SUI>, house_data: &mut HouseData, ctx: &mut TxContext): ID {
+    public fun start_game(counter: &mut Counter, coin: Coin<SUI>, house_data: &mut HouseData, ctx: &mut TxContext): ID {
         let fee_bp = hd::base_fee_in_bp(house_data);
-        let (id, new_game) = internal_start_game(ball_place, counter, coin, house_data, fee_bp, ctx);
+        let (id, new_game) = internal_start_game(counter, coin, house_data, fee_bp, ctx);
 
         dof::add(hd::borrow_mut(house_data), id, new_game);
         id
     }
+    /// Function used to calculate the games outcome 
+    /// The function sends the total amount to the player
+    public fun finish_game(game_id: ID, bls_sig: vector<u8>, house_data: &mut HouseData, ctx: &mut TxContext, num_balls: u64): (u64, address, vector<u8>) {
+    // Ensure that the game exists.
+    assert!(game_exists(house_data, game_id), EGameDoesNotExist);
 
-    public fun finish_game(game_id: ID, bls_sig: vector<u8>, house_data: &mut HouseData, ctx: &mut TxContext): (u64, address, vector<u8>) {
-        // Ensure that the game exists.
-        assert!(game_exists(house_data, game_id), EGameDoesNotExist);
+    let Game {
+        id,
+        game_start_epoch: _,
+        stake,
+        player,
+        vrf_input,
+        fee_bp: _
+    } = dof::remove<ID, Game>(hd::borrow_mut(house_data), game_id);
 
-        let Game {
-            id,
-            ball_placed_epoch: _,
-            stake,
-            ball_place,
-            player,
-            vrf_input,
-            fee_bp: _
-        } = dof::remove<ID, Game>(hd::borrow_mut(house_data), game_id);
+    object::delete(id);
 
-        object::delete(id);
+    // Step 1: Check the BLS signature, if it's invalid abort.
+    let is_sig_valid = bls12381_min_pk_verify(&bls_sig, &hd::public_key(house_data), &vrf_input);
+    assert!(is_sig_valid, EInvalidBlsSig);
 
-        // Step 1: Check the BLS signature, if its invalid abort.
-        let is_sig_valid = bls12381_min_pk_verify(&bls_sig, &hd::public_key(house_data), &vrf_input);
-        assert!(is_sig_valid, EInvalidBlsSig);
+    // Hash the beacon before taking the bytes.
+    let hashed_beacon = blake2b256(&bls_sig);
+    // Initialize the trace vector and the total funds amount
+    let trace = vector::empty<u8>();
+    let total_funds_amount: u64 = 0;
 
-        // Hash the beacon before taking the 12 byte.
-        let hashed_beacon = blake2b256(&bls_sig);
-        let trace = vector::empty<u8>();
-        // Step 2: Determine result.
+
+    let ball_index = 0;
+    while (ball_index < num_balls) {
+        let state: u64 = 0;
         let i = 0;
-        let state = (ball_place as u64);
-        while (i < 11) {
-            let byte = *vector::borrow(&hashed_beacon, i);
-            state = state + 10 + (byte as u64);
+        while (i < 12) {
+            let byte_index = (ball_index * 12) + i;
+            let byte = *vector::borrow(&hashed_beacon, byte_index);
+            // Add the byte to the trace vector
             vector::push_back<u8>(&mut trace, byte);
+            // Count the number of even bytes
+            // If even, add 1 to the state
+            // Odd byte -> 0, Even byte -> 1
+            state = if (byte % 2 == 0) { state + 1 } else { state };
+            i = i + 1;
         };
 
-        let multiplier_index = state - 110;
-
+        // Calculate multiplier index based on state
+        let multiplier_index = state % vector::length(&hd::multiplier(house_data));
         let result = *vector::borrow(&hd::multiplier(house_data), multiplier_index);
-
         let funds_amount = result * balance::value<SUI>(&stake);
+        total_funds_amount = total_funds_amount + funds_amount;
 
-        let to_send = funds_amount - balance::value<SUI>(&stake);
+        ball_index = ball_index + 1;
+    };
 
-        // return the original stake of the player
-        transfer::public_transfer(coin::from_balance(stake, ctx), player);
+    let to_send = total_funds_amount - balance::value<SUI>(&stake) * num_balls;
 
-        emit(Outcome {
-            game_id,
-            result: to_send,
-            player
-        });
+    // return the original stake of the player
+    transfer::public_transfer(coin::from_balance(stake, ctx), player);
 
-        // return the amount to be sent to the player, (and the player address) the transaction will happen by a PTB
-        (funds_amount, player, trace)
-    }
-    
-    public fun dispute_and_return(house_data: &mut HouseData, game_id: ID, ctx: &mut TxContext) {
-        // Ensure that the game exists.
-        assert!(game_exists(house_data, game_id), EGameDoesNotExist);
+    emit(Outcome {
+        game_id,
+        result: to_send,
+        player
+    });
 
-        let Game {
-            id,
-            ball_placed_epoch,
-            stake,
-            ball_place: _,
-            player,
-            vrf_input: _,
-            fee_bp: _,
+    // return the total amount to be sent to the player, (and the player address) the transaction will happen by a PTB
+    (total_funds_amount, player, trace)
+}
 
-        } = dof::remove(hd::borrow_mut(house_data), game_id);
-
-        object::delete(id);
-
-        let caller_epoch = tx_context::epoch(ctx);
-        let cancel_epoch = ball_placed_epoch + EPOCHS_CANCEL_AFTER;
-        // Ensure that minimum epochs have passed before user can cancel.
-        assert!(cancel_epoch <= caller_epoch, ECanNotChallengeYet);
-
-        transfer::public_transfer(coin::from_balance(stake, ctx), player);
-
-        emit(Outcome {
-            game_id,
-            result: 0,
-            player
-        });
-    }
 
     // --------------- Game Accessors ---------------
 
-    /// Returns the epoch in which the guess was placed.
-    public fun ball_placed_epoch(game: &Game): u64 {
-        game.ball_placed_epoch
+    /// Returns the epoch in which the gane started.
+    public fun game_start_epoch(game: &Game): u64 {
+        game.game_start_epoch
     }
 
     /// Returns the total stake.
     public fun stake(game: &Game): u64 {
         balance::value(&game.stake) // TODO: update this
-    }
-
-    /// Returns the player's initial placement of the ball.
-    public fun ball_place(game: &Game): u8 {
-        game.ball_place
     }
 
     /// Returns the player's address.
@@ -231,11 +200,11 @@ module plinko::plinko {
 
     // TODO: update the logic and the parameters 
 
-    /// Internal helper function used to create a new game. 
+    /// Internal helper function ussed to create a new game. 
     /// The player must provide a guess and a Counter NFT.
     /// Stake is taken from the player's coin and added to the game's stake. 
     /// The house's stake is also added to the game's stake.
-    fun internal_start_game(ball_place: u8, counter: &mut Counter, coin: Coin<SUI>, house_data: &mut HouseData, fee_bp: u16, ctx: &mut TxContext): (ID, Game) {
+    fun internal_start_game(counter: &mut Counter, coin: Coin<SUI>, house_data: &HouseData, fee_bp: u16, ctx: &mut TxContext): (ID, Game) {
         // Ensure guess is valid.
         // map_guess(guess);
         let user_stake = coin::value(&coin);
@@ -253,9 +222,8 @@ module plinko::plinko {
 
         let new_game = Game {
             id,
-            ball_placed_epoch: tx_context::epoch(ctx),
+            game_start_epoch: tx_context::epoch(ctx),
             stake: coin::into_balance<SUI>(coin),
-            ball_place,
             player: tx_context::sender(ctx),
             vrf_input,
             fee_bp
@@ -265,7 +233,6 @@ module plinko::plinko {
             game_id,
             player: tx_context::sender(ctx),
             vrf_input,
-            ball_place,
             user_stake,
             fee_bp
         });
