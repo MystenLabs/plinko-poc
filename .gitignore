@@ -29,11 +29,12 @@ build/
 plinko/build/
 plinko/Move.lock
 
+app/.env.local
 app/.env.localnet
 pnpm-lock.yaml
 
 # env files under the setup directory
-setup/*.env
+setup/.env.local
 .publish.res.json
 .vercel
 
