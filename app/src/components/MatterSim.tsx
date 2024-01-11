@@ -17,7 +17,7 @@ import { useGameHistory } from "@/contexts/GameHistoryContext";
 
 const MatterSim: React.FC = () => {
   const { isPlaying, setPlaying } = usePlayContext();
-  const { addColor, colors } = useGameHistory();
+  const { addColor, colors, resetHistory } = useGameHistory();
   // Define bucket colors
   const bucketColors = [
     "#FF0000", // Red
@@ -448,6 +448,7 @@ const MatterSim: React.FC = () => {
   useEffect(() => {
     if (finishedBalls === predefinedPaths.length) {
       setPlaying(false);
+      resetHistory();
     }
     console.log("bottomArea.render.fillStyle:", colors);
   }, [finishedBalls, predefinedPaths.length, setPlaying, colors]);
