@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import MatterSim from "../../components/MatterSim";
 import PlinkoSettings from "@/components/PlinkoSettings";
 import { PlayProvider } from "@/contexts/PlayContext";
+import { GameHistoryProvider } from "@/contexts/GameHistoryContext";
 
 export const metadata: Metadata = {
   title: "Play Plinko Game",
@@ -16,12 +17,14 @@ export default function Play() {
   return (
     <Paper>
       <PlayProvider>
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-          <div className="mb-4">
-            <MatterSim />
+        <GameHistoryProvider>
+          <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+            <div className="mb-4">
+              <MatterSim />
+            </div>
+            <PlinkoSettings />
           </div>
-          <PlinkoSettings />
-        </div>
+        </GameHistoryProvider>
       </PlayProvider>
     </Paper>
   );
