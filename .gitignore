@@ -19,6 +19,7 @@ yarn-error.log*
 lerna-debug.log*
 pnpm-debug.log*
 sui.log*
+setup/.publish.res.json
 
 # Dependency and build-related directories
 node_modules/
@@ -38,3 +39,5 @@ setup/.env.local
 .publish.res.json
 .vercel
 
+setup/package-lock.json
+setup/src/tx_res.json
