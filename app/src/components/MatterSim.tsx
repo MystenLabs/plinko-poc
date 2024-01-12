@@ -14,6 +14,13 @@ import Matter, {
 import { usePlayContext } from "../contexts/PlayContext";
 
 import { useGameHistory } from "@/contexts/GameHistoryContext";
+import {
+  checkIfTheMultipliersAreCorrect,
+  findTheExpectedMultipliers,
+  findTheMultiplier,
+  findTheMultipliers,
+  generateMultiplierText,
+} from "@/helpers/automatedTests";
 
 const MatterSim: React.FC = () => {
   const { isPlaying, setPlaying } = usePlayContext();
@@ -38,27 +45,30 @@ const MatterSim: React.FC = () => {
   const [ballFloors, setBallFloors] = useState<number[]>([0, 0]);
   // Array to store positions for the multiplier text
   const multiplierPositions: any = [];
-  // Define the multipliers for each spot
-  const multipliers = [
-    "9.0x",
-    "8.2x",
-    "6.5x",
-    "3.8x",
-    "1.0x",
-    "0.6x",
-    "0.4x",
-    "0.6x",
-    "1.0x",
-    "3.8x",
-    "6.5x",
-    "8.2x",
-    "9.0x",
+  const multipliersNumbers = [
+    9.0, 8.2, 6.5, 3.8, 1.0, 0.6, 0.4, 0.6, 1.0, 3.8, 6.5, 8.2, 9.0,
   ];
+  // Define the multipliers for each spot
+  const multipliers = generateMultiplierText(multipliersNumbers);
   // State for matrix
   const [dropBallPosision, setDropBallPosision] = useState<number[]>([0, 0]);
   // Create a physics engine
   const engine = Engine.create();
   const predefinedPaths: number[][] = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
+    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+    [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], // Example path for the second ball
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+    [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
+    [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+  ];
+  const predefinedPathsForTesting: number[][] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
@@ -446,7 +456,32 @@ const MatterSim: React.FC = () => {
   }, [isPlaying]);
 
   useEffect(() => {
+    //Find the history of multipliers that balls have landed on
+    //@ts-ignore
+    console.log(
+      "History of multipliers:",
+      findTheMultipliers(bucketColors, multipliersNumbers, colors)
+    );
     if (finishedBalls === predefinedPaths.length) {
+      let historyOfMultipliers = findTheMultipliers(
+        bucketColors,
+        multipliersNumbers,
+        colors
+      );
+      const expectedMultipliers = findTheExpectedMultipliers(
+        predefinedPaths,
+        multipliersNumbers
+      );
+      console.log(
+        "Check if all balls goes to the correct bucket",
+        //@ts-ignore
+        historyOfMultipliers == expectedMultipliers,
+        "With expected multipliers:",
+        findTheExpectedMultipliers(
+          predefinedPathsForTesting,
+          multipliersNumbers
+        )
+      );
       setPlaying(false);
       resetHistory();
     }
