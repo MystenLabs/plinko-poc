@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 
 import Matter, {
   Engine,
@@ -20,11 +20,14 @@ import {
   findTheMultiplier,
   findTheMultipliers,
   generateMultiplierText,
+  generateRandomPaths,
 } from "@/helpers/automatedTests";
+import { number } from "zod";
 
 const MatterSim: React.FC = () => {
   const { isPlaying, setPlaying } = usePlayContext();
   const { addColor, colors, resetHistory } = useGameHistory();
+  const [multipliersHistroty, setMultipliersHistory] = useState([0]);
   // Define bucket colors
   const bucketColors = [
     "#FF0000", // Red
@@ -54,6 +57,7 @@ const MatterSim: React.FC = () => {
   const [dropBallPosision, setDropBallPosision] = useState<number[]>([0, 0]);
   // Create a physics engine
   const engine = Engine.create();
+
   const predefinedPaths: number[][] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -67,21 +71,22 @@ const MatterSim: React.FC = () => {
     [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
     [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
     [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  ];
-  const predefinedPathsForTesting: number[][] = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-    [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], // Example path for the second ball
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-    [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
     [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
     [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
   ];
+  let prePaths = generateRandomPaths(30);
+  // const predefinedPaths = prePaths;
+  console.log("prePaths:", prePaths);
+  // const predefinedPaths = prePaths;
+  console.log("predefinedPaths:", predefinedPaths);
+
+  const predefinedPathsForTesting = predefinedPaths;
+
+  const expectedMultipliers = findTheExpectedMultipliers(
+    predefinedPathsForTesting,
+    multipliersNumbers
+  );
+  console.log("expectedMultipliers:", expectedMultipliers);
 
   // Ball properties
   const ballSize = 7;
@@ -468,25 +473,42 @@ const MatterSim: React.FC = () => {
         multipliersNumbers,
         colors
       );
-      const expectedMultipliers = findTheExpectedMultipliers(
-        predefinedPaths,
-        multipliersNumbers
-      );
-      console.log(
-        "Check if all balls goes to the correct bucket",
-        //@ts-ignore
-        historyOfMultipliers == expectedMultipliers,
-        "With expected multipliers:",
-        findTheExpectedMultipliers(
-          predefinedPathsForTesting,
-          multipliersNumbers
-        )
-      );
+      // console.log("historyOfMultipliers:", historyOfMultipliers);
+
+      // console.log("expectedMultipliers:", expectedMultipliers);
+      // console.log(
+      //   "Check if all balls goes to the correct bucket",
+      //   //@ts-ignore
+      //   historyOfMultipliers == expectedMultipliers,
+      //   "With expected multipliers:",
+      //   findTheExpectedMultipliers(
+      //     predefinedPathsForTesting,
+      //     multipliersNumbers
+      //   )
+      // );
+      setMultipliersHistory(historyOfMultipliers);
       setPlaying(false);
       resetHistory();
     }
     console.log("bottomArea.render.fillStyle:", colors);
   }, [finishedBalls, predefinedPaths.length, setPlaying, colors]);
+
+  useEffect(() => {
+    if (multipliersHistroty.length == expectedMultipliers.length) {
+      let areEqual = multipliersHistroty.every(
+        (value, index) => value === expectedMultipliers[index]
+      );
+      console.log(
+        "********************Check if all balls goes to the correct bucket",
+        //@ts-ignore
+        areEqual,
+        "With expected multipliers:",
+        expectedMultipliers,
+        "and history of multipliers:",
+        multipliersHistroty
+      );
+    }
+  }, [multipliersHistroty]);
 
   return (
     <div>
