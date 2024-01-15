@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react";
 import { usePlayContext } from "../contexts/PlayContext";
 
 const PlinkoSettings = () => {
-  const { isPlaying, setPlaying } = usePlayContext();
-  const [betSize, setBetSize] = useState(0.0);
+  const { isPlaying, setPlaying, betSize, setBetSize } = usePlayContext();
+  // const [betSize, setBetSize] = useState(0.0);
   const [numberOfBalls, setNumberOfBalls] = useState(0);
   const [currentBet, setCurrentBet] = useState(0);
   const [selectedRisk, setSelectedRisk] = useState("red");
@@ -28,6 +28,7 @@ const PlinkoSettings = () => {
   };
 
   const adjustBetSize = (delta: any) => {
+    //@ts-ignore
     setBetSize((prev) => Math.max(0, prev + delta));
   };
 
