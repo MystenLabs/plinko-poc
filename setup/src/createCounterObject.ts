@@ -1,27 +1,63 @@
 import * as dotenv from "dotenv";
+import { SuiClient } from "@mysten/sui.js/client";
+// import { config } from "./helper/config";
+import { getKeyPairEd25519 } from "./getkeypair";
+import { TransactionBlock } from "@mysten/sui.js/transactions";
 
 dotenv.config({ path: "../.env.local" });
 
-import { SuiClient, getFullnodeUrl } from '@mysten/sui.js/client';
-import { TransactionBlock } from '@mysten/sui.js/transactions';
-import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519';
-import { fromB64 } from '@mysten/sui.js/utils';
+import {PLAYER_PRIVATE_KEY, PACKAGE_ADDRESS, SUI_NETWORK,} from "./config";
 
-import {
-  PACKAGE_ADDRESS,
-  SUI_NETWORK, 
-  HOUSE_ADDRESS,
-  HOUSE_PRIVATE_KEY, 
-  HOUSE_CAP,
-} from "./config";
+// const {
+//     client,
+//     PLAYER_PRIVATE_KEY,
+//     PACKAGE_ADDRESS,
+// } = config();
 
-let privateKeyArray = Uint8Array.from(Array.from(fromB64(HOUSE_PRIVATE_KEY!)));
-const keypairAdmin = Ed25519Keypair.fromSecretKey(privateKeyArray.slice(1));
 
-let provider = new SuiClient({
+const client = new SuiClient({
     url: SUI_NETWORK,
-});
+  });
+
+
+const playerSigner = getKeyPairEd25519(PLAYER_PRIVATE_KEY);
+
+const playerAddress = playerSigner.getPublicKey().toSuiAddress();
+console.log("Player Address = " + playerAddress);
 
 export const createCounterObject = async (): Promise<String|void> => {
-    
+
+    const tx = new TransactionBlock();
+
+    tx.moveCall({
+        target: `${PACKAGE_ADDRESS}::counter_nft::mint`,
+        arguments: [],
+    });
+
+    tx.setGasBudget(1000000000);
+
+    let res = await client.signAndExecuteTransactionBlock({
+        transactionBlock: tx,
+        requestType: "WaitForLocalExecution",
+        signer: playerSigner,
+        options: {
+          showEffects: true,
+        },
+      });
+
+      if (res?.effects?.status.status === "success") {
+        res?.objectChanges?.find((obj) => {
+          if (obj.type === "created" && obj.objectType.endsWith("counter_nft::Counter")) {
+            const counterNftId = `COUNTER_NFT_ID=${obj.objectId}\n`;
+            console.log(counterNftId);
+            return counterNftId
+          }
+        });
+      }
+        if (res?.effects?.status.status === "failure") {
+            console.log("Error = ", res?.effects);
+        }
+
 }
+
+createCounterObject();
