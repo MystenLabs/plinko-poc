@@ -19,7 +19,7 @@ export default function Play() {
       <PlayProvider>
         <GameHistoryProvider>
           <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <div className="mb-4 scale-75 sm:scale-90 md:scale-100">
+            <div className="mb-4 scale-50 sm:scale-70 md:scale-100">
               <MatterSim />
             </div>
             <PlinkoSettings />
