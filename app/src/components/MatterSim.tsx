@@ -24,9 +24,10 @@ import {
 } from "@/helpers/automatedTests";
 
 const MatterSim: React.FC = () => {
-  const { isPlaying, setPlaying } = usePlayContext();
+  const { isPlaying, setPlaying, betSize } = usePlayContext();
   const { addColor, colors, resetHistory } = useGameHistory();
   const [multipliersHistroty, setMultipliersHistory] = useState([0]);
+  const [winSize, setWinSize] = useState(0);
   // Define bucket colors
   const bucketColors = [
     "#FF0000", // Red
@@ -470,19 +471,6 @@ const MatterSim: React.FC = () => {
         multipliersNumbers,
         colors
       );
-      // console.log("historyOfMultipliers:", historyOfMultipliers);
-
-      // console.log("expectedMultipliers:", expectedMultipliers);
-      // console.log(
-      //   "Check if all balls goes to the correct bucket",
-      //   //@ts-ignore
-      //   historyOfMultipliers == expectedMultipliers,
-      //   "With expected multipliers:",
-      //   findTheExpectedMultipliers(
-      //     predefinedPathsForTesting,
-      //     multipliersNumbers
-      //   )
-      // );
       setMultipliersHistory(historyOfMultipliers);
       setPlaying(false);
       resetHistory();
@@ -510,6 +498,46 @@ const MatterSim: React.FC = () => {
   return (
     <div>
       <div id="matter-canvas-container"></div>
+      {/* Last ball won */}
+      <div className="font-bold mt-4">History:</div>
+      <div
+        className="font-bold overflow-x-auto whitespace-nowrap flex flex-row-reverse justify-end space-x-2"
+        style={{
+          width: "500px", // Set a fixed width (adjust as needed)
+        }}
+      >
+        {colors.map((color, index) => {
+          const isLastColor = index === colors.length - 1;
+          const size = isLastColor ? "70px" : "50px";
+          // What position got this color at the bucketColors array
+          const position = bucketColors.indexOf(color);
+          const multiplier = multipliersNumbers[position];
+          let lastBallWon = 0; // Initialize last ball won variable
+          let totalWon = 0; // Initialize total won variable
+
+          if (isLastColor) {
+            lastBallWon = multiplier * betSize;
+          }
+
+          return (
+            <div
+              key={index}
+              className={`${
+                isLastColor ? "w-24" : "w-[size]"
+              } h-[size] bg-[color] text-white flex items-center justify-center text-[fontSize] font-[fontWeight] border-1 border-black rounded-[4px]`}
+              style={{
+                backgroundColor: color,
+              }}
+            >
+              {multiplier}x {isLastColor && `(+${lastBallWon.toFixed(2)})`}{" "}
+              {/* Display last ball won amount for the last color */}
+            </div>
+          );
+        })}
+      </div>
+      {/* Total won */}
+      <div className="font-bold mt-4">Total won:$</div>
+      {/* Display the total won amount here */}
     </div>
   );
 };
