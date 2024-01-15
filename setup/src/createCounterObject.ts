@@ -14,3 +14,14 @@ import {
   HOUSE_PRIVATE_KEY, 
   HOUSE_CAP,
 } from "./config";
+
+let privateKeyArray = Uint8Array.from(Array.from(fromB64(HOUSE_PRIVATE_KEY!)));
+const keypairAdmin = Ed25519Keypair.fromSecretKey(privateKeyArray.slice(1));
+
+let provider = new SuiClient({
+    url: SUI_NETWORK,
+});
+
+export const createCounterObject = async (): Promise<String|void> => {
+    
+}
