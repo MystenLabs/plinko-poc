@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@babel/core": "^7.23.0",
+    "@babel/core": "^7.23.7",
     "@hookform/resolvers": "^3.3.1",
     "@mysten/enoki": "^0.0.8",
     "@mysten/sui.js": "^0.41.2",
