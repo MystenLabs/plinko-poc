@@ -22,7 +22,6 @@ import {
   generateMultiplierText,
   generateRandomPaths,
 } from "@/helpers/automatedTests";
-import { number } from "zod";
 
 const MatterSim: React.FC = () => {
   const { isPlaying, setPlaying } = usePlayContext();
@@ -104,7 +103,7 @@ const MatterSim: React.FC = () => {
     setFinishedBalls(0);
 
     // Canvas dimensions and pin settings
-    const worldWidth = 800;
+    const worldWidth = 590;
     const startPins = 3;
     const pinLines = 12;
     const pinSize = 12.82; // Adjusted pin size to accommodate the ball
@@ -118,11 +117,14 @@ const MatterSim: React.FC = () => {
       element: container,
       engine: engine,
       options: {
-        width: 800,
+        width: worldWidth,
         height: 600,
         background: "#36454F",
         showVelocity: true,
         showAngleIndicator: true,
+        showPerformance: true, // Show FPS (only for testing) TODO : remove it
+        //@ts-ignore
+        showAngleIndicator: false,
       },
     });
 
@@ -407,11 +409,6 @@ const MatterSim: React.FC = () => {
           }
         }
       });
-    });
-
-    Render.lookAt(render, {
-      min: { x: 0, y: 0 },
-      max: { x: worldWidth, y: 600 },
     });
 
     Events.on(render, "afterRender", () => {
