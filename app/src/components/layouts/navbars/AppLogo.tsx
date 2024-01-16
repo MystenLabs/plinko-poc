@@ -24,7 +24,7 @@ export const AppLogo = ({ className = "" }: AppLogoProps) => {
         width={50}
         height={50}
       />
-      <div>PoC Template</div>
+      <div>PLINKO GAME</div>
     </Link>
   );
 };
