@@ -97,7 +97,9 @@ if (SUI_NETWORK.includes("mainnet")) {
 
                 res?.objectChanges?.find((obj) => {
                     if(obj.type === "created" && obj.objectType.endsWith("house_data::HouseData")){
-                        console.log("HOUSE_DATA_ID=",obj.objectId);
+                        const houseDataString = `HOUSE_DATA_ID=${obj.objectId}\n`;
+                        console.log(houseDataString);
+                        fs.appendFileSync("../.env.local", houseDataString);
                     }
                 });
                 process.exit(0);
