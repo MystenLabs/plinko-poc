@@ -12,36 +12,36 @@ import {
 import { NavigationLink } from "@/types/NavigationLink";
 import { USER_ROLES } from "@/constants/USER_ROLES";
 
-const playNavigation: NavigationLink = {
-  title: "Play",
-  href: "/play",
-  icon: <LightningBoltIcon />,
-};
+// const playNavigation: NavigationLink = {
+//   title: "Play",
+//   href: "/play",
+//   icon: <LightningBoltIcon />,
+// };
 
-const aboutNavigation: NavigationLink = {
-  title: "About",
-  href: "/about",
-  icon: <CodeIcon />,
-};
+// const aboutNavigation: NavigationLink = {
+//   title: "About",
+//   href: "/about",
+//   icon: <CodeIcon />,
+// };
 
-const ownedObjectsNavigation: NavigationLink = {
-  title: "My Objects",
-  href: "/objects",
-  icon: <BackpackIcon />,
-};
+// const ownedObjectsNavigation: NavigationLink = {
+//   title: "My Objects",
+//   href: "/objects",
+//   icon: <BackpackIcon />,
+// };
 
-const apiNavigations: NavigationLink[] = [
-  {
-    title: "API Health",
-    href: "/api/health",
-    icon: <CheckCircledIcon />,
-  },
-  {
-    title: "API Visits",
-    href: "/api/visits",
-    icon: <CountdownTimerIcon />,
-  },
-];
+// const apiNavigations: NavigationLink[] = [
+//   {
+//     title: "API Health",
+//     href: "/api/health",
+//     icon: <CheckCircledIcon />,
+//   },
+//   {
+//     title: "API Visits",
+//     href: "/api/visits",
+//     icon: <CountdownTimerIcon />,
+//   },
+// ];
 
 // const accountNavigation: NavigationLink = {
 //   title: "Account",
@@ -49,32 +49,30 @@ const apiNavigations: NavigationLink[] = [
 //   icon: <PersonIcon />,
 // };
 
-const transferNavigation: NavigationLink = {
-  title: "Transfer SUI",
-  href: "/transfer",
-  icon: <PaperPlaneIcon />,
-};
+// const transferNavigation: NavigationLink = {
+//   title: "Transfer SUI",
+//   href: "/transfer",
+//   icon: <PaperPlaneIcon />,
+// };
 
-const pwaShowcaseNavigation: NavigationLink = {
-  title: "PWA Showcase",
-  href: "/pwa",
-  icon: <LightningBoltIcon />,
-};
+// const pwaShowcaseNavigation: NavigationLink = {
+//   title: "PWA Showcase",
+//   href: "/pwa",
+//   icon: <LightningBoltIcon />,
+// };
 
 const authenticatedNavigations: NavigationLink[] = [
-  ownedObjectsNavigation,
-  transferNavigation,
+  // ownedObjectsNavigation,
+  // transferNavigation,
   // accountNavigation,
 ];
 
 const globalNavigations: NavigationLink[] = [
-  aboutNavigation,
-  ...apiNavigations,
-  pwaShowcaseNavigation,
-  playNavigation
+  // aboutNavigation,
+  // ...apiNavigations,
+  // pwaShowcaseNavigation,
+  // playNavigation,
 ];
-
-
 
 export const navigationsByUserRole = {
   anonymous: [
