@@ -29,10 +29,15 @@ export const createCounterObject = async (): Promise<String|void> => {
 
     const tx = new TransactionBlock();
 
-    tx.moveCall({
+    const counterNFT = tx.moveCall({
         target: `${PACKAGE_ADDRESS}::counter_nft::mint`,
         arguments: [],
     });
+
+    tx.moveCall({
+        target: `${PACKAGE_ADDRESS}::counter_nft::transfer_to_sender`,
+        arguments: [tx.object(counterNFT)],
+    })
 
     tx.setGasBudget(1000000000);
 
