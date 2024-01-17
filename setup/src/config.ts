@@ -7,6 +7,7 @@ export const PACKAGE_ADDRESS = process.env.PACKAGE_ADDRESS!;
 export const HOUSE_ADDRESS = process.env.PLINKO_HOUSE_ADDRESS;
 export const HOUSE_PRIVATE_KEY = process.env.PLINKO_HOUSE_PRIVATE_KEY!;
 export const HOUSE_CAP = process.env.HOUSE_ADMIN_CAP!;
+export const HOUSE_DATA_ID = process.env.HOUSE_DATA_ID!;
 export const PLAYER_PRIVATE_KEY = process.env.PLAYER_PRIVATE_KEY!;
 
 
