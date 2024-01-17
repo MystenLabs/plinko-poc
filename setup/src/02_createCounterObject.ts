@@ -61,6 +61,14 @@ export const createCounterObject = async (): Promise<String|void> => {
       ],
     }) 
 
+    tx.moveCall({
+      target: `${PACKAGE_ADDRESS}::plinko::finish_game`,
+      arguments: [
+        tx.object(gameId),
+        tx.object(counterNFT),
+      ],
+    }); 
+
     tx.setGasBudget(1000000000);
 
     let res = await client.signAndExecuteTransactionBlock({
