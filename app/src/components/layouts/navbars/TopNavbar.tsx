@@ -5,6 +5,7 @@ import { UserProfileMenu } from "@/components/general/UserProfileMenu";
 import { UserAvatar } from "@/components/general/UserAvatar";
 import { useAuthentication } from "@/contexts/Authentication";
 import { USER_ROLES } from "@/constants/USER_ROLES";
+import BalanceDisplay from "@/components/layouts/navbars/BalanceDisplay";
 
 export const TopNavbar = () => {
   const { user } = useAuthentication();
@@ -13,7 +14,12 @@ export const TopNavbar = () => {
     <div className="sticky top-0 flex w-full h-full bg-primary p-5 space-x-4 justify-between items-center">
       <NavbarHeader showCloseButton={false} onClose={() => {}} />
       <NavbarLinks position="top" />
-      <div className="flex justify-end items-center space-x-1">
+      <div className="flex items-center space-x-2">
+        {" "}
+        {/* Adjust space and alignment */}
+        {user?.role !== USER_ROLES.ROLE_4 && (
+          <BalanceDisplay balance={100} currencySymbol="SUI" />
+        )}
         {user?.role !== USER_ROLES.ROLE_4 &&
           process.env.NEXT_PUBLIC_USE_TOP_NAVBAR_IN_LARGE_SCREEN === "1" && (
             <UserProfileMenu
