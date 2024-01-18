@@ -22,12 +22,12 @@ import {
   generateMultiplierText,
   generateRandomPaths,
 } from "@/helpers/automatedTests";
+import { set } from "zod";
 
 const MatterSim: React.FC = () => {
   const { isPlaying, setPlaying, betSize } = usePlayContext();
   const { addColor, colors, resetHistory } = useGameHistory();
   const [multipliersHistroty, setMultipliersHistory] = useState([0]);
-  const [winSize, setWinSize] = useState(0);
   // Define bucket colors
   const bucketColors = [
     "#FF0000", // Red
@@ -513,7 +513,6 @@ const MatterSim: React.FC = () => {
           const position = bucketColors.indexOf(color);
           const multiplier = multipliersNumbers[position];
           let lastBallWon = 0; // Initialize last ball won variable
-          let totalWon = 0; // Initialize total won variable
 
           if (isLastColor) {
             lastBallWon = multiplier * betSize;
