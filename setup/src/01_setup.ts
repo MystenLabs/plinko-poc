@@ -21,7 +21,8 @@ import * as bls from "@noble/bls12-381";
 
 import fs from "fs";
 
-let multiplierArray = [900, 820, 650, 380, 100, 60, 40, 60, 100, 380, 650, 820, 900];
+// let multiplierArray = [900, 820, 650, 380, 100, 60, 40, 60, 100, 380, 650, 820, 900];
+let multiplierArray = [9, 8, 7, 6, 5, 4, 3, 2, 1, 3, 6, 7, 8];
 let privateKeyArray = Uint8Array.from(Array.from(fromB64(HOUSE_PRIVATE_KEY!)));
 
 const keypairAdmin = Ed25519Keypair.fromSecretKey(privateKeyArray.slice(1));
@@ -37,7 +38,7 @@ console.log("Admin Address = " + HOUSE_ADDRESS);
 console.log("Package ID  = " + PACKAGE_ADDRESS);
 console.log("House Cap  = " + HOUSE_CAP);
 
-const initHouseBalance = 1000000000;
+const initHouseBalance = 100000000000;
 
 const tx = new TransactionBlock();
 
