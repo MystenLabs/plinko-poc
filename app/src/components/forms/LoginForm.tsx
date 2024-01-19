@@ -36,8 +36,6 @@ export const LoginForm = () => {
     });
     const authURLs: AuthURLByUserRole = {
       [USER_ROLES.ROLE_1]: authURL.concat(`&state=${USER_ROLES.ROLE_1}`),
-      [USER_ROLES.ROLE_2]: authURL.concat(`&state=${USER_ROLES.ROLE_2}`),
-      [USER_ROLES.ROLE_3]: authURL.concat(`&state=${USER_ROLES.ROLE_3}`),
     };
     setAuthURLs(authURLs);
     return authURLs;
@@ -54,30 +52,16 @@ export const LoginForm = () => {
   }
 
   return (
-    <div className="space-y-5">
-      <h3 className="font-semibold text-lg text-center">Login</h3>
+    <div className="flex flex-col items-center justify-center h-screen">
+      <h3 className="font-semibold text-lg text-center mb-5">Login</h3>
       {!!authURLs && (
-        <div className="flex flex-col md:flex-row space-x-3 items-center">
+        <div className="flex flex-col md:flex-row items-center justify-center">
           <Link
             href={authURLs[USER_ROLES.ROLE_1]}
-            className="flex items-center space-x-2 px-3 py-2 bg-gray-100 text-black w-[210px] rounded-lg"
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white w-full md:w-auto rounded-lg shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1"
           >
             <Image src="/google.svg" alt="Google" width={20} height={20} />
-            <div>Admin Sign In</div>
-          </Link>
-          <Link
-            href={authURLs[USER_ROLES.ROLE_2]}
-            className="flex items-center space-x-2 px-3 py-2 bg-gray-100 text-black w-[230px] rounded-lg"
-          >
-            <Image src="/google.svg" alt="Google" width={20} height={20} />
-            <div>Moderator Sign In</div>
-          </Link>
-          <Link
-            href={authURLs[USER_ROLES.ROLE_3]}
-            className="flex items-center space-x-2 px-3 py-2 bg-gray-100 text-black w-[210px] rounded-lg"
-          >
-            <Image src="/google.svg" alt="Google" width={20} height={20} />
-            <div>Member Sign In</div>
+            <div>Sign In To Play</div>
           </Link>
         </div>
       )}

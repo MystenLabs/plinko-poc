@@ -36,7 +36,7 @@ export const NavbarLinks = ({ position = "top" }: NavbarLinksProps) => {
         return (
           <Link
             key={href}
-            className={`flex ${
+            className={`hidden flex ${
               position === "bottom"
                 ? "flex-col items-center justify-center space-y-2 text-center text-sm"
                 : "items-center space-x-4 text-lg"
@@ -45,7 +45,8 @@ export const NavbarLinks = ({ position = "top" }: NavbarLinksProps) => {
             }`}
             href={href}
           >
-            {!!icon && position !== "top" &&
+            {!!icon &&
+              position !== "top" &&
               cloneElement(icon, {
                 className: "w-5 h-5",
               })}

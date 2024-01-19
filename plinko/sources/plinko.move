@@ -54,7 +54,8 @@ module plinko::plinko {
     struct Outcome has copy, drop {
         game_id: ID,
         result: u64,
-        player: address
+        player: address,
+        trace: vector<u8>
     }
 
     // Structs
@@ -82,7 +83,7 @@ module plinko::plinko {
     }
     /// Function used to calculate the games outcome 
     /// The function sends the total amount to the player
-    public fun finish_game(game_id: ID, bls_sig: vector<u8>, house_data: &mut HouseData, ctx: &mut TxContext, num_balls: u64): (u64, address, vector<u8>) {
+    public fun finish_game(game_id: ID, bls_sig: vector<u8>, house_data: &mut HouseData, num_balls: u64, ctx: &mut TxContext): (u64, address, vector<u8>) {
     // Ensure that the game exists.
     assert!(game_exists(house_data, game_id), EGameDoesNotExist);
 
@@ -141,7 +142,8 @@ module plinko::plinko {
     emit(Outcome {
         game_id,
         result: to_send,
-        player
+        player,
+        trace
     });
 
     // return the total amount to be sent to the player, (and the player address) the transaction will happen by a PTB
