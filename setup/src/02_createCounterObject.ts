@@ -3,6 +3,8 @@ import { SuiClient } from "@mysten/sui.js/client";
 // import { config } from "./helper/config";
 import { getKeyPairEd25519 } from "./getkeypair";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
+import * as bls from "@noble/bls12-381";
+import {bytesToHex} from "@noble/hashes/utils";
 
 dotenv.config({ path: "../.env.local" });
 
@@ -42,17 +44,7 @@ export const createCounterObject = async (): Promise<String|void> => {
         arguments: [],
     });
 
-   const vrf_input = tx.moveCall ({
-      target: `${PACKAGE_ADDRESS}::counter_nft::get_vrf_input_and_increment`,
-      arguments: [tx.object(counterNFT)],
-    });
-
-    tx.moveCall({
-      target: `${PACKAGE_ADDRESS}::counter_nft::transfer_to_sender`,
-      arguments: [tx.object(counterNFT)],
-  });
-
-  const gameId = tx.moveCall({
+     const gameId = tx.moveCall({
       target: `${PACKAGE_ADDRESS}::plinko::start_game`,
       arguments: [
         tx.object(counterNFT),
@@ -62,14 +54,30 @@ export const createCounterObject = async (): Promise<String|void> => {
     }) 
 
     tx.moveCall({
-      target: `${PACKAGE_ADDRESS}::plinko::finish_game`,
-      arguments: [
-        tx.object(gameId),
-        tx.object(counterNFT),
-      ],
-    }); 
+      target: `${PACKAGE_ADDRESS}::counter_nft::transfer_to_sender`,
+      arguments: [tx.object(counterNFT)],
+  });
 
-    tx.setGasBudget(1000000000);
+
+  // const counterHex = bytesToHex(Uint8Array.from([vrf_input]));
+  // const messageToSign = randomnessHexString.concat(counterHex);
+  // let signedHouseHash = await bls.sign(vrf_input, deriveBLS_SecretKey(ADMIN_SECRET_KEY!));
+
+  // try {
+  //   const houseSignedInput = bls.sign(
+  //       new Uint8Array(vrf_input),
+  //       curveUtils.hexToBytes(housePrivHex),
+  //   );
+
+  //   tx.moveCall({
+  //     target: `${PACKAGE_ADDRESS}::plinko::finish_game`,
+  //     arguments: [
+  //       tx.object(gameId),
+  //       tx.object(counterNFT),
+  //     ],
+  //   }); 
+
+    tx.setGasBudget(10000000000);
 
     let res = await client.signAndExecuteTransactionBlock({
         transactionBlock: tx,
@@ -78,6 +86,7 @@ export const createCounterObject = async (): Promise<String|void> => {
         options: {
           showEffects: true,
           showObjectChanges: true,
+          showEvents: true,
         },
       });
 
@@ -88,7 +97,6 @@ export const createCounterObject = async (): Promise<String|void> => {
           if (obj.type === "created" && obj.objectType.endsWith("counter_nft::Counter")) {
             const counterNftId = `COUNTER_NFT_ID=${obj.objectId}\n`;
             console.log(counterNftId);
-            console.log("VRF Input = ", vrf_input);
             return counterNftId
           }
         });
