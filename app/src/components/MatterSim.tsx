@@ -10,6 +10,7 @@ import Matter, {
   Vector,
   Events,
   Body,
+  Common,
 } from "matter-js";
 import { usePlayContext } from "../contexts/PlayContext";
 
@@ -142,6 +143,19 @@ const MatterSim: React.FC = () => {
         if (document.visibilityState === "visible" && isPlaying) {
           console.log("isPlaying:", isPlaying);
           await new Promise((resolve) => setTimeout(resolve, 750));
+
+          // Generate a unique collision group for each ball
+          const collisionGroup = Common.nextId();
+
+          // Set the collision group and category for the ball
+          Body.set(balls[ballsSpawned], {
+            collisionFilter: {
+              group: collisionGroup,
+              category: 2, // Set a unique category for each ball (can be any number)
+              mask: 1, // Set the mask to interact with pins (category 1)
+            },
+          });
+
           Composite.add(engine.world, [balls[ballsSpawned]]);
           ballsSpawned++;
         } else {
