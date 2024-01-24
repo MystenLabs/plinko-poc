@@ -10,7 +10,6 @@ import hkdf from "futoin-hkdf";
 dotenv.config({ path: "../.env.local" });
 
 import {
-  PLAYER_PRIVATE_KEY, 
   PACKAGE_ADDRESS, 
   HOUSE_DATA_ID, 
   HOUSE_PRIVATE_KEY,
@@ -20,47 +19,44 @@ import {
     url: SUI_NETWORK,
   });
 
-
-const playerSigner = getKeyPairEd25519(PLAYER_PRIVATE_KEY);
 const houseSigner = getKeyPairEd25519(HOUSE_PRIVATE_KEY);
-const playerAddress = playerSigner.getPublicKey().toSuiAddress();
-console.log("Player Address = " + playerAddress);
 
 async function runGame() {
 
-  const vrf_input = [
-    0,
-    16,
-    123,
-    65,
-    254,
-    172,
-    185,
-    232,
-    179,
-    250,
-    120,
-    216,
-    87,
-    9,
-    20,
-    75,
-    104,
-    178,
-    38,
-    35,
-    204,
-    101,
-    7,
-    32,
-    42,
-    143,
-    1,
+  const vrf_input = 
+  [
+    224,
+    69,
+    2,
+    114,
     141,
-    97,
-    58,
+    196,
+    196,
+    168,
+    172,
+    78,
+    197,
+    242,
     178,
-    39,
+    219,
+    3,
+    111,
+    181,
+    249,
+    244,
+    144,
+    226,
+    160,
+    226,
+    148,
+    210,
+    85,
+    48,
+    125,
+    6,
+    110,
+    112,
+    152,
     0,
     0,
     0,
@@ -70,9 +66,9 @@ async function runGame() {
     0,
     0
   ];
-
    let houseSignedInput = await bls.sign(new Uint8Array(vrf_input), deriveBLS_SecretKey(HOUSE_PRIVATE_KEY!));
-   let gameId = "0x7a9369e3f439e48524d2a34c8ac649029e615327505d68d88d8bbe8b11452988";
+   console.log("houseSignedInput=", houseSignedInput);
+   let gameId = "0xb582f1118c684489e6c06f4350202845951a69dd74fc35f9b99d779cd71ca5ed";
    let numberofBalls = 2;
 
   //  const gameId = await client.getObject({ id: "coinObjectId" });

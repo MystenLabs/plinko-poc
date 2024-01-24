@@ -7,7 +7,6 @@ class BlsService {
 
 // key derivation function (deriving a sk from house's sk)
   constructor() {
-    // @todo: keygen source should be coming from .env
     this.SecretKey = this.deriveBLS_SK();
     this.PublicKey = bls.getPublicKey(this.SecretKey);
     console.log('Public Key', this.PublicKey);
