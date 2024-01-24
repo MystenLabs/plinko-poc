@@ -4,9 +4,12 @@
 // import { SuiService, SuiServiceInterface } from "./SuiService";
 import { SuiService } from "./SuiService";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
+import * as bls from "@noble/bls12-381";
+import BlsService from "./BlsService";
 class PlinkoGameService {
   // private suiService: SuiServiceInterface;
   private suiService: SuiService;
+  
   private gameIdMap: Map<
     String,
     {
@@ -67,8 +70,8 @@ class PlinkoGameService {
       // if (!this.gameIdMap.has(gameId)) {
       //   reject("Given gameId does not exist");
       //   return;
-      // //
-
+      //
+      console.log("bslSig=", blsSig);
       let txnDigest = this.gameIdMap.get(gameId)?.txn_digest;
       let numberofBalls = 2;
       // console.log(`Waiting for create game txn with digest ${txnDigest} to sync...`);
@@ -80,14 +83,59 @@ class PlinkoGameService {
       //     status: "failure",
       //     message: "Timeout expired while waiting for full nodes to sync on the created game",
       //   });
-      // }
-
+      //  }
+      const vrf_input = 
+      [
+        99,
+        63,
+        19,
+        46,
+        41,
+        215,
+        27,
+        188,
+        181,
+        6,
+        51,
+        27,
+        211,
+        71,
+        246,
+        236,
+        127,
+        137,
+        190,
+        54,
+        151,
+        124,
+        85,
+        93,
+        37,
+        246,
+        15,
+        8,
+        249,
+        91,
+        119,
+        59,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ];
+      const bls_serv = new BlsService();
+      let houseSignedInput = await bls.sign(new Uint8Array(vrf_input), bls_serv.deriveBLS_SK());
+      console.log("houseSignedInput=", houseSignedInput);
       const tx = new TransactionBlock();
       tx.moveCall({
         target: `${process.env.PACKAGE_ADDRESS}::plinko::finish_game`,
         arguments: [
-          tx.object(gameId),
-          tx.pure(Array.from(blsSig), "vector<u8>"),
+          tx.pure(gameId),
+          tx.pure(Array.from(houseSignedInput), "vector<u8>"),
           tx.object(String(process.env.HOUSE_DATA_ID)),
           tx.pure(numberofBalls, "u64")
         ],
