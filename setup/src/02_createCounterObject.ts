@@ -1,10 +1,7 @@
 import * as dotenv from "dotenv";
 import { SuiClient } from "@mysten/sui.js/client";
-// import { config } from "./helper/config";
 import { getKeyPairEd25519 } from "./getkeypair";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
-import * as bls from "@noble/bls12-381";
-import {bytesToHex} from "@noble/hashes/utils";
 
 dotenv.config({ path: "../.env.local" });
 
@@ -14,17 +11,9 @@ import {
   HOUSE_DATA_ID, 
   SUI_NETWORK} from "./config";
 
-// const {
-//     client,
-//     PLAYER_PRIVATE_KEY,
-//     PACKAGE_ADDRESS,
-// } = config();
-
-
 const client = new SuiClient({
     url: SUI_NETWORK,
   });
-
 
 const playerSigner = getKeyPairEd25519(PLAYER_PRIVATE_KEY);
 
@@ -58,24 +47,6 @@ export const createCounterObject = async (): Promise<String|void> => {
       arguments: [tx.object(counterNFT)],
   });
 
-
-  // const counterHex = bytesToHex(Uint8Array.from([vrf_input]));
-  // const messageToSign = randomnessHexString.concat(counterHex);
-  // let signedHouseHash = await bls.sign(vrf_input, deriveBLS_SecretKey(ADMIN_SECRET_KEY!));
-
-  // try {
-  //   const houseSignedInput = bls.sign(
-  //       new Uint8Array(vrf_input),
-  //       curveUtils.hexToBytes(housePrivHex),
-  //   );
-
-  //   tx.moveCall({
-  //     target: `${PACKAGE_ADDRESS}::plinko::finish_game`,
-  //     arguments: [
-  //       tx.object(gameId),
-  //       tx.object(counterNFT),
-  //     ],
-  //   }); 
 
     tx.setGasBudget(10000000000);
 
