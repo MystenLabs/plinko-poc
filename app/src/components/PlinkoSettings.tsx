@@ -1,9 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { usePlayContext } from "../contexts/PlayContext";
+import { useCreateCounterObject } from "@/hooks/moveTransactionCalls.ts/useCreateCounterObject";
 
 const PlinkoSettings = () => {
   const { isPlaying, setPlaying, betSize, setBetSize } = usePlayContext();
+  const { handleCreateCounterObject } = useCreateCounterObject();
   // const [betSize, setBetSize] = useState(0.0);
   const [numberOfBalls, setNumberOfBalls] = useState(0);
   const [currentBet, setCurrentBet] = useState(0);
@@ -15,8 +17,13 @@ const PlinkoSettings = () => {
     setCurrentBet(bet * balls);
   }, [betSize, numberOfBalls]);
 
-  const handlePlayClick = () => {
+  const handlePlayClick = async () => {
     if (isPlaying) return;
+    console.log("Play Clicked", isPlaying);
+    console.log(currentBet);
+    let currentBetSize = currentBet;
+    //@ts-ignore
+    await handleCreateCounterObject(currentBetSize);
     setPlaying(true);
     console.log("Play Clicked", isPlaying);
     console.log(
@@ -167,7 +174,7 @@ const PlinkoSettings = () => {
 
       {/* Current Bet */}
       <div className="text-right mt-2 text-sm font-medium text-gray-700">
-        Current bet: {currentBet.toFixed(2)}
+        Current bet: {currentBet}
       </div>
     </div>
   );
