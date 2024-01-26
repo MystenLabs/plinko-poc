@@ -57,20 +57,6 @@ async function runGame() {
     });
 
     console.log("executed! status = ", res);
-
-    // if (res?.effects?.status.status === "success") {
-    //   res?.objectChanges?.find((obj) => {
-    //     if (obj.type === "created" && obj.objectType.endsWith("counter_nft::Counter")) {
-    //       const counterNftId = `COUNTER_NFT_ID=${obj.objectId}\n`;
-    //       console.log(counterNftId);
-    //       return counterNftId
-    //     }
-    //   });
-    // }
-    //   if (res?.effects?.status.status === "failure") {
-    //       console.log("Error = ", res?.effects);
-    //   }
-
 }
 
 export function deriveBLS_SecretKey(private_key: string): Uint8Array {
