@@ -112,7 +112,7 @@ router.post(
 
     try {
       let { playerWon, transactionDigest } =
-        await GameService.finishGame(req.body.gameId, req.body.blsSig);
+        await GameService.finishGame(req.body.gameId, req.body.blsSig, req.body.numberofBalls);
       res.status(200);
       res.json({
         playerWon,

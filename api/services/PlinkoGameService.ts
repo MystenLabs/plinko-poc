@@ -63,7 +63,8 @@ class PlinkoGameService {
   // end-game for single player satoshi
   public finishGame(
     gameId: string,
-    blsSig: Uint8Array
+    blsSig: Uint8Array,
+    numberofBalls: number
   ): Promise<{ playerWon: boolean; transactionDigest: string }> {
     return new Promise(async (resolve, reject) => {
       // Limiting the use of endGame call to only gameIds created within the scope of the application
@@ -73,7 +74,6 @@ class PlinkoGameService {
       //
       console.log("bslSig=", blsSig);
       let txnDigest = this.gameIdMap.get(gameId)?.txn_digest;
-      let numberofBalls = 2;
       // console.log(`Waiting for create game txn with digest ${txnDigest} to sync...`);
       // let hasSynced = await this.suiService.hasBlockSynced(txnDigest!);
       // console.log('Has synced', !!hasSynced);
