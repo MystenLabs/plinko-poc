@@ -84,7 +84,7 @@ router.post(
       // end game
       console.log("ending game with id:", gameId);
       let { playerWon, transactionDigest } =
-        await GameService.finishGame(gameId!, blsSig);
+        await GameService.finishGame(gameId!, blsSig, req.body.numberofBalls);
         res.status(200);
         console.timeEnd(pid);
         return res.json({
@@ -123,7 +123,7 @@ router.post(
         `Bad things have happened while calling /game/single/end with id "${req.body.gameId}":`,
         e
       );
-      // Forward the error to the error handler
+      // // Forward the error to the error handler
       res.status(500);
       next(e);
     }
