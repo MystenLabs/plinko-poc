@@ -10,7 +10,6 @@ import hkdf from "futoin-hkdf";
 dotenv.config({ path: "../.env.local" });
 
 import {
-  PLAYER_PRIVATE_KEY, 
   PACKAGE_ADDRESS, 
   HOUSE_DATA_ID, 
   HOUSE_PRIVATE_KEY,
@@ -20,11 +19,7 @@ import {
     url: SUI_NETWORK,
   });
 
-
-const playerSigner = getKeyPairEd25519(PLAYER_PRIVATE_KEY);
 const houseSigner = getKeyPairEd25519(HOUSE_PRIVATE_KEY);
-const playerAddress = playerSigner.getPublicKey().toSuiAddress();
-console.log("Player Address = " + playerAddress);
 
 async function runGame() {
 
