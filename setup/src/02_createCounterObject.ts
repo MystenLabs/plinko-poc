@@ -6,76 +6,73 @@ import { TransactionBlock } from "@mysten/sui.js/transactions";
 dotenv.config({ path: "../.env.local" });
 
 import {
-  PLAYER_PRIVATE_KEY, 
-  PACKAGE_ADDRESS, 
-  HOUSE_DATA_ID, 
-  SUI_NETWORK} from "./config";
+  PLAYER_PRIVATE_KEY,
+  PACKAGE_ADDRESS,
+  HOUSE_DATA_ID,
+  SUI_NETWORK,
+} from "./config";
 
 const client = new SuiClient({
-    url: SUI_NETWORK,
-  });
+  url: SUI_NETWORK,
+});
 
-const playerSigner = getKeyPairEd25519(PLAYER_PRIVATE_KEY);
+const playerSigner = getKeyPairEd25519(PLAYER_PRIVATE_KEY); // keypair USER from enoki
 
 const playerAddress = playerSigner.getPublicKey().toSuiAddress();
 console.log("Player Address = " + playerAddress);
 
-const betAmount = 1000000000;
+const betAmount = 1000000000; // betamount from ui (total bet amount)
 
-export const createCounterObject = async (): Promise<String|void> => {
+export const createCounterObject = async (): Promise<String | void> => {
+  const tx = new TransactionBlock();
 
-    const tx = new TransactionBlock();
+  const betAmountCoin = tx.splitCoins(tx.gas, [tx.pure(betAmount)]);
 
-    const betAmountCoin = tx.splitCoins(tx.gas, [tx.pure(betAmount)]);
-
-    const counterNFT = tx.moveCall({
-        target: `${PACKAGE_ADDRESS}::counter_nft::mint`,
-        arguments: [],
-    });
-
-     const gameId = tx.moveCall({
-      target: `${PACKAGE_ADDRESS}::plinko::start_game`,
-      arguments: [
-        tx.object(counterNFT),
-        betAmountCoin,
-        tx.object(HOUSE_DATA_ID)
-      ],
-    }) 
-
-    tx.moveCall({
-      target: `${PACKAGE_ADDRESS}::counter_nft::transfer_to_sender`,
-      arguments: [tx.object(counterNFT)],
+  const counterNFT = tx.moveCall({
+    target: `${PACKAGE_ADDRESS}::counter_nft::mint`,
+    arguments: [],
   });
 
+  const gameId = tx.moveCall({
+    target: `${PACKAGE_ADDRESS}::plinko::start_game`,
+    arguments: [tx.object(counterNFT), betAmountCoin, tx.object(HOUSE_DATA_ID)],
+  });
 
-    tx.setGasBudget(10000000000);
+  tx.moveCall({
+    target: `${PACKAGE_ADDRESS}::counter_nft::transfer_to_sender`,
+    arguments: [tx.object(counterNFT)],
+  });
 
-    let res = await client.signAndExecuteTransactionBlock({
-        transactionBlock: tx,
-        requestType: "WaitForLocalExecution",
-        signer: playerSigner,
-        options: {
-          showEffects: true,
-          showObjectChanges: true,
-          showEvents: true,
-        },
-      });
+  tx.setGasBudget(10000000000);
 
-      console.log("executed! status = ", res);
+  let res = await client.signAndExecuteTransactionBlock({
+    transactionBlock: tx,
+    requestType: "WaitForLocalExecution",
+    signer: playerSigner,
+    options: {
+      showEffects: true,
+      showObjectChanges: true,
+      showEvents: true,
+    },
+  });
 
-      if (res?.effects?.status.status === "success") {
-        res?.objectChanges?.find((obj) => {
-          if (obj.type === "created" && obj.objectType.endsWith("counter_nft::Counter")) {
-            const counterNftId = `COUNTER_NFT_ID=${obj.objectId}\n`;
-            console.log(counterNftId);
-            return counterNftId
-          }
-        });
+  console.log("executed! status = ", res);
+
+  if (res?.effects?.status.status === "success") {
+    res?.objectChanges?.find((obj) => {
+      if (
+        obj.type === "created" &&
+        obj.objectType.endsWith("counter_nft::Counter")
+      ) {
+        const counterNftId = `COUNTER_NFT_ID=${obj.objectId}\n`;
+        console.log(counterNftId);
+        return counterNftId;
       }
-        if (res?.effects?.status.status === "failure") {
-            console.log("Error = ", res?.effects);
-        }
-
-}
+    });
+  }
+  if (res?.effects?.status.status === "failure") {
+    console.log("Error = ", res?.effects);
+  }
+};
 
 createCounterObject();
