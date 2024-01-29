@@ -39,5 +39,9 @@ setup/.env.local
 .publish.res.json
 .vercel
 
+# env files under all directories
+*.env
+*.env.local
+
 setup/package-lock.json
 setup/src/tx_res.json
