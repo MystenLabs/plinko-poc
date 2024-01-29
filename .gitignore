@@ -45,3 +45,5 @@ setup/.env.local
 
 setup/package-lock.json
 setup/src/tx_res.json
+api/.env
+api/.env.local
