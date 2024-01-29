@@ -2,10 +2,13 @@
 import React, { useState, useEffect } from "react";
 import { usePlayContext } from "../contexts/PlayContext";
 import { useCreateCounterObject } from "@/hooks/moveTransactionCalls.ts/useCreateCounterObject";
+import { useGameHistory } from "@/contexts/GameHistoryContext";
 
 const PlinkoSettings = () => {
   const { isPlaying, setPlaying, betSize, setBetSize } = usePlayContext();
   const { handleCreateCounterObject } = useCreateCounterObject();
+  const { resetHistory } = useGameHistory();
+
   // const [betSize, setBetSize] = useState(0.0);
   const [numberOfBalls, setNumberOfBalls] = useState(0);
   const [currentBet, setCurrentBet] = useState(0);
@@ -19,6 +22,7 @@ const PlinkoSettings = () => {
 
   const handlePlayClick = async () => {
     if (isPlaying) return;
+    resetHistory();
     console.log("Play Clicked", isPlaying);
     console.log(currentBet);
     let currentBetSize = currentBet;
