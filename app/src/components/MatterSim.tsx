@@ -27,7 +27,7 @@ import { set } from "zod";
 
 const MatterSim: React.FC = () => {
   const { isPlaying, setPlaying, betSize } = usePlayContext();
-  const { addColor, colors, resetHistory } = useGameHistory();
+  const { addColor, colors, addTotalWon, totalWon } = useGameHistory();
   const [multipliersHistroty, setMultipliersHistory] = useState([0]);
   // Define bucket colors
   const bucketColors = [
@@ -354,8 +354,10 @@ const MatterSim: React.FC = () => {
 
             // Get the color of the bottomArea and add it to the history
             const color = bottomArea.render.fillStyle;
+
             console.log("bottomArea.render.fillStyle:", color);
             addColor(color);
+
             // Temporarily increase the size of the bottomArea
             Body.scale(bottomArea, 1.1, 1.1); // Increase by 10%
 
@@ -487,7 +489,6 @@ const MatterSim: React.FC = () => {
       );
       setMultipliersHistory(historyOfMultipliers);
       setPlaying(false);
-      resetHistory();
     }
     console.log("bottomArea.render.fillStyle:", colors);
   }, [finishedBalls, predefinedPaths.length, setPlaying, colors]);
@@ -530,6 +531,7 @@ const MatterSim: React.FC = () => {
 
           if (isLastColor) {
             lastBallWon = multiplier * betSize;
+            addTotalWon(lastBallWon, colors.length);
           }
 
           return (
@@ -549,7 +551,10 @@ const MatterSim: React.FC = () => {
         })}
       </div>
       {/* Total won */}
-      <div className="font-bold mt-4">Total won:$</div>
+      <div className="font-bold mt-4">
+        Total won:
+        {totalWon !== -1 ? parseFloat(totalWon.toString()).toFixed(2) : "0.00"}$
+      </div>
       {/* Display the total won amount here */}
     </div>
   );
