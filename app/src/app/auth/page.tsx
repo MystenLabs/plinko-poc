@@ -21,12 +21,10 @@ const AuthPage = () => {
       .handleAuthCallback(hash)
       .then(async (res) => {
         console.log({ res });
+        // const keypair2 = await enokiFlow.getKeypair();
+        // const address1 = keypair2.getPublicKey().toSuiAddress();
         const session = await enokiFlow.getSession();
-        const keypair = session?.ephemeralKeyPair!;
-        let privateKeyArray = Uint8Array.from(Array.from(fromB64(keypair!)));
-        const address = Ed25519Keypair.fromSecretKey(privateKeyArray)
-          .getPublicKey()
-          .toSuiAddress();
+        const address = enokiFlow.$zkLoginState.get().address!;
         const jwt = session?.jwt;
         const decodedJwt: any = jwtDecode(jwt!);
         const userRole = res as UserRole;
