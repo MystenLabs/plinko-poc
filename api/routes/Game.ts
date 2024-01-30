@@ -111,8 +111,12 @@ router.post(
     console.log("POST /game/single/end with body:", req.body);
 
     try {
+      const blsSigArray = JSON.parse(req.body.blsSig);
+      console.log("blsSigArray=>", blsSigArray);
+      const blsSigUintArray = new Uint8Array(blsSigArray);
+      console.log("blsSigUint8Array=>", blsSigUintArray);
       let { playerWon, transactionDigest } =
-        await GameService.finishGame(req.body.gameId, req.body.blsSig, req.body.numberofBalls);
+        await GameService.finishGame(req.body.gameId, blsSigUintArray, req.body.numberofBalls);
       res.status(200);
       res.json({
         playerWon,
@@ -120,10 +124,10 @@ router.post(
       });
     } catch (e) {
       console.error(
-        `Bad things have happened while calling /game/single/end with id "${req.body.gameId}":`,
-        e
+        `Bad things have happened while calling /plinko/end with id ${req.body.gameId}`,
+        e,
       );
-      // // Forward the error to the error handler
+      // Forward the error to the error handler
       res.status(500);
       next(e);
     }

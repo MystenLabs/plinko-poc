@@ -84,58 +84,20 @@ class PlinkoGameService {
       //     message: "Timeout expired while waiting for full nodes to sync on the created game",
       //   });
       //  }
-      const vrf_input = 
-      [
-        99,
-        63,
-        19,
-        46,
-        41,
-        215,
-        27,
-        188,
-        181,
-        6,
-        51,
-        27,
-        211,
-        71,
-        246,
-        236,
-        127,
-        137,
-        190,
-        54,
-        151,
-        124,
-        85,
-        93,
-        37,
-        246,
-        15,
-        8,
-        249,
-        91,
-        119,
-        59,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ];
+      console.log("----------------------");
+      
       const bls_serv = new BlsService();
-      let houseSignedInput = await bls.sign(new Uint8Array(vrf_input), bls_serv.deriveBLS_SK());
+      let houseSignedInput = await bls.sign(blsSig, bls_serv.deriveBLS_SK());
       console.log("houseSignedInput=", houseSignedInput);
+      console.log("GameID: ",gameId)
+      console.log("numberofBalls: ",numberofBalls)
       const tx = new TransactionBlock();
+      tx.setGasBudget(1000000000);
       tx.moveCall({
         target: `${process.env.PACKAGE_ADDRESS}::plinko::finish_game`,
         arguments: [
-          tx.pure(gameId),
-          tx.pure(Array.from(houseSignedInput), "vector<u8>"),
+          tx.object(gameId),
+          tx.pure(Array.from(houseSignedInput)),
           tx.object(String(process.env.HOUSE_DATA_ID)),
           tx.pure(numberofBalls, "u64")
         ],
