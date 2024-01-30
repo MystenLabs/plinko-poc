@@ -27,7 +27,7 @@ const PlinkoSettings = () => {
     console.log(currentBet);
     let currentBetSize = currentBet;
     //@ts-ignore
-    await handleCreateCounterObject(currentBetSize);
+    await handleCreateCounterObject(currentBetSize, numberOfBalls);
     setPlaying(true);
     console.log("Play Clicked", isPlaying);
     console.log(
