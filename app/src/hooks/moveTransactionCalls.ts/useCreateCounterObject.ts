@@ -97,6 +97,7 @@ export const useCreateCounterObject = () => {
     setVrfInput(vrf__input);
     console.log("game_id = ", game__id);
     console.log("VRF_Input = ", vrf__input);
+    console.log("Number of Balls = ", numberofBalls);
 
     // Fetch API call for the game/plinko/end endpoint
     try {
@@ -106,9 +107,9 @@ export const useCreateCounterObject = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          gameId: "0xe1fc83f56f7e8016fdbc10a27c20ff6907516bea0529504c34ccd640df6400e8",
-          blsSig: "[38, 116, 51, 100, 81, 12, 207, 166, 14, 208, 53, 40, 79, 73, 239, 56, 35, 56, 160, 45, 39, 122, 174, 7, 86, 48, 241, 79, 155, 176, 52, 58, 0, 0, 0, 0, 0, 0, 0, 0]",
-          numberofBalls: 2,
+          gameId: game__id,
+          blsSig: vrf__input,
+          numberofBalls: numberofBalls,
         }),
       });
 
