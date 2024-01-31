@@ -6,6 +6,8 @@ import { SuiService } from "./SuiService";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import * as bls from "@noble/bls12-381";
 import BlsService from "./BlsService";
+import hkdf from "futoin-hkdf";
+
 class PlinkoGameService {
   // private suiService: SuiServiceInterface;
   private suiService: SuiService;
@@ -86,19 +88,24 @@ class PlinkoGameService {
       //  }
       console.log("----------------------");
       
-      const bls_serv = new BlsService();
-      let houseSignedInput = await bls.sign(blsSig, bls_serv.deriveBLS_SK());
+      // const bls_serv = new BlsService();
+      // let houseSignedInput = await bls.sign(blsSig, bls_serv.deriveBLS_SK());
+
+      let houseSignedInput = await bls.sign(new Uint8Array(blsSig), this.deriveBLS_SecretKey(process.env.PLINKO_HOUSE_PRIVATE_KEY!));
+
       console.log("houseSignedInput=", houseSignedInput);
       console.log("GameID: ",gameId)
       console.log("numberofBalls: ",numberofBalls)
+      console.log("HOUSE DATA ID: ",String(process.env.HOUSE_DATA_ID!))
+      console.log("PACKAGE_ADDRESS: ",process.env.PACKAGE_ADDRESS)
       const tx = new TransactionBlock();
       tx.setGasBudget(1000000000);
       tx.moveCall({
         target: `${process.env.PACKAGE_ADDRESS}::plinko::finish_game`,
         arguments: [
-          tx.object(gameId),
-          tx.pure(Array.from(houseSignedInput)),
-          tx.object(String(process.env.HOUSE_DATA_ID)),
+          tx.pure(gameId),
+          tx.pure(Array.from(houseSignedInput), "vector<u8>"),
+          tx.object(String(process.env.HOUSE_DATA_ID!)),
           tx.pure(numberofBalls, "u64")
         ],
       });
@@ -164,6 +171,17 @@ class PlinkoGameService {
         });
     });
   }
+
+   public deriveBLS_SecretKey(private_key: string): Uint8Array {
+    // initial key material
+    const ikm = private_key;
+    const length = 32;
+    const salt = "plinko";
+    const info = "bls-signature";
+    const hash = 'SHA-256';
+    const derived_sk = hkdf(ikm, length, {salt, info, hash});
+    return Uint8Array.from(derived_sk);
+}
 }
 
 export default PlinkoGameService;
