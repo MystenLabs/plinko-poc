@@ -13,7 +13,7 @@ COPY .env.local* /api
 RUN npm install
 
 
-EXPOSE 8080/tcp
+EXPOSE 8080
 
 # Starts the service
-CMD ["npm", "run", "prod"]
+CMD ["npm", "run", "dev"]
