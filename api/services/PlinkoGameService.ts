@@ -119,15 +119,18 @@ class PlinkoGameService {
           options: {
             showObjectChanges: true,
             showEffects: true,
+            showEvents: true,
           },
         })
         .then(async (res: any) => {
           const {
             effects,
             objectChanges,
-            balanceChanges
+            balanceChanges,
+            events
           } = res;
-
+          const trace = events[0].parsedJson.trace;
+          console.log("trace", trace);
           const status = effects?.status?.status;
           const transactionDigest = effects?.transactionDigest!;
 
