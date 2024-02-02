@@ -7,14 +7,18 @@ interface IPlayContext {
   setPlaying: (playing: boolean) => void;
   betSize: number;
   setBetSize: (size: number) => void;
+  traceVector: string; // Add this line
+  setTraceVector: (trace: string) => void; // And this line
 }
 
 // Create the context
 const PlayContext = createContext<IPlayContext>({
   isPlaying: false,
-  setPlaying: () => {}, // Placeholder function
+  setPlaying: () => {},
   betSize: 0,
-  setBetSize: () => {}, // Placeholder function
+  setBetSize: () => {},
+  traceVector: "", // Default empty string
+  setTraceVector: () => {}, // Placeholder function
 });
 
 // Export the custom hook for accessing the context
@@ -26,12 +30,21 @@ export const PlayProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [isPlaying, setPlaying] = useState(false);
   const [betSize, setBetSize] = useState(0);
+  const [traceVector, setTraceVector] = useState(""); // State for traceVector
 
   return (
     <PlayContext.Provider
-      value={{ isPlaying, setPlaying, betSize, setBetSize }}
+      value={{
+        isPlaying,
+        setPlaying,
+        betSize,
+        setBetSize,
+        traceVector, // Provide traceVector
+        setTraceVector, // And its setter
+      }}
     >
       {children}
     </PlayContext.Provider>
   );
 };
+

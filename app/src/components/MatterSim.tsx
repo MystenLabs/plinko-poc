@@ -58,7 +58,13 @@ const MatterSim: React.FC = () => {
   const [dropBallPosision, setDropBallPosision] = useState<number[]>([0, 0]);
   // Create a physics engine
   const engine = Engine.create();
+  
+  // Retrieve the traceVector
+  const { traceVector } = usePlayContext();
 
+// Convert traceVector to a binary path (even = 1, odd = 0)
+// const binaryPath = traceVector.map(value => value % 2 === 0 ? 1 : 0);
+  
   const predefinedPaths: number[][] = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
