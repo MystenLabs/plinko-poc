@@ -9,6 +9,8 @@ interface IPlayContext {
   setBetSize: (size: number) => void;
   traceVector: string; // Add this line
   setTraceVector: (trace: string) => void; // And this line
+  finalPaths: number[][]; // Add this line
+  setFinalPaths: (paths: number[][]) => void;
 }
 
 // Create the context
@@ -19,6 +21,8 @@ const PlayContext = createContext<IPlayContext>({
   setBetSize: () => {},
   traceVector: "", // Default empty string
   setTraceVector: () => {}, // Placeholder function
+  finalPaths: [], // Default empty array
+  setFinalPaths: () => {}, // Placeholder function
 });
 
 // Export the custom hook for accessing the context
@@ -31,6 +35,9 @@ export const PlayProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isPlaying, setPlaying] = useState(false);
   const [betSize, setBetSize] = useState(0);
   const [traceVector, setTraceVector] = useState(""); // State for traceVector
+  const [finalPaths, setFinalPaths] = useState<number[][]>([
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ]); // State for finalPaths
 
   return (
     <PlayContext.Provider
@@ -41,10 +48,11 @@ export const PlayProvider: React.FC<{ children: React.ReactNode }> = ({
         setBetSize,
         traceVector, // Provide traceVector
         setTraceVector, // And its setter
+        finalPaths, // Provide finalPaths
+        setFinalPaths,
       }}
     >
       {children}
     </PlayContext.Provider>
   );
 };
-
