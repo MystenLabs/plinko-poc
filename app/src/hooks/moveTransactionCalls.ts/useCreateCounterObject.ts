@@ -1,6 +1,7 @@
 import { SuiClient } from "@mysten/sui.js/client";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { useState } from "react";
+import { usePlayContext } from "../../contexts/PlayContext";
 import { useAuthentication } from "@/contexts/Authentication";
 import { set } from "zod";
 
@@ -14,6 +15,7 @@ export const useCreateCounterObject = () => {
   const [counterNftId, setCounterNftId] = useState("");
   const [gameId, setGameId] = useState("");
   const [vrfInput, setVrfInput] = useState("");
+  const { setTraceVector } = usePlayContext();
   const handleCreateCounterObject = async (total_bet_amount: number , numberofBalls: number) => {
     setIsLoading(true);
     const keypair = await enokiFlow.getKeypair();
@@ -100,28 +102,38 @@ export const useCreateCounterObject = () => {
     console.log("Number of Balls = ", numberofBalls);
 
     // Fetch API call for the game/plinko/end endpoint
-    try {
-      const response = await fetch('http://localhost:8080/game/plinko/end', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          gameId: game__id,
-          blsSig: vrf__input,
-          numberofBalls: numberofBalls,
-        }),
-      });
+try {
+  const response = await fetch('http://localhost:8080/game/plinko/end', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      gameId: game__id,
+      blsSig: vrf__input,
+      numberofBalls: numberofBalls,
+    }),
+  });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
 
-      const data = await response.json();
-      console.log("Response from /game/plinko/end:", data);
-    } catch (error) {
-      console.error("Error in calling /game/plinko/end:", error);
-    }
+  const data = await response.json();
+  console.log("Response from /game/plinko/end:", data);
+
+  // Assuming the trace vector is directly in the data object; adjust according to actual structure
+  const traceVector = data.trace;
+  
+  console.log("Trace vector from /game/plinko/end:", traceVector);
+
+  setTraceVector(traceVector);
+
+} catch (error) {
+  console.error("Error in calling /game/plinko/end:", error);
+}
+
+// Continue with the rest of your hook logic
 
     return [game__id, vrf__input];
   };
