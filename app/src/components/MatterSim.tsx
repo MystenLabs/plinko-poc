@@ -26,7 +26,12 @@ import {
 import { set } from "zod";
 
 const MatterSim: React.FC = () => {
-  const { isPlaying, setPlaying, betSize } = usePlayContext();
+  const {
+    isPlaying,
+    setPlaying,
+    betSize,
+    finalPaths: predefinedPaths,
+  } = usePlayContext();
   const { addColor, colors, addTotalWon, totalWon } = useGameHistory();
   const [multipliersHistroty, setMultipliersHistory] = useState([0]);
   // Define bucket colors
@@ -58,32 +63,33 @@ const MatterSim: React.FC = () => {
   const [dropBallPosision, setDropBallPosision] = useState<number[]>([0, 0]);
   // Create a physics engine
   const engine = Engine.create();
-  
+
   // Retrieve the traceVector
   const { traceVector } = usePlayContext();
 
-// Convert traceVector to a binary path (even = 1, odd = 0)
-// const binaryPath = traceVector.map(value => value % 2 === 0 ? 1 : 0);
-  
-  const predefinedPaths: number[][] = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-    [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], // Example path for the second ball
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-    [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
-    [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
-    [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  ];
-  let prePaths = generateRandomPaths(30);
-  // const predefinedPaths = prePaths;
-  console.log("prePaths:", prePaths);
+  // Convert traceVector to a binary path (even = 1, odd = 0)
+  // const binaryPath = traceVector.map(value => value % 2 === 0 ? 1 : 0);
+
+  // const predefinedPaths: number[][] = [
+  //   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  //   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  //   [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
+  //   [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
+  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
+  //   [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+  //   [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], // Example path for the second ball
+  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+  //   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
+  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+  //   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
+  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+  // ];
+  // const predefinedPaths: number[][] = finalPaths;
+  // let prePaths = generateRandomPaths(30);
+  // // const predefinedPaths = prePaths;
+  // console.log("prePaths:", prePaths);
   // const predefinedPaths = prePaths;
   console.log("predefinedPaths:", predefinedPaths);
 
@@ -478,7 +484,7 @@ const MatterSim: React.FC = () => {
       Runner.stop(runner);
       Render.stop(render);
     };
-  }, [isPlaying]);
+  }, [isPlaying, predefinedPaths]);
 
   useEffect(() => {
     //Find the history of multipliers that balls have landed on

@@ -5,7 +5,8 @@ import { useCreateCounterObject } from "@/hooks/moveTransactionCalls.ts/useCreat
 import { useGameHistory } from "@/contexts/GameHistoryContext";
 
 const PlinkoSettings = () => {
-  const { isPlaying, setPlaying, betSize, setBetSize } = usePlayContext();
+  const { isPlaying, setPlaying, betSize, setBetSize, setFinalPaths } =
+    usePlayContext();
   const { handleCreateCounterObject } = useCreateCounterObject();
   const { resetHistory } = useGameHistory();
 
@@ -27,7 +28,12 @@ const PlinkoSettings = () => {
     console.log(currentBet);
     let currentBetSize = currentBet;
     //@ts-ignore
-    await handleCreateCounterObject(currentBetSize, numberOfBalls);
+    let result_create_obj = await handleCreateCounterObject(
+      currentBetSize,
+      numberOfBalls
+    );
+    // console.log("final_paths", result_create_obj[2]);
+    setFinalPaths(result_create_obj[2]);
     setPlaying(true);
     console.log("Play Clicked", isPlaying);
     console.log(
@@ -72,113 +78,70 @@ const PlinkoSettings = () => {
   };
 
   return (
-    <div className="p-4 bg-white bg-opacity-75 backdrop-filter backdrop-blur-lg shadow-md rounded-lg max-w-4xl mx-auto my-4">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4 text-center">
-        Plinko Game Settings
-      </h2>
-      <div className="flex flex-col md:flex-row justify-around items-center space-y-4 md:space-y-0 md:space-x-10">
-        {/* Bet Size & Number of Balls */}
-        <div className="flex flex-row justify-around items-center space-x-4">
-          {/* Bet Size */}
-          <div className="flex flex-col items-center">
-            <label className="text-sm font-medium text-gray-700 mb-2">
-              Bet Size
-            </label>
-            <div className="flex items-center">
-              <input
-                type="number"
-                value={betSize}
-                onChange={handleBetSizeChange}
-                className="w-16 p-2 text-center border border-gray-300 rounded-l-md"
-              />
-              <button
-                onClick={() => adjustBetSize(-0.5)}
-                className="h-8 w-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center mx-1"
-              >
-                -
-              </button>
-              <button
-                onClick={() => adjustBetSize(0.5)}
-                className="h-8 w-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          {/* Number of Balls */}
-          <div className="flex flex-col items-center">
-            <label className="text-sm font-medium text-gray-700 mb-2">
-              Number of Balls
-            </label>
-            <div className="flex items-center">
-              <input
-                type="number"
-                value={numberOfBalls}
-                onChange={handleNumberOfBallsChange}
-                className="w-16 p-2 text-center border border-gray-300 rounded-l-md"
-              />
-              <button
-                onClick={() => adjustNumberOfBalls(-1)}
-                className="h-8 w-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center mx-1"
-              >
-                -
-              </button>
-              <button
-                onClick={() => adjustNumberOfBalls(1)}
-                className="h-8 w-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center"
-              >
-                +
-              </button>
-            </div>
-          </div>
+    <div className="w-[982px] px-5 pt-5 pb-[25px] bg-emerald-950 rounded-[20px] mx-auto my-4 flex justify-start items-end gap-5">
+      {/* Bid Amount (per ball) */}
+      <div className="flex flex-col justify-start items-start gap-2.5">
+        <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
+          Bid Amount (per ball)
         </div>
-
-        {/* Risk Level */}
-        <div className="flex flex-col items-center">
-          <label className="text-sm font-medium text-gray-700 mb-2">
-            Risk Level
-          </label>
-          <div className="flex">
-            <button
-              onClick={() => setSelectedRisk("green")}
-              className={riskButtonClass("green")}
-            >
-              Green
-            </button>
-            <button
-              onClick={() => setSelectedRisk("yellow")}
-              className={riskButtonClass("yellow")}
-            >
-              Yellow
-            </button>
-            <button
-              onClick={() => setSelectedRisk("red")}
-              className={riskButtonClass("red")}
-            >
-              Red
-            </button>
+        <div className="flex items-center h-11 p-5 bg-emerald-950 rounded-[40px] border border-white border-opacity-25 gap-2.5">
+          <input
+            type="number"
+            value={betSize}
+            onChange={handleBetSizeChange}
+            className="bg-transparent text-white text-opacity-50 text-base font-normal leading-[18.40px] w-full outline-none"
+            placeholder="0"
+          />
+          <div className="text-white text-opacity-50 text-base font-normal leading-[18.40px]">
+            SUI
           </div>
         </div>
       </div>
 
-      <div className="text-center mt-4">
+      {/* Number of Balls */}
+      <div className="flex flex-col justify-start items-start gap-2.5">
+        <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
+          Number of Balls
+        </div>
+        <div className="flex items-center h-11 p-5 bg-emerald-950 rounded-[40px] border border-white border-opacity-25 gap-2.5">
+          <input
+            type="number"
+            value={numberOfBalls}
+            onChange={handleNumberOfBallsChange}
+            className="bg-transparent text-white text-opacity-50 text-base font-normal leading-[18.40px] w-full outline-none"
+            placeholder="0"
+          />
+        </div>
+      </div>
+
+      {/* Number of Rows (New) */}
+      <div className="flex flex-col justify-start items-start gap-2.5">
+        <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
+          Number of Rows
+        </div>
+        <div className="flex items-center h-11 p-5 bg-emerald-950 rounded-[40px] border border-white border-opacity-25 gap-2.5">
+          <div className="text-white text-opacity-80 text-base font-normal leading-[18.40px]">
+            12 {/* Adjust the hardcoded value as per your dynamic data */}
+          </div>
+        </div>
+      </div>
+
+      {/* Total Bid & Play Button */}
+      <div className="flex flex-col justify-start items-start gap-2.5">
+        <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
+          Total Bid: {currentBet} SUI{" "}
+          {/* Adjust the hardcoded value as per your dynamic data */}
+        </div>
         <button
-          type="button"
           onClick={handlePlayClick}
-          className={`px-6 py-3 text-lg rounded-full ${
-            isPlaying
-              ? "bg-gray-500 hover:bg-gray-500 cursor-not-allowed"
-              : "bg-blue-500 hover:bg-blue-700"
-          } text-white`}
+          className={`h-11 px-6 py-2.5 bg-emerald-600 rounded-[999px] flex justify-center items-center gap-2 ${
+            isPlaying ? "cursor-not-allowed opacity-50" : ""
+          }`}
         >
-          Play
+          <div className="text-white text-base font-bold leading-[18.40px]">
+            {isPlaying ? "Playing..." : "Play"}
+          </div>
         </button>
-      </div>
-
-      {/* Current Bet */}
-      <div className="text-right mt-2 text-sm font-medium text-gray-700">
-        Current bet: {currentBet}
       </div>
     </div>
   );
