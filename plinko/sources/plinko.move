@@ -106,6 +106,10 @@ module plinko::plinko {
     let hashed_beacon = blake2b256(&bls_sig);
     // Initialize the trace vector and the total funds amount
     let trace = vector::empty<u8>();
+
+    // Calculate the stake amount per ball
+    let stake_per_ball = balance::value<SUI>(&stake) / num_balls;
+
     let total_funds_amount: u64 = 0;
 
 
@@ -128,9 +132,11 @@ module plinko::plinko {
         // Calculate multiplier index based on state
         let multiplier_index = state % vector::length(&hd::multiplier(house_data));
         let result = *vector::borrow(&hd::multiplier(house_data), multiplier_index);
-        let funds_amount = result * balance::value<SUI>(&stake);
-        total_funds_amount = total_funds_amount + funds_amount;
-
+        
+        // Calculate funds amount for this particular ball
+        // Divide by 1000 to adjust for multiplier scale and SUI units
+        let funds_amount_per_ball = (result * stake_per_ball)/100; 
+        total_funds_amount = total_funds_amount + funds_amount_per_ball;
         ball_index = ball_index + 1;
     };
 
