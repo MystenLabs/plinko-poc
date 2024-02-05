@@ -5,8 +5,8 @@ import { useCreateCounterObject } from "@/hooks/moveTransactionCalls.ts/useCreat
 import { useGameHistory } from "@/contexts/GameHistoryContext";
 
 const PlinkoSettings = () => {
-  const { isPlaying, setPlaying, betSize, setBetSize, setFinalPaths } =
-    usePlayContext();
+  //@ts-ignore
+  const { isPlaying, setPlaying, betSize, setBetSize } = usePlayContext();
   const { handleCreateCounterObject } = useCreateCounterObject();
   const { resetHistory } = useGameHistory();
 
@@ -33,7 +33,7 @@ const PlinkoSettings = () => {
       numberOfBalls
     );
     // console.log("final_paths", result_create_obj[2]);
-    setFinalPaths(result_create_obj[2]);
+    // setFinalPaths(result_create_obj[2]);
     setPlaying(true);
     console.log("Play Clicked", isPlaying);
     console.log(

@@ -16,8 +16,9 @@ export const useCreateCounterObject = () => {
   const [counterNftId, setCounterNftId] = useState("");
   const [gameId, setGameId] = useState("");
   const [vrfInput, setVrfInput] = useState("");
-  const [final_paths, setFinalPaths] = useState(<number[][]>[]);
-  const { setTraceVector } = usePlayContext();
+  // const [final_paths, setFinalPaths] = useState(<number[][]>[]);
+  //@ts-ignore
+  const { final_paths, setFinalPaths } = usePlayContext();
   const handleCreateCounterObject = async (
     total_bet_amount: number,
     numberofBalls: number
@@ -132,9 +133,8 @@ export const useCreateCounterObject = () => {
 
       console.log("Trace vector from /game/plinko/end:", traceVector);
       const final_paths_t = await splitIntoPathsAndNormalize(traceVector);
+      console.log("Final paths from /game/plinko/end:", final_paths_t);
       setFinalPaths(final_paths_t);
-
-      setTraceVector(traceVector);
     } catch (error) {
       console.error("Error in calling /game/plinko/end:", error);
     }
