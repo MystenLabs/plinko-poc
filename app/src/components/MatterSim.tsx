@@ -26,7 +26,14 @@ import {
 import { set } from "zod";
 
 const MatterSim: React.FC = () => {
-  const { isPlaying, setPlaying, betSize } = usePlayContext();
+  //@ts-ignore
+  const {
+    isPlaying,
+    setPlaying,
+    betSize,
+    finalPaths: predefinedPaths,
+  } = usePlayContext();
+  console.log("predefinedPaths:", predefinedPaths);
   const { addColor, colors, addTotalWon, totalWon } = useGameHistory();
   const [multipliersHistroty, setMultipliersHistory] = useState([0]);
   // Define bucket colors
@@ -59,25 +66,44 @@ const MatterSim: React.FC = () => {
   // Create a physics engine
   const engine = Engine.create();
 
-  const predefinedPaths: number[][] = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-    [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], // Example path for the second ball
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-    [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
-    [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
-    [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  ];
-  let prePaths = generateRandomPaths(30);
-  // const predefinedPaths = prePaths;
-  console.log("prePaths:", prePaths);
+  // Convert traceVector to a binary path (even = 1, odd = 0)
+  // const binaryPath = traceVector.map(value => value % 2 === 0 ? 1 : 0);
+
+  // const predefinedPaths: number[][] = [
+  //   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  //   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  //   [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
+  //   [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
+  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
+  //   [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+  //   [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], // Example path for the second ball
+  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+  //   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
+  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+  //   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
+  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+  //   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  //   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+  //   [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
+  //   [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
+  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
+  //   [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+  //   [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], // Example path for the second ball
+  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
+  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+  //   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
+  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+  //   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
+  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+  // ];
+  console.log("predifinedPaths:", predefinedPaths);
+  // const predefinedPaths: number[][] = finalPaths;
+  // let prePaths = generateRandomPaths(30);
+  // // const predefinedPaths = prePaths;
+  // console.log("prePaths:", prePaths);
   // const predefinedPaths = prePaths;
   console.log("predefinedPaths:", predefinedPaths);
 
@@ -173,7 +199,7 @@ const MatterSim: React.FC = () => {
       }
       const centerPinX = dropBallPosision;
       //remove the predefinedPaths[i][0]
-      predefinedPaths[i].shift(); // because we drop the ball from the top and takes the first value of the array as a starting point
+      // predefinedPaths[i].shift(); // because we drop the ball from the top and takes the first value of the array as a starting point
       const ballStartY = 50; // Starting Y position of the ball
       const ball = Bodies.circle(centerPinX, ballStartY, ballSize, {
         restitution: ballElasticity,
@@ -381,7 +407,7 @@ const MatterSim: React.FC = () => {
       for (let i = 0; i < predefinedPaths.length; i++) {
         if (
           followingPredefinedPath[i] &&
-          currentRows[i] < predefinedPaths[i].length
+          currentRows[i] < predefinedPaths[i].length - 1
         ) {
           const newRow = Math.floor((balls[i].position.y - 100) / pinGap);
 
@@ -404,7 +430,8 @@ const MatterSim: React.FC = () => {
 
           // Adjust the angle of the force
           const angle = (Math.PI / 2) * normalizedDistance - 0.4; // From 0 (horizontal) to PI/2 (vertical)
-          const direction = predefinedPaths[i][currentRows[i]] === 0 ? -1 : 1;
+          const direction =
+            predefinedPaths[i][currentRows[i] + 1] === 0 ? -1 : 1;
           const forceX = Math.cos(angle - 6) * direction * forceMagnitude * 2.3;
 
           const forceY = Math.sin(angle + 1) * forceMagnitude * 1.2;
@@ -420,7 +447,7 @@ const MatterSim: React.FC = () => {
       event.pairs.forEach((pair) => {
         for (let i = 0; i < predefinedPaths.length; i++) {
           if (pair.bodyA === balls[i] || pair.bodyB === balls[i]) {
-            if (currentSteps[i] < predefinedPaths[i].length - 1) {
+            if (currentSteps[i] < predefinedPaths[i].length - 2) {
               currentSteps[i]++; // Move to the next step in the path after each collision
             }
           }

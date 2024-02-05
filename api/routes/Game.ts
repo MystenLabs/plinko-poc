@@ -59,76 +59,75 @@ router.post(
   }
 );
 
-router.post(
-  "/play",
-  checkPlayGame,
-  async (req: Request, res: Response, next: NextFunction) => {
-    const randomNumber = Math.floor(Math.random() * 60_000_000) + 1
-      const randchar = () => String.fromCharCode(Math.floor(Math.random() * 97) + 26);
-      const pid = `${randomNumber}${randchar()}${randchar()}${randchar()}${randchar()}`;
-      console.time(pid);
-      console.log(`/game/play/ID=${pid} - POST /game/play with body:`, req.body);
-    try {
-      // register, sign, and end the game
-      const { gameId, txnDigest, userRandomnessHexString } = req.body;
-      const gameIdWithRandomness = gameId!.replace("0x", "").concat(userRandomnessHexString);
+// router.post(
+//   "/play",
+//   checkPlayGame,
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const randomNumber = Math.floor(Math.random() * 60_000_000) + 1
+//       const randchar = () => String.fromCharCode(Math.floor(Math.random() * 97) + 26);
+//       const pid = `${randomNumber}${randchar()}${randchar()}${randchar()}${randchar()}`;
+//       console.time(pid);
+//       console.log(`/game/play/ID=${pid} - POST /game/play with body:`, req.body);
+//     try {
+//       // register, sign, and end the game
+//       const { gameId, txnDigest, userRandomnessHexString } = req.body;
+//       const gameIdWithRandomness = gameId!.replace("0x", "").concat(userRandomnessHexString);
 
-      // register
-      console.log("registering game with id:", gameId);
-      let registered = GameService.registerGame(gameId, txnDigest);
+//       // register
+//       console.log("registering game with id:", gameId);
+//       let registered = GameService.registerGame(gameId, txnDigest);
 
-      // sign game
-      console.log("signing game with id:", gameId);
-      const blsSig = await services.BlsService.sign(gameIdWithRandomness);
+//       // sign game
+//       console.log("signing game with id:", gameId);
+//       const blsSig = await services.BlsService.sign(gameIdWithRandomness);
       
-      // end game
-      console.log("ending game with id:", gameId);
-      let { playerWon, transactionDigest } =
-        await GameService.finishGame(gameId!, blsSig, req.body.numberofBalls);
-        res.status(200);
-        console.timeEnd(pid);
-        return res.json({
-          playerWon,
-          transactionDigest,
-        });
-    }
-    catch (err) {
-      console.error(
-        `${pid} - Bad things have happened while calling /game/play with id "${req.body.gameId}":`,
-        err
-      );
-      // Forward the error to the error handler
-      res.status(500);
-      next(err);
-    }
-  }
-)
+//       // end game
+//       console.log("ending game with id:", gameId);
+//       let { playerWon, transactionDigest } =
+//         await GameService.finishGame(gameId!, blsSig, req.body.numberofBalls);
+//         res.status(200);
+//         console.timeEnd(pid);
+//         return res.json({
+//           playerWon,
+//           transactionDigest,
+//         });
+//     }
+//     catch (err) {
+//       console.error(
+//         `${pid} - Bad things have happened while calling /game/play with id "${req.body.gameId}":`,
+//         err
+//       );
+//       // Forward the error to the error handler
+//       res.status(500);
+//       next(err);
+//     }
+//   }
+// )
 
 router.post(
   "/plinko/end",
   checkSinglePlayerEnd,
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log("POST /game/single/end with body:", req.body);
+    console.log("POST /game/plinko/end with body:", req.body);
 
     try {
-      let { playerWon, transactionDigest } =
-        await GameService.finishGame(req.body.gameId, req.body.blsSig, req.body.numberofBalls);
-      res.status(200);
-      res.json({
-        playerWon,
-        transactionDigest,
+      const blsSigArray = req.body.blsSig;
+      let {trace, transactionDigest } = // Assuming `trace` is now part of the return object
+        await GameService.finishGame(req.body.gameId, blsSigArray, req.body.numberofBalls);
+      res.status(200).json({
+        trace,
+        transactionDigest
       });
     } catch (e) {
       console.error(
-        `Bad things have happened while calling /game/single/end with id "${req.body.gameId}":`,
+        `Error while calling /plinko/end with id ${req.body.gameId}:`,
         e
       );
-      // // Forward the error to the error handler
-      res.status(500);
-      next(e);
+      res.status(500).send("An error occurred while processing your request.");
     }
   }
 );
+
 
 router.post(
   "/sign",
