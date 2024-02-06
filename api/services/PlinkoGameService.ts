@@ -111,6 +111,7 @@ public finishGame(
         } = res;
         const trace = events[0].parsedJson.trace;
         console.log("trace", trace);
+        console.log(effects);
         const status = effects?.status?.status;
         const transactionDigest = effects?.transactionDigest!;
 
