@@ -83,7 +83,7 @@ module plinko::plinko {
     }
     /// Function used to calculate the games outcome 
     /// The function sends the total amount to the player
-    public fun finish_game(game_id: ID, bls_sig: vector<u8>, house_data: &mut HouseData, num_balls: u64, ctx: &mut TxContext): (u64, address, vector<u8>, Balance<SUI>) {
+    public fun finish_game(game_id: ID, bls_sig: vector<u8>, house_data: &mut HouseData, num_balls: u64, ctx: &mut TxContext): (u64, address, vector<u8>) {
     // Ensure that the game exists.
     assert!(game_exists(house_data, game_id), EGameDoesNotExist);
 
@@ -140,9 +140,13 @@ module plinko::plinko {
         ball_index = ball_index + 1;
     };
 
+ 
+
     // Extract the calculated amount from the HouseData's balance
     let payout_balance_mut = hd::borrow_balance_mut(house_data);
     let payout_coin = coin::take(payout_balance_mut, total_funds_amount, ctx);
+    
+    balance::join(payout_balance_mut, stake);
 
     // transfer the payout coins to the player
     transfer::public_transfer(payout_coin, player);
@@ -155,7 +159,7 @@ module plinko::plinko {
     });
 
     // return the total amount to be sent to the player, (and the player address) the transaction will happen by a PTB
-    (total_funds_amount, player, trace, stake)
+    (total_funds_amount, player, trace)
 }
 
 
@@ -223,7 +227,7 @@ module plinko::plinko {
         // Ensure that the stake is not lower than the min stake.
         assert!(user_stake >= hd::min_stake(house_data), EStakeTooLow);
         // Ensure that the house has enough balance to play for this game.
-        assert!(hd::balance(house_data) >= user_stake*(*vector::borrow(&hd::multiplier(house_data), 0)), EInsufficientHouseBalance);
+        assert!(hd::balance(house_data) >= (user_stake*(*vector::borrow(&hd::multiplier(house_data), 0)))/100, EInsufficientHouseBalance);
 
         let vrf_input = counter_nft::get_vrf_input_and_increment(counter);
 
