@@ -21,8 +21,7 @@ import * as bls from "@noble/bls12-381";
 
 import fs from "fs";
 
-// let multiplierArray = [900, 820, 650, 380, 100, 60, 40, 60, 100, 380, 650, 820, 900];
-let multiplierArray = [9, 8, 7, 6, 5, 4, 3, 2, 1, 3, 6, 7, 8];
+let multiplierArray = [900, 820, 650, 380, 100, 60, 40, 60, 100, 380, 650, 820, 900];
 let privateKeyArray = Uint8Array.from(Array.from(fromB64(HOUSE_PRIVATE_KEY!)));
 
 const keypairAdmin = Ed25519Keypair.fromSecretKey(privateKeyArray.slice(1));
@@ -101,8 +100,11 @@ if (SUI_NETWORK.includes("mainnet")) {
             obj.objectType.endsWith("house_data::HouseData")
           ) {
             const houseDataString = `HOUSE_DATA_ID=${obj.objectId}\n`;
+            const next_house_data_id = `NEXT_PUBLIC_HOUSE_DATA_ID=${obj.objectId}\n`;
             console.log(houseDataString);
             fs.appendFileSync("../.env.local", houseDataString);
+            fs.appendFileSync("../../api/.env.local", houseDataString);
+            fs.appendFileSync("../../app/.env", next_house_data_id);
           }
         });
         process.exit(0);
