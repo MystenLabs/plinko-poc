@@ -83,7 +83,7 @@ module plinko::plinko {
     }
     /// Function used to calculate the games outcome 
     /// The function sends the total amount to the player
-    public fun finish_game(game_id: ID, bls_sig: vector<u8>, house_data: &mut HouseData, num_balls: u64, ctx: &mut TxContext): (u64, address, vector<u8>) {
+    public fun finish_game(game_id: ID, bls_sig: vector<u8>, house_data: &mut HouseData, num_balls: u64, ctx: &mut TxContext): (u64, address, vector<u8>, Balance<SUI>) {
     // Ensure that the game exists.
     assert!(game_exists(house_data, game_id), EGameDoesNotExist);
 
@@ -134,26 +134,28 @@ module plinko::plinko {
         let result = *vector::borrow(&hd::multiplier(house_data), multiplier_index);
         
         // Calculate funds amount for this particular ball
-        // Divide by 1000 to adjust for multiplier scale and SUI units
+        // Divide by 100 to adjust for multiplier scale and SUI units
         let funds_amount_per_ball = (result * stake_per_ball)/100; 
         total_funds_amount = total_funds_amount + funds_amount_per_ball;
         ball_index = ball_index + 1;
     };
 
-    let to_send = total_funds_amount - balance::value<SUI>(&stake) * num_balls;
+    // Extract the calculated amount from the HouseData's balance
+    let payout_balance_mut = hd::borrow_balance_mut(house_data);
+    let payout_coin = coin::take(payout_balance_mut, total_funds_amount, ctx);
 
-    // return the original stake of the player
-    transfer::public_transfer(coin::from_balance(stake, ctx), player);
+    // transfer the payout coins to the player
+    transfer::public_transfer(payout_coin, player);
 
     emit(Outcome {
         game_id,
-        result: to_send,
+        result: total_funds_amount,
         player,
         trace
     });
 
     // return the total amount to be sent to the player, (and the player address) the transaction will happen by a PTB
-    (total_funds_amount, player, trace)
+    (total_funds_amount, player, trace, stake)
 }
 
 
