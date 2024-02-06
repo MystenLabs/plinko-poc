@@ -40,10 +40,12 @@ module plinko::counter_nft {
 
     /// Calculates the Counter NFT ID + count and returns the appended result as a vector<u8>.
     /// Then it increases the count by 1 and returns the appended bytes.
-    public fun get_vrf_input_and_increment(self: &mut Counter): vector<u8> {
+    public fun get_vrf_input_and_increment(self: &mut Counter, num_balls: u64): vector<u8> {
         let vrf_input = object::id_bytes(self);
         let count_to_bytes = bcs::to_bytes(&count(self));
+        let num_balls_to_bytes = bcs::to_bytes(&num_balls); 
         vector::append(&mut vrf_input, count_to_bytes);
+        vector::append(&mut vrf_input, num_balls_to_bytes);
         increment(self);
         vrf_input
     }
