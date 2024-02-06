@@ -48,6 +48,7 @@ export const useCreateCounterObject = () => {
       target: `${process.env.NEXT_PUBLIC_PACKAGE_ADDRESS}::plinko::start_game`,
       arguments: [
         counterNFT,
+        tx.pure(numberofBalls),
         betAmountCoin,
         tx.object(`${process.env.NEXT_PUBLIC_HOUSE_DATA_ID}`),
       ],

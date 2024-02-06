@@ -74,9 +74,9 @@ module plinko::plinko {
 
     /// Function used to create a new game. The player must provide a guess and a Counter NFT.
     /// Stake is taken from the player's coin and added to the game's stake. The house's stake is also added to the game's stake.
-    public fun start_game(counter: &mut Counter, coin: Coin<SUI>, house_data: &mut HouseData, ctx: &mut TxContext): ID {
+    public fun start_game(counter: &mut Counter, num_balls: u64, coin: Coin<SUI>, house_data: &mut HouseData, ctx: &mut TxContext): ID {
         let fee_bp = hd::base_fee_in_bp(house_data);
-        let (id, new_game) = internal_start_game(counter, coin, house_data, fee_bp, ctx);
+        let (id, new_game) = internal_start_game(counter, num_balls, coin, house_data, fee_bp, ctx);
 
         dof::add(hd::borrow_mut(house_data), id, new_game);
         id
@@ -145,7 +145,7 @@ module plinko::plinko {
     // Extract the calculated amount from the HouseData's balance
     let payout_balance_mut = hd::borrow_balance_mut(house_data);
     let payout_coin = coin::take(payout_balance_mut, total_funds_amount, ctx);
-    
+
     balance::join(payout_balance_mut, stake);
 
     // transfer the payout coins to the player
@@ -218,7 +218,7 @@ module plinko::plinko {
     /// The player must provide a guess and a Counter NFT.
     /// Stake is taken from the player's coin and added to the game's stake. 
     /// The house's stake is also added to the game's stake.
-    fun internal_start_game(counter: &mut Counter, coin: Coin<SUI>, house_data: &HouseData, fee_bp: u16, ctx: &mut TxContext): (ID, Game) {
+    fun internal_start_game(counter: &mut Counter, num_balls: u64, coin: Coin<SUI>, house_data: &HouseData, fee_bp: u16, ctx: &mut TxContext): (ID, Game) {
         // Ensure guess is valid.
         // map_guess(guess);
         let user_stake = coin::value(&coin);
@@ -229,7 +229,7 @@ module plinko::plinko {
         // Ensure that the house has enough balance to play for this game.
         assert!(hd::balance(house_data) >= (user_stake*(*vector::borrow(&hd::multiplier(house_data), 0)))/100, EInsufficientHouseBalance);
 
-        let vrf_input = counter_nft::get_vrf_input_and_increment(counter);
+        let vrf_input = counter_nft::get_vrf_input_and_increment(counter, num_balls);
 
         let id = object::new(ctx);
         let game_id = object::uid_to_inner(&id);
