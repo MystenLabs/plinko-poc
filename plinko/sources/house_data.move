@@ -71,7 +71,7 @@ module plinko::house_data {
             balance: coin::into_balance(coin),
             house: tx_context::sender(ctx),
             public_key,
-            max_stake: 1_000_000_000, // 1 SUI = 10^9.
+            max_stake: 10_000_000_000, // 1 SUI = 10^9.
             min_stake: 1_000_000_000, // 1 SUI.
             fees: balance::zero(),
             base_fee_in_bp: 100, // 1% in basis points.

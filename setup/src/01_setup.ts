@@ -37,7 +37,7 @@ console.log("Admin Address = " + HOUSE_ADDRESS);
 console.log("Package ID  = " + PACKAGE_ADDRESS);
 console.log("House Cap  = " + HOUSE_CAP);
 
-const initHouseBalance = 10000000000;
+const initHouseBalance = 50000000000;
 
 const tx = new TransactionBlock();
 
