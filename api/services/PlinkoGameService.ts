@@ -1,47 +1,17 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-// import { SuiService, SuiServiceInterface } from "./SuiService";
+// // import { SuiService, SuiServiceInterface } from "./SuiService";
 import { SuiService } from "./SuiService";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import * as bls from "@noble/bls12-381";
-import BlsService from "./BlsService";
 import hkdf from "futoin-hkdf";
 
 import {
   ExecutorServiceHandler,
-  isCoin,
-  SplitStrategy,
-  PoolObject,
-  TransactionBlockWithLambda
+  TransactionBlockWithLambda,
+  DefaultSplitStrategy
 } from "suioop";
-
-class NoMicroCoinsSplitStrategy implements SplitStrategy {
-  private minimumBalancePerCoin = 1_000_000_000;
-  private readonly minimumPoolBalance;
-  private balanceSoFar = 0;
-
-  constructor(minimumBalance = 30_000_000_000) {
-    this.minimumPoolBalance = minimumBalance;
-  }
-
-  public pred(obj: PoolObject | undefined) {
-    if (!obj) throw new Error('No object found!.');
-    if (this.balanceSoFar >= this.minimumPoolBalance) {
-      return null;
-    }
-    if (isCoin(obj.type) && (obj.balance ?? 0) > this.minimumBalancePerCoin) {
-      this.balanceSoFar += obj.balance ?? 0;
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  public succeeded() {
-    return this.balanceSoFar >= this.minimumPoolBalance;
-  }
-}
 
 class PlinkoGameService {
   
@@ -68,7 +38,7 @@ class PlinkoGameService {
       })
 
   ExecutorServiceHandler.initialize(
-      SuiService.getKeyPair(process.env.PLINKO_HOUSE_PRIVATE_KEY!), // ..ac36
+      SuiService.getKeyPair(process.env.PLINKO_HOUSE_PRIVATE_KEY!),
       this.suiService.client,
       10000
   )
@@ -89,15 +59,8 @@ public finishGame(
 ): Promise<{ trace: string; transactionDigest: string }> {
   return new Promise(async (resolve, reject) => {
     console.log("bslSig=", blsSig);
-    console.log("----------------------");
     
     let houseSignedInput = await bls.sign(new Uint8Array(blsSig), this.deriveBLS_SecretKey(process.env.PLINKO_HOUSE_PRIVATE_KEY!));
-
-    console.log("houseSignedInput=", houseSignedInput);
-    console.log("GameID: ",gameId);
-    console.log("numberofBalls: ",numberofBalls);
-    console.log("HOUSE DATA ID: ",String(process.env.HOUSE_DATA_ID!));
-    console.log("PACKAGE_ADDRESS: ",process.env.PACKAGE_ADDRESS);
 
     const txbLambda = () => {
       const tx = new TransactionBlock();
@@ -114,13 +77,13 @@ public finishGame(
       return tx;
     };  
 
-    const customSplitStrategy = new NoMicroCoinsSplitStrategy()
     const txb = new TransactionBlockWithLambda(txbLambda);
 
     this.executorServiceHandler?.execute(
       txb,
       this.suiService.client,
-      customSplitStrategy,
+      // Each pool will contain coins with a total balance of 1 SUI
+      new DefaultSplitStrategy(1000000000),
       {
         showEvents: true,
         showBalanceChanges: true,
@@ -162,7 +125,6 @@ public finishGame(
     });
   });
 }
-
 
    public deriveBLS_SecretKey(private_key: string): Uint8Array {
     // initial key material
