@@ -7,7 +7,6 @@ import PlinkoSettings from "@/components/PlinkoSettings";
 import { PlayProvider } from "@/contexts/PlayContext";
 import { GameHistoryProvider } from "@/contexts/GameHistoryContext";
 import { TotalWon } from "@/components/totalWon";
-import { HistoryPanel } from "@/components/historyPanel";
 
 export const metadata: Metadata = {
   title: "Play Plinko Game",
@@ -20,7 +19,7 @@ export default function Play() {
     <Paper>
       <PlayProvider>
         <GameHistoryProvider>
-          <div className="flex flex-col items-center min-h-screen">
+          <div className="flex flex-col items-center min-h-screen bg-opacity-0">
             <TotalWon />
             <div className="mb-4 scale-50 sm:scale-70 md:scale-100">
               <MatterSim />

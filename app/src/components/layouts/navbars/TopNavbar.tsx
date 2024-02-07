@@ -11,7 +11,7 @@ export const TopNavbar = () => {
   const { user } = useAuthentication();
 
   return (
-    <div className="sticky top-0 flex w-full h-full bg-primary p-5 space-x-4 justify-between items-center">
+    <div className="sticky top-0 flex w-full h-full bg-opacity-0 p-5 space-x-4 justify-between items-center ">
       <NavbarHeader showCloseButton={false} onClose={() => {}} />
       <NavbarLinks position="top" />
       <div className="flex items-center space-x-2">
