@@ -16,10 +16,6 @@ export const TopNavbar = () => {
       <NavbarLinks position="top" />
       <div className="flex items-center space-x-2">
         {" "}
-        {/* Adjust space and alignment */}
-        {user?.role !== USER_ROLES.ROLE_4 && (
-          <BalanceDisplay balance={100} currencySymbol="SUI" />
-        )}
         {user?.role !== USER_ROLES.ROLE_4 &&
           process.env.NEXT_PUBLIC_USE_TOP_NAVBAR_IN_LARGE_SCREEN === "1" && (
             <UserProfileMenu
