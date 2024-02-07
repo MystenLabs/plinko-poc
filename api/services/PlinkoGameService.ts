@@ -17,7 +17,6 @@ class PlinkoGameService {
   
   private suiService: SuiService;
   public executorServiceHandler: ExecutorServiceHandler | undefined;
-  public testUserServiceHandler: ExecutorServiceHandler | undefined;
 
   private tx = new TransactionBlock();
 
@@ -42,10 +41,6 @@ class PlinkoGameService {
       this.suiService.client,
       10000
   )
-      .then(
-          (es: any) => {
-            this.testUserServiceHandler = es;
-          })
       .catch((e: any) => {
         throw new Error(e)
       })
@@ -93,8 +88,6 @@ public finishGame(
     .then(async (res: any) => {
       const {
         effects,
-        objectChanges,
-        balanceChanges,
         events
       } = res;
 
@@ -126,7 +119,7 @@ public finishGame(
   });
 }
 
-   public deriveBLS_SecretKey(private_key: string): Uint8Array {
+  public deriveBLS_SecretKey(private_key: string): Uint8Array {
     // initial key material
     const ikm = private_key;
     const length = 32;
