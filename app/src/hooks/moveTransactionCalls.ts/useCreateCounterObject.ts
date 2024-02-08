@@ -117,7 +117,7 @@ export const useCreateCounterObject = () => {
         },
         body: JSON.stringify({
           gameId: game__id,
-          blsSig: vrf__input,
+          vrfInput: vrf__input,
           numberofBalls: numberofBalls,
         }),
       });

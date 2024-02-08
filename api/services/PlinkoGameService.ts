@@ -49,13 +49,13 @@ class PlinkoGameService {
 // end-game for single player satoshi
 public finishGame(
   gameId: string,
-  blsSig: Uint8Array,
+  vrfInputArray: Uint8Array,
   numberofBalls: number
 ): Promise<{ trace: string; transactionDigest: string }> {
   return new Promise(async (resolve, reject) => {
-    console.log("bslSig=", blsSig);
+    console.log("bslSig=", vrfInputArray);
     
-    let houseSignedInput = await bls.sign(new Uint8Array(blsSig), this.deriveBLS_SecretKey(process.env.PLINKO_HOUSE_PRIVATE_KEY!));
+    let blsHouseSignedInput = await bls.sign(new Uint8Array(vrfInputArray), this.deriveBLS_SecretKey(process.env.PLINKO_HOUSE_PRIVATE_KEY!));
 
     const txbLambda = () => {
       const tx = new TransactionBlock();
@@ -64,7 +64,7 @@ public finishGame(
         target: `${process.env.PACKAGE_ADDRESS}::plinko::finish_game`,
         arguments: [
           tx.pure(gameId),
-          tx.pure(Array.from(houseSignedInput), "vector<u8>"),
+          tx.pure(Array.from(blsHouseSignedInput), "vector<u8>"),
           tx.object(String(process.env.HOUSE_DATA_ID!)),
           tx.pure(numberofBalls, "u64")
         ],
