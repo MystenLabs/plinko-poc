@@ -3,6 +3,7 @@
 
 module plinko::house_data {
     // === Imports ===
+    
     use std::vector;
     use sui::object::{Self, UID};
     use sui::balance::{Self, Balance};
@@ -45,8 +46,8 @@ module plinko::house_data {
         multiplier: vector<u64>
     }
 
-    /// A one-time use capability to initialize the house data; created and sent
-    /// to sender in the initializer.
+    /// A one-time use capability to initialize the house data; 
+    /// created and sent to sender in the initializer.
     struct HouseCap has key {
         id: UID
     }
