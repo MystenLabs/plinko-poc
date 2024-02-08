@@ -26,7 +26,7 @@ class PlinkoGameService {
     ExecutorServiceHandler.initialize(
       this.suiService.keypair,
       this.suiService.client,
-      10000
+      1000
   )
       .then(
           (es: any) => {
@@ -39,7 +39,7 @@ class PlinkoGameService {
   ExecutorServiceHandler.initialize(
       SuiService.getKeyPair(process.env.PLINKO_HOUSE_PRIVATE_KEY!),
       this.suiService.client,
-      10000
+      1000
   )
       .catch((e: any) => {
         throw new Error(e)
@@ -78,7 +78,7 @@ public finishGame(
       txb,
       this.suiService.client,
       // Each pool will contain coins with a total balance of 1 SUI
-      new DefaultSplitStrategy(1000000000),
+      new DefaultSplitStrategy(5000000000),
       {
         showEvents: true,
         showBalanceChanges: true,

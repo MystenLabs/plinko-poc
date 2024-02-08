@@ -19,7 +19,7 @@ router.post(
 
     try {
       const vrfInputArray = req.body.vrfInput;
-      let {trace, transactionDigest } = // Assuming `trace` is now part of the return object
+      let {trace, transactionDigest } = // Assuming `trace` is now part of the return object //
         await GameService.finishGame(req.body.gameId, vrfInputArray, req.body.numberofBalls);
       res.status(200).json({
         trace,

@@ -16,7 +16,7 @@ import {
     SUI_NETWORK 
 } from "./config";
 
-const COIN_SIZE = 1_000_000_000;
+const COIN_SIZE = 5_000_000_000;
 
 console.log("Connecting to ", SUI_NETWORK);
 
