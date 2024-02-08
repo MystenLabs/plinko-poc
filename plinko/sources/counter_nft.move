@@ -5,16 +5,25 @@
 /// Creates a counter object that can be incremented and burned.
 /// Utilized as a unique VRF input for each Plinko round.
 module plinko::counter_nft {
+    // === Imports ===
+
     use std::vector;
     use sui::object::{Self, UID};
     use sui::tx_context::{Self, TxContext};
     use sui::transfer::{Self};
     use sui::bcs::{Self};
 
-    /// Counter object that is used as a unique VRF input for each Plinko round.
-    /// To achieve this, the Counter NFT is flattened into a vector<u64> value containing the Counter NFT ID + the current count.
+    // === Structs ===
+
+    /// A Counter object serves as a unique, NFT
+    /// that increments with each use. It's designed to provide a unique
+    /// Verifiable Random Function (VRF) input for each round of the game,
+    /// ensuring the randomness and fairness of game outcomes.
     struct Counter has key {
         id: UID,
+        // A numerical value that increments with each use of the Counter.
+        // This incrementing behavior is critical for ensuring that each game round
+        // receives a fresh, unique input for randomness generation.
         count: u64,
     }
 
@@ -38,8 +47,9 @@ module plinko::counter_nft {
         transfer::transfer(counter, tx_context::sender(ctx));
     }
 
-    /// Calculates the Counter NFT ID + count + num_balls selected by the player and returns the appended result as a vector<u8>.
-    /// Then it increases the count by 1 and returns the appended bytes.
+    /// Generates a unique VRF input by concatenating the Counter's ID, its current count, and the number of balls
+    /// selected by the player. This composite input ensures each game round has a distinct random seed.
+    /// The count is incremented after use to maintain uniqueness for subsequent rounds.
     public fun get_vrf_input_and_increment(self: &mut Counter, num_balls: u64): vector<u8> {
         let vrf_input = object::id_bytes(self);
         let count_to_bytes = bcs::to_bytes(&count(self));
@@ -54,8 +64,6 @@ module plinko::counter_nft {
     public fun count(self: &Counter): u64 {
         self.count
     }
-
-    // === Internal ===
 
     /// Internal function to increment the counter by 1.
     fun increment(self: &mut Counter) {
