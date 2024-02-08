@@ -102,8 +102,27 @@ module plinko::plinko {
     let is_sig_valid = bls12381_min_pk_verify(&bls_sig, &hd::public_key(house_data), &vrf_input);
     assert!(is_sig_valid, EInvalidBlsSig);
 
+    // let extended_beacon = vector::empty<u8>();
+    // let counter: u8 = 0;
+    // while (vector::length(&extended_beacon) < (num_balls * 2)) {
+    //     let hash_input = vector::append(&bls_sig, vector::singleton(counter));
+    //     let block = hash::blake2b256(&hash_input);
+    //     vector::append(&mut extended_beacon, block);
+    //     counter = counter + 1;
+    // }
+
+    let extended_beacon = vector::empty<u8>();
+    let counter: u8 = 0;
+
+    while (vector::length(&extended_beacon) < (num_balls * 12)) {
+        vector::append(&mut bls_sig, vector::singleton(counter));
+        let block = blake2b256(&bls_sig);
+        vector::append(&mut extended_beacon, block);
+        counter = counter + 1;
+    };
+
     // Hash the beacon before taking the bytes.
-    let hashed_beacon = blake2b256(&bls_sig);
+    // let hashed_beacon = blake2b256(&bls_sig);
     // Initialize the trace vector and the total funds amount
     let trace = vector::empty<u8>();
 
@@ -119,7 +138,7 @@ module plinko::plinko {
         let i = 0;
         while (i < 12) {
             let byte_index = (ball_index * 12) + i;
-            let byte = *vector::borrow(&hashed_beacon, byte_index);
+            let byte = *vector::borrow(&extended_beacon, byte_index);
             // Add the byte to the trace vector
             vector::push_back<u8>(&mut trace, byte);
             // Count the number of even bytes
