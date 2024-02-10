@@ -1,14 +1,10 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-// TODO: Update the name of the parameters
-
 module plinko::plinko {
+    // === Imports ===
 
-    // Imports
-    // use std::string::{Self, String};
     use std::vector;
-
     use sui::coin::{Self, Coin};
     use sui::balance::{Self, Balance};
     use sui::sui::SUI;
@@ -19,7 +15,6 @@ module plinko::plinko {
     use sui::event::emit;
     use sui::hash::{blake2b256};
     use sui::dynamic_object_field::{Self as dof};
-    // use sui::table;
 
     // Counter library
     use plinko::counter_nft::{Self, Counter};
@@ -58,11 +53,11 @@ module plinko::plinko {
         trace: vector<u8>
     }
 
-    // Structs
+    // === Structs ===
 
-    // Represents a game and holds the acrued stake.
-    // The guess field could have also been represented as a u8 or boolean, but we chose to use "H" and "T" strings for readability and safety.
-    // Makes it easier for the user to assess if a selection they made on a DApp matches with the txn they are signing on their wallet.
+    /// Represents a game and holds the acrued stake.
+    /// The guess field could have also been represented as a u8 or boolean, but we chose to use "H" and "T" strings for readability and safety.
+    /// Makes it easier for the user to assess if a selection they made on a DApp matches with the txn they are signing on their wallet.
     struct Game has key, store {
         id: UID,
         game_start_epoch: u64,
@@ -81,72 +76,68 @@ module plinko::plinko {
         dof::add(hd::borrow_mut(house_data), id, new_game);
         id
     }
-    /// Function used to calculate the games outcome 
-    /// The function sends the total amount to the player
+
+    /// Completes a game, calculating the outcome and transferring winnings.
     public fun finish_game(game_id: ID, bls_sig: vector<u8>, house_data: &mut HouseData, num_balls: u64, ctx: &mut TxContext): (u64, address, vector<u8>) {
-    // Ensure that the game exists.
-    assert!(game_exists(house_data, game_id), EGameDoesNotExist);
+        // Ensure that the game exists.
+        assert!(game_exists(house_data, game_id), EGameDoesNotExist);
 
-    let Game {
-        id,
-        game_start_epoch: _,
-        stake,
-        player,
-        vrf_input,
-        fee_bp: _
-    } = dof::remove<ID, Game>(hd::borrow_mut(house_data), game_id);
+        // Retrieves and removes the game from HouseData, preparing for outcome calculation.
+        let Game {
+            id,
+            game_start_epoch: _,
+            stake,
+            player,
+            vrf_input,
+            fee_bp: _
+        } = dof::remove<ID, Game>(hd::borrow_mut(house_data), game_id);
 
-    object::delete(id);
+        object::delete(id);
 
-    // Step 1: Check the BLS signature, if it's invalid abort.
-    let is_sig_valid = bls12381_min_pk_verify(&bls_sig, &hd::public_key(house_data), &vrf_input);
-    assert!(is_sig_valid, EInvalidBlsSig);
+        // Validates the BLS signature against the VRF input.
+        let is_sig_valid = bls12381_min_pk_verify(&bls_sig, &hd::public_key(house_data), &vrf_input);
+        assert!(is_sig_valid, EInvalidBlsSig);
 
-    // let extended_beacon = vector::empty<u8>();
-    // let counter: u8 = 0;
-    // while (vector::length(&extended_beacon) < (num_balls * 2)) {
-    //     let hash_input = vector::append(&bls_sig, vector::singleton(counter));
-    //     let block = hash::blake2b256(&hash_input);
-    //     vector::append(&mut extended_beacon, block);
-    //     counter = counter + 1;
-    // }
+        // Initialize the extended beacon vector and a counter for hashing.
+        let extended_beacon = vector::empty<u8>();
+        let counter: u8 = 0;
 
-    let extended_beacon = vector::empty<u8>();
-    let counter: u8 = 0;
-
-    while (vector::length(&extended_beacon) < (num_balls * 12)) {
-        vector::append(&mut bls_sig, vector::singleton(counter));
-        let block = blake2b256(&bls_sig);
-        vector::append(&mut extended_beacon, block);
-        counter = counter + 1;
-    };
-
-    // Hash the beacon before taking the bytes.
-    // let hashed_beacon = blake2b256(&bls_sig);
-    // Initialize the trace vector and the total funds amount
-    let trace = vector::empty<u8>();
-
-    // Calculate the stake amount per ball
-    let stake_per_ball = balance::value<SUI>(&stake) / num_balls;
-
-    let total_funds_amount: u64 = 0;
-
-
-    let ball_index = 0;
-    while (ball_index < num_balls) {
-        let state: u64 = 0;
-        let i = 0;
-        while (i < 12) {
-            let byte_index = (ball_index * 12) + i;
-            let byte = *vector::borrow(&extended_beacon, byte_index);
-            // Add the byte to the trace vector
-            vector::push_back<u8>(&mut trace, byte);
-            // Count the number of even bytes
-            // If even, add 1 to the state
-            // Odd byte -> 0, Even byte -> 1
-            state = if (byte % 2 == 0) { state + 1 } else { state };
-            i = i + 1;
+        // Extends the beacon until it has enough data for all ball outcomes.
+        while (vector::length(&extended_beacon) < (num_balls * 12)) {
+            // Create a new vector combining the original BLS signature with the current counter value.
+            let hash_input = vector::empty<u8>();
+            vector::append(&mut hash_input, bls_sig);
+            vector::append(&mut hash_input, vector::singleton(counter));
+            // Generate a new hash block from the unique hash input.
+            let block = blake2b256(&hash_input);
+            // Append the generated hash block to the extended beacon.
+            vector::append(&mut extended_beacon, block);
+            // Increment the counter for the next iteration to ensure a new unique hash input.
+            counter = counter + 1;
         };
+
+        // Initializes variables for calculating game outcome.
+        let trace = vector::empty<u8>();
+        // Calculate the stake amount per ball
+        let stake_per_ball = balance::value<SUI>(&stake) / num_balls;
+        let total_funds_amount: u64 = 0;
+
+        // Calculates outcome for each ball based on the extended beacon.
+        let ball_index = 0;
+        while (ball_index < num_balls) {
+            let state: u64 = 0;
+            let i = 0;
+            while (i < 12) {
+                let byte_index = (ball_index * 12) + i;
+                let byte = *vector::borrow(&extended_beacon, byte_index);
+                // Add the byte to the trace vector
+                vector::push_back<u8>(&mut trace, byte);
+                // Count the number of even bytes
+                // If even, add 1 to the state
+                // Odd byte -> 0, Even byte -> 1
+                state = if (byte % 2 == 0) { state + 1 } else { state };
+                i = i + 1;
+            };
 
         // Calculate multiplier index based on state
         let multiplier_index = state % vector::length(&hd::multiplier(house_data));
@@ -161,7 +152,7 @@ module plinko::plinko {
 
  
 
-    // Extract the calculated amount from the HouseData's balance
+    // Processes the payout to the player and returns the game outcome.
     let payout_balance_mut = hd::borrow_balance_mut(house_data);
     let payout_coin = coin::take(payout_balance_mut, total_funds_amount, ctx);
 
@@ -231,8 +222,6 @@ module plinko::plinko {
 
     // --------------- Internal Helper functions ---------------
 
-    // TODO: update the logic and the parameters 
-
     /// Internal helper function ussed to create a new game. 
     /// The player must provide a guess and a Counter NFT.
     /// Stake is taken from the player's coin and added to the game's stake. 
@@ -272,4 +261,5 @@ module plinko::plinko {
 
         (game_id, new_game)
     }
+
 }
