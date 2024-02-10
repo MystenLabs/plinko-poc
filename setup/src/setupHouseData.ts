@@ -50,6 +50,7 @@ initializeContract();
 function initializeContract() {
   const houseCoin = tx.splitCoins(tx.gas, [tx.pure(initHouseBalance)]);
   let blsKeyAsMoveParameter = getBLS_KeyAsMoveParameter();
+  console.log("PK = ", blsKeyAsMoveParameter);
 
   tx.moveCall({
     target: `${PACKAGE_ADDRESS}::house_data::initialize_house_data`,

@@ -70,6 +70,8 @@ module plinko::counter_nft {
         self.count = self.count + 1;
     }
 
+    // === Test Functions ===
+    
     #[test_only]
     public fun burn_for_testing(self: Counter) {
         burn(self);

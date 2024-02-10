@@ -16,7 +16,7 @@ import {
     SUI_NETWORK 
 } from "./config";
 
-const COIN_SIZE = 5_000_000_000;
+const COIN_SIZE = 30_000_000_000;
 
 console.log("Connecting to ", SUI_NETWORK);
 
@@ -32,7 +32,7 @@ function getSigner() {
   return keypairAdmin;
 }
 
-async function createCoins(numberOfCoins: number = 30) {
+async function createCoins(numberOfCoins: number = 5) {
   let client = new SuiClient({url: SUI_NETWORK!});
 
   let txb = new TransactionBlock();
