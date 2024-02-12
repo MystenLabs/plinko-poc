@@ -3,7 +3,6 @@
 
 module plinko::plinko {
     // === Imports ===
-
     use std::vector;
     use sui::coin::{Self, Coin};
     use sui::balance::{Self, Balance};
@@ -22,18 +21,31 @@ module plinko::plinko {
     // HouseData library
     use plinko::house_data::{Self as hd, HouseData};
 
-    // Consts
-    const GAME_RETURN: u8 = 2;
-
-    // Errors
+    // === Errors ===
     const EStakeTooLow: u64 = 0;
     const EStakeTooHigh: u64 = 1;
     const EInvalidBlsSig: u64 = 2;
     const EInsufficientHouseBalance: u64 = 5;
     const EGameDoesNotExist: u64 = 6;
 
+    // === Constants ===
+    const GAME_RETURN: u8 = 2;
 
-    // Events
+    // === Structs ===
+
+    /// Represents a game and holds the acrued stake.
+    /// The guess field could have also been represented as a u8 or boolean, but we chose to use "H" and "T" strings for readability and safety.
+    /// Makes it easier for the user to assess if a selection they made on a DApp matches with the txn they are signing on their wallet.
+    struct Game has key, store {
+        id: UID,
+        game_start_epoch: u64,
+        stake: Balance<SUI>,
+        player: address,
+        vrf_input: vector<u8>,
+        fee_bp: u16
+    }
+
+    // === Events ===
 
     /// Emitted when a new game has started.
     struct NewGame has copy, drop {
@@ -53,19 +65,7 @@ module plinko::plinko {
         trace: vector<u8>
     }
 
-    // === Structs ===
-
-    /// Represents a game and holds the acrued stake.
-    /// The guess field could have also been represented as a u8 or boolean, but we chose to use "H" and "T" strings for readability and safety.
-    /// Makes it easier for the user to assess if a selection they made on a DApp matches with the txn they are signing on their wallet.
-    struct Game has key, store {
-        id: UID,
-        game_start_epoch: u64,
-        stake: Balance<SUI>,
-        player: address,
-        vrf_input: vector<u8>,
-        fee_bp: u16
-    }
+    // === Public Functions ===
 
     /// Function used to create a new game. The player must provide a guess and a Counter NFT.
     /// Stake is taken from the player's coin and added to the game's stake. The house's stake is also added to the game's stake.
@@ -150,8 +150,6 @@ module plinko::plinko {
         ball_index = ball_index + 1;
     };
 
- 
-
     // Processes the payout to the player and returns the game outcome.
     let payout_balance_mut = hd::borrow_balance_mut(house_data);
     let payout_coin = coin::take(payout_balance_mut, total_funds_amount, ctx);
@@ -172,8 +170,7 @@ module plinko::plinko {
     (total_funds_amount, player, trace)
 }
 
-
-    // --------------- Game Accessors ---------------
+    // === Public-View Functions ===
 
     /// Returns the epoch in which the gane started.
     public fun game_start_epoch(game: &Game): u64 {
@@ -200,7 +197,7 @@ module plinko::plinko {
         game.fee_bp
     }
 
-    // --------------- Public Helper functions ---------------
+    // === Admin Functions ===
 
     /// Helper function to calculate the amount of fees to be paid.
     /// Fees are only applied on the player's stake.
@@ -220,7 +217,7 @@ module plinko::plinko {
         dof::borrow(hd::borrow(house_data), game_id)
     }
 
-    // --------------- Internal Helper functions ---------------
+    // === Private Functions ===
 
     /// Internal helper function ussed to create a new game. 
     /// The player must provide a guess and a Counter NFT.
