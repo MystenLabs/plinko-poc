@@ -27,15 +27,15 @@ if [ $# -ne 0 ]; then
   fi
 fi
 
-echo "- Admin Address is: ${PLINKO_HOME_ADDRESS}"
+echo "- Admin Address is: ${PLINKO_HOUSE_ADDRESS}"
 
-import_address=$(sui keytool import "$PLINKO_HOME_ADDRESS" ed25519)
+import_address=$(sui keytool import "$PLINKO_HOUSE_ADDRESS" ed25519)
 
-switch_res=$(sui client switch --address ${PLINKO_HOME_ADDRESS})
+switch_res=$(sui client switch --address ${PLINKO_HOUSE_ADDRESS})
 
 #faucet_res=$(curl --location --request POST "$FAUCET" --header 'Content-Type: application/json' --data-raw '{"FixedAmountRequest": { "recipient": '$PLINKO_HOUSE_ADDRESS'}}')
 
-publish_res=$(sui client publish --skip-fetch-latest-git-deps --gas-budget 2000000000 --json ${MOVE_PACKAGE_PATH})
+publish_res=$(sui client publish --gas-budget 2000000000 --json ${MOVE_PACKAGE_PATH})
 
 echo ${publish_res} >.publish.res.json
 
@@ -54,9 +54,6 @@ newObjs=$(echo "$publish_res" | jq -r '.objectChanges[] | select(.type == "creat
 
 HOUSE_CAP=$(echo "$newObjs" | jq -r 'select (.objectType | contains("house_data::HouseCap")).objectId')
 
-# PUBLISHER_ID=$(echo "$newObjs" | jq -r 'select (.objectType | contains("package::Publisher")).objectId')
-
-
 suffix=""
 if [ $# -eq 0 ]; then
   suffix=".localnet"
@@ -67,23 +64,32 @@ SUI_NETWORK=$NETWORK
 BACKEND_API=$BACKEND_API
 PACKAGE_ADDRESS=$PACKAGE_ID
 HOUSE_ADMIN_CAP=$HOUSE_CAP
-PLINKO_HOUSE_ADDRESS=$PLINKO_HOME_ADDRESS
-PLINKO_HOUSE_PRIVATE_KEY=$PLINKO_HOME_PRIVATE_KEY
+PLINKO_HOUSE_ADDRESS=$PLINKO_HOUSE_ADDRESS
+PLINKO_HOUSE_PRIVATE_KEY=$PLINKO_HOUSE_PRIVATE_KEY
+API_ENV
+
+cat >../api/.env.local<<-API_ENV
+SUI_NETWORK=$NETWORK
+BACKEND_API=$BACKEND_API
+PORT=8080
+TRUSTED_ORIGINS=["https://satoshi-flip.mystenlabs.com", "http://localhost:5173", "https://api-satoshi-tnt.mystenlabs.com"]
+PACKAGE_ADDRESS=$PACKAGE_ID
+PLINKO_HOUSE_ADDRESS=$PLINKO_HOUSE_ADDRESS
+PLINKO_HOUSE_PRIVATE_KEY=$PLINKO_HOUSE_PRIVATE_KEY
 API_ENV
 
 cat >../app/.env$suffix<<-VITE_API_ENV
 NEXT_PUBLIC_SUI_NETWORK=$NETWORK
-NEXT_PUBLIC_PACKAGE=$PACKAGE_ID
+NEXT_PUBLIC_PACKAGE_ADDRESS=$PACKAGE_ID
 NEXT_PUBLIC_BACKEND_API=$BACKEND_API
+NEXT_PUBLIC_USE_TOP_NAVBAR_IN_LARGE_SCREEN=1
+# used for logging purposes inside the UI components
+# on purpose not starting with NEXT_PUBLIC_ to avoid exposing it to the client side
+# if !!process.env.IS_SERVER_SIDE => we are on the server side
+# else => we are on the client side
+IS_SERVER_SIDE=1
+NEXT_PUBLIC_ENOKI_API_KEY=enoki_apikey_77f611f1f19ea68960734dc0085579dc
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=312094986673-jqjjob1oubf36jkfvnnv2qm68cpcgk31.apps.googleusercontent.com
 VITE_API_ENV
-
-# commented out as the POC template does not have an api directory
-
-# cat >../api/.env$suffix<<-BACKEND_API_ENV
-# SUI_NETWORK=$NETWORK
-# BACKEND_API=$BACKEND_API
-# PACKAGE_ADDRESS=$PACKAGE_ID
-# ADMIN_ADDRESS=$ADMIN_ADDRESS
-# BACKEND_API_ENV
 
 echo "Contract Deployment finished!"

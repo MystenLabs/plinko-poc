@@ -26,97 +26,19 @@ function errorHandler(
   console.error("Error Handler:", err);
 }
 
-// Used as parameter checking in the /start endpint
-function checkStart(req: Request, res: Response, next: NextFunction) {
-  try {
-    if (!req?.body?.minAmount)
-      throw new Error('Parameter "minAmount" is required');
-    if (!req?.body?.maxAmount)
-      throw new Error('Parameter "maxAmount" is required');
-  } catch (error) {
-    res.status(errorCode);
-    next(error);
-  }
-
-  next();
-}
-
-// Used as parameter checking in the /end endpint
-function checkEnd(req: Request, res: Response, next: NextFunction) {
-  try {
-    if (!req?.body?.gameId) throw new Error('Parameter "gameId" is required');
-  } catch (error) {
-    res.status(errorCode);
-    next(error);
-  }
-
-  next();
-}
-
 function checkSinglePlayerEnd(req: Request, res: Response, next: NextFunction) {
   try {
     if (!req?.body?.gameId) throw new Error('Parameter "gameId" is required');
-    if (!req?.body?.blsSig) throw new Error('Parameter "blsSig" is required');
+    if (!req?.body?.vrfInput) throw new Error('Parameter "blsSig" is required');
   } catch (error) {
     res.status(errorCode);
     next(error);
   }
-
-  next();
-}
-
-function checkSign(req: Request, res: Response, next: NextFunction) {
-  checkEnd(req, res, next);
-}
-
-function checkRegisterGame(req: Request, res: Response, next: NextFunction) {
-  try {
-    if (!req?.body?.gameId) throw new Error('Parameter "gameId" is required');
-    if (!req?.body?.txnDigest)
-      throw new Error('Parameter "txnDigest" is required');
-  } catch (error) {
-    res.status(errorCode);
-    next(error);
-  }
-
-  next();
-}
-
-function checkPlayGame(req: Request, res: Response, next: NextFunction) {
-  const requiredParams = ["gameId", "txnDigest", "userRandomnessHexString"];
-  try {
-    requiredParams.forEach((param) => {
-      if (!req?.body?.[param])
-        throw new Error(`Parameter "${param}" is required`);
-    });
-  } catch (error) {
-    res.status(errorCode);
-    next(error);
-  }
-
-  next();
-}
-
-function checkVerify(req: Request, res: Response, next: NextFunction) {
-  try {
-    if (!req?.body?.msg) throw new Error('Parameter "msg" is required');
-    if (!req?.body?.sig) throw new Error('Parameter "sig" is required');
-  } catch (error) {
-    res.status(errorCode);
-    next(error);
-  }
-
   next();
 }
 
 export {
   notFound,
   errorHandler,
-  checkStart,
-  checkEnd,
   checkSinglePlayerEnd,
-  checkRegisterGame,
-  checkSign,
-  checkPlayGame,
-  checkVerify,
 };
