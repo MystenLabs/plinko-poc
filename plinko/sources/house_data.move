@@ -1,13 +1,10 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-/// An abstraction used to represent the house in a game of Satoshi Coin Flip.
-/// The house is the entity that defines game restrictions and fees.
-/// All games reside below the house as DoFs.
 module plinko::house_data {
-
+    // === Imports ===
+    
     use std::vector;
-
     use sui::object::{Self, UID};
     use sui::balance::{Self, Balance};
     use sui::sui::SUI;
@@ -16,33 +13,48 @@ module plinko::house_data {
     use sui::tx_context::{Self, TxContext};
     use sui::transfer::{Self};
 
-    // Error codes
-    const ECallerNotHouse: u64 = 0;
-    const EInsufficientBalance: u64 = 1;
+    // === Friends ===
 
     friend plinko::plinko;
 
-    /// Configuration and Treasury object, managed by the house.
+    // === Errors ===
+    
+    const ECallerNotHouse: u64 = 0;
+    const EInsufficientBalance: u64 = 1;
+
+    
+    // === Structs ===
+    
+    /// Configuration and Treasury shared object, managed by the house.
     struct HouseData has key {
         id: UID,
-        balance: Balance<SUI>, // House's balance which also contains the acrued winnings of the house.
+        /// House's balance which also contains the acrued winnings of the house.
+        balance: Balance<SUI>, 
+        /// Address of the house or the game operator.
         house: address,
-        public_key: vector<u8>, // Public key used to verify the beacon produced by the back-end.
+        /// Public key used to verify the beacon produced by the back-end.
+        public_key: vector<u8>, 
+        /// Maximum stake amount a player can bet in a single game.
         max_stake: u64,
+        /// Minimum stake amount required to play the game.
         min_stake: u64,
-        fees: Balance<SUI>, // The acrued fees from games played.
-        base_fee_in_bp: u16, // The default fee in basis points. 1 basis point = 0.01%.
+        /// The accrued fees from games played.
+        fees: Balance<SUI>, 
+        /// The default fee in basis points. 1 basis point = 0.01%.
+        base_fee_in_bp: u16, 
+        /// Multipliers used to calculate winnings based on the game outcome.
         multiplier: vector<u64>
     }
 
-    /// A one-time use capability to initialize the house data; created and sent
-    /// to sender in the initializer.
+    /// A one-time use capability to initialize the house data; 
+    /// created and sent to sender in the initializer.
     struct HouseCap has key {
         id: UID
     }
 
     /// Used as a one time witness to generate the publisher.
     struct HOUSE_DATA has drop {}
+
 
     fun init(otw: HOUSE_DATA, ctx: &mut TxContext) {
         // Creating and sending the Publisher object to the sender.
@@ -55,8 +67,6 @@ module plinko::house_data {
 
         transfer::transfer(house_cap, tx_context::sender(ctx));
     }
-
-    // Functions
 
     /// Initializer function that should only be called once and by the creator of the contract.
     /// Initializes the house data object with the house's public key and an initial balance.
@@ -71,7 +81,7 @@ module plinko::house_data {
             balance: coin::into_balance(coin),
             house: tx_context::sender(ctx),
             public_key,
-            max_stake: 1_000_000_000, // 1 SUI = 10^9.
+            max_stake: 10_000_000_000, // 10 SUI = 10^9.
             min_stake: 1_000_000_000, // 1 SUI.
             fees: balance::zero(),
             base_fee_in_bp: 100, // 1% in basis points.
@@ -85,6 +95,8 @@ module plinko::house_data {
 
         transfer::share_object(house_data);
     }
+
+    // === Public-Mutative Functions ===
 
     fun set_multiplier_vector(house_data: &mut HouseData, v: vector<u64>) {
         vector::append<u64>(&mut house_data.multiplier, v);
@@ -101,10 +113,8 @@ module plinko::house_data {
         coin::put(&mut house_data.balance, coin)
     }
 
-    /// House can withdraw the entire balance of the house object.
-    /// Caution should be taken when calling this function. 
-    /// If all funds are withdrawn, it will result in the house
-    /// not being able to participate in any more games.
+    /// A function to withdraw the entire balance of the house object.
+    /// It can be called only by the house
     public fun withdraw(house_data: &mut HouseData, ctx: &mut TxContext) {
         // Only the house address can withdraw funds.
         assert!(tx_context::sender(ctx) == house(house_data), ECallerNotHouse);
@@ -140,8 +150,6 @@ module plinko::house_data {
         house_data.min_stake = min_stake;
     }
 
-    // --------------- HouseData Mutations ---------------
-
     /// Returns a mutable reference to the balance of the house.
     public(friend) fun borrow_balance_mut(house_data: &mut HouseData): &mut Balance<SUI> {
         &mut house_data.balance
@@ -157,7 +165,7 @@ module plinko::house_data {
         &mut house_data.id
     }
 
-    // --------------- HouseData Accessors ---------------
+    // === Public-View Functions ===
 
     /// Returns a reference to the house id.
     public(friend) fun borrow(house_data: &HouseData): &UID {
@@ -203,6 +211,8 @@ module plinko::house_data {
     public fun multiplier(house_data: &HouseData): vector<u64> {
         house_data.multiplier
     }
+
+    // === Test Functions ===
 
     #[test_only]
     public fun init_for_testing(ctx: &mut TxContext) {
