@@ -78,7 +78,7 @@ const PlinkoSettings = () => {
   };
 
   return (
-    <div className="w-[982px] px-5 pt-5 pb-[25px] bg-emerald-950 rounded-[20px] mx-auto my-4 flex justify-start items-end gap-5">
+    <div className="w-[982px] max-w-full px-5 pt-5 pb-[25px] bg-emerald-950 rounded-[20px] mx-auto my-4 flex justify-start items-end gap-5">
       {/* Bid Amount (per ball) */}
       <div className="flex flex-col justify-start items-start gap-2.5">
         <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
