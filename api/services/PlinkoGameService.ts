@@ -1,7 +1,6 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-// // import { SuiService, SuiServiceInterface } from "./SuiService";
 import { SuiService } from "./SuiService";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import * as bls from "@noble/bls12-381";
@@ -26,7 +25,7 @@ class PlinkoGameService {
     ExecutorServiceHandler.initialize(
       this.suiService.keypair,
       this.suiService.client,
-      1000
+      10000
   )
       .then(
           (es: any) => {
@@ -39,7 +38,7 @@ class PlinkoGameService {
   ExecutorServiceHandler.initialize(
       SuiService.getKeyPair(process.env.PLINKO_HOUSE_PRIVATE_KEY!),
       this.suiService.client,
-      1000
+      10000
   )
       .catch((e: any) => {
         throw new Error(e)
@@ -78,7 +77,7 @@ public finishGame(
       txb,
       this.suiService.client,
       // Each pool will contain coins with a total balance of 1 SUI
-      new DefaultSplitStrategy(5000000000),
+      new DefaultSplitStrategy(1000000000),
       {
         showEvents: true,
         showBalanceChanges: true,
@@ -128,7 +127,7 @@ public finishGame(
     const hash = 'SHA-256';
     const derived_sk = hkdf(ikm, length, {salt, info, hash});
     return Uint8Array.from(derived_sk);
-}
+  }
 }
 
 export default PlinkoGameService;
