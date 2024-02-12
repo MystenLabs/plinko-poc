@@ -13,6 +13,6 @@ export const PLAYER_PRIVATE_KEY = process.env.PLAYER_PRIVATE_KEY!;
 
 // console.log everything in the process.env object
 const keys = Object.keys(process.env);
-console.log("env contains HOUSE_PRIVATE_KEY:", keys.includes("HOUSE_PRIVATE_KEY"));
-console.log("env contains PLAYER_PRIVATE_KEY:", keys.includes("PLAYER_PRIVATE_KEY"));
+console.log("env contains HOUSE_PRIVATE_KEY:", keys.includes("PLINKO_HOUSE_ADDRESS"));
+console.log("env contains PLAYER_PRIVATE_KEY:", keys.includes("PLINKO_HOUSE_PRIVATE_KEY"));
 

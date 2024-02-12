@@ -5,12 +5,13 @@ module plinko::plinko_tests {
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
     use sui::transfer;
+    // use std::debug::print;
+    use sui::object::ID;
     use sui::bls12381::bls12381_min_pk_verify;
     use sui::test_scenario::{Self, Scenario};
     use plinko::house_data::{Self as hd,  HouseCap, HouseData};
     use plinko::counter_nft::{Self, Counter};
     use plinko::plinko::{Self};
-    use sui::object::ID;
 
     const HOUSE: address = @0x21ba535ffa74e261a6281a205398ac9400bbbac41b49bfa967882abdf86b1486;
     const PLAYER: address = @0x4670405fc30d04de9946ad2d6ad822a2859af40a12a0a6ea4516a526884359cf;
@@ -29,50 +30,48 @@ module plinko::plinko_tests {
     ];
 
     const VRF_INPUT: vector<u8> = vector<u8> [
-        131, 142, 106, 141,  5, 104,   8, 104, 198, 230, 246,
-        23, 129,   6, 216,  8, 160,  16, 190, 255,  34, 188,
-        187, 204,  50, 168, 22, 206, 205, 232, 122, 242,   0,
-        0,   0,   0,   0,  0,   0,   0,   1,   0,   0,   0,
-        0,   0,   0,   0
+        117, 195, 54, 14, 177, 159, 210, 194, 15, 187, 165, 226, 218, 140, 241, 163,
+        156, 219, 30, 233, 19, 175, 56, 2, 186, 51, 11, 133, 46, 69, 158, 5,
+        0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0
     ];
 
     const MULTIPLIER_ARRAY: vector<u64> = vector<u64> [900, 820, 650, 380, 100, 60, 40, 60, 100, 380, 650, 820, 900];
 
     // Signed counter id 0x75c3360eb19fd2c20fbba5e2da8cf1a39cdb1ee913af3802ba330b852e459e05 + starting count = 0000000000000000 (represented as u64) with house's private key.
     const BLS_SIG_1_BALL: vector<u8> = vector<u8> [
-        145, 215, 252, 142, 184, 164, 207,  30, 184, 137, 244, 162,
-        78,  31, 255, 224, 234, 192, 112, 251, 132, 120, 251,  52,
-        14,  46,  10,  43,  93, 238,  55,  95, 168,   4, 201,  90,
-        35,   7, 114, 104,  96,  52, 143,  80,   3,  68, 106,  33,
-        17, 131, 206, 227,  97,  47, 221, 247,  48, 224,  44,  93,
-        15,  81, 124, 160,  24, 210,   8, 220, 169, 109, 116,  89,
-        69,  62,  28, 142, 185, 249, 193, 254,   6,  24, 140, 245,
-        229, 139, 153,  97,  46,  56, 195,   6, 124, 235,  40,  83
+        136, 210,  48,  88, 168,  60,  54,  19,  43, 187, 235, 193,
+        7,  40, 240,  86, 136, 176,  74, 161,  15,  74,  46,  43,
+        48, 244,  88, 159,  12, 246,  37, 130, 244, 252, 167,  23,
+        249,  86, 151,  72,  25, 130,  51, 156,  98, 227, 227, 104,
+        21,  41,  15, 180, 115,   3, 154, 131, 148, 244,  29,  70,
+        138,  57, 129,  24, 239, 140,  56, 105, 233, 202, 231, 211,
+        26,  53,  71,  88, 138,  89, 176, 212, 193, 165, 148,  19,
+        178,  23, 104,   8, 110, 105,  18, 194,  38, 129, 248, 189
     ];
 
-    // Signed counter id 0x75c3360eb19fd2c20fbba5e2da8cf1a39cdb1ee913af3802ba330b852e459e05 + starting count = 0000000000000001 (represented as u64) with house's private key.
-    const BLS_SIG_2_BALL: vector<u8> = vector<u8> [
-        131, 135,   2,   8, 105, 144, 163,  38,  46, 152,  38,  38,
-        75, 173, 158,  89,  88, 100,  27,  63, 177, 179, 250, 222,
-        123, 173,  88, 178,  63, 118, 227,  99, 231,  35, 246, 248,
-        46, 134, 195, 131, 202,  94, 116,  83, 120, 118, 209,   6,
-        6,  37, 134, 236,   0, 172,  14,  13, 115, 214,  40,  19,
-        65, 200, 241,  22, 133,   7,  39, 194, 141, 128, 196,  91,
-        185,  52, 132, 202, 247, 211,  51,  52,  51, 168, 151, 138,
-        87, 100, 164, 193, 199, 155, 245, 219, 216,   3,  34, 239
-    ];
+    // // Signed counter id 0x75c3360eb19fd2c20fbba5e2da8cf1a39cdb1ee913af3802ba330b852e459e05 + starting count = 0000000000000001 (represented as u64) with house's private key.
+    // const BLS_SIG_2_BALL: vector<u8> = vector<u8> [
+    //     131, 135,   2,   8, 105, 144, 163,  38,  46, 152,  38,  38,
+    //     75, 173, 158,  89,  88, 100,  27,  63, 177, 179, 250, 222,
+    //     123, 173,  88, 178,  63, 118, 227,  99, 231,  35, 246, 248,
+    //     46, 134, 195, 131, 202,  94, 116,  83, 120, 118, 209,   6,
+    //     6,  37, 134, 236,   0, 172,  14,  13, 115, 214,  40,  19,
+    //     65, 200, 241,  22, 133,   7,  39, 194, 141, 128, 196,  91,
+    //     185,  52, 132, 202, 247, 211,  51,  52,  51, 168, 151, 138,
+    //     87, 100, 164, 193, 199, 155, 245, 219, 216,   3,  34, 239
+    // ];
 
-    // Signed counter id 0x75c3360eb19fd2c20fbba5e2da8cf1a39cdb1ee913af3802ba330b852e459e05 + starting count = 0000000000000002 (represented as u64) with house's private key.
-    const BLS_SIG_3_BALL: vector<u8> = vector<u8> [
-        176, 190,  66, 105, 178, 192,  87,  85,  96,  91,  78, 171,
-        125, 245,  86,  42, 245, 254,  70,  48,  33, 135, 205, 154,
-        111,  70,  39,   1, 255,  73, 184, 144, 200, 244, 164, 186,
-        146, 153, 104,  97, 233, 128, 116, 121, 192,  97, 248,  40,
-        25, 229,  28, 210,  11, 207,  74,  18,  46,   7,  40, 127,
-        226, 168,  33,  37,  84, 198, 201,  46, 242,   1,  53,  30,
-        238,  62, 204,   8, 232,  53, 178, 129, 121, 197, 146, 173,
-        242,  60, 219, 189, 109,  39,  12,  19, 177,  51,  58,  73
-    ];
+    // // Signed counter id 0x75c3360eb19fd2c20fbba5e2da8cf1a39cdb1ee913af3802ba330b852e459e05 + starting count = 0000000000000002 (represented as u64) with house's private key.
+    // const BLS_SIG_3_BALL: vector<u8> = vector<u8> [
+    //     176, 190,  66, 105, 178, 192,  87,  85,  96,  91,  78, 171,
+    //     125, 245,  86,  42, 245, 254,  70,  48,  33, 135, 205, 154,
+    //     111,  70,  39,   1, 255,  73, 184, 144, 200, 244, 164, 186,
+    //     146, 153, 104,  97, 233, 128, 116, 121, 192,  97, 248,  40,
+    //     25, 229,  28, 210,  11, 207,  74,  18,  46,   7,  40, 127,
+    //     226, 168,  33,  37,  84, 198, 201,  46, 242,   1,  53,  30,
+    //     238,  62, 204,   8, 232,  53, 178, 129, 121, 197, 146, 173,
+    //     242,  60, 219, 189, 109,  39,  12,  19, 177,  51,  58,  73
+    // ];
 
     // const INVALID_BLS_SIG: vector<u8> = vector<u8>[
     //     129, 108, 254,  61, 148, 134, 105, 218, 212,  49, 136, 118,
@@ -112,14 +111,13 @@ module plinko::plinko_tests {
         let scenario = &mut scenario_val;
         {
             fund_addresses(scenario, HOUSE, PLAYER, INITIAL_HOUSE_BALANCE, INITIAL_PLAYER_BALANCE);
-            // Call init function, transfer HouseCap to the house.
-            
         };
-
+        // Call init function, transfer HouseCap to the house.
         // House initializes the contract with PK.
         init_house(scenario, HOUSE, true);
 
         let game_id = create_counter_nft_and_start_game(scenario, PLAYER, player_stake, num_balls);
+        // print(&game_id);
 
         end_game(scenario, game_id, HOUSE, num_balls);
 
@@ -159,7 +157,7 @@ module plinko::plinko_tests {
         };
     }
 
-      /// Used to create a counter nft and a game for the player.
+    /// Used to create a counter nft and a game for the player.
     /// Variables house_wins and valid_guess are used to test different outcomes and expected failures.
     public fun create_counter_nft_and_start_game(scenario: &mut Scenario, player: address, stake: u64, num_balls: u64): ID {
         // Player creates Counter NFT
@@ -182,8 +180,12 @@ module plinko::plinko_tests {
     fun create_counter_nft(scenario: &mut Scenario, player: address) {
         test_scenario::next_tx(scenario, player);
         {
+            // let vrf_input: vector<u8>;
             let ctx = test_scenario::ctx(scenario);
             let counter = counter_nft::mint(ctx);
+            // print(&counter);
+            // vrf_input = counter_nft::get_vrf_input_for_testing(&mut counter);
+            // print(&vrf_input);
             counter_nft::transfer_to_sender(counter, ctx);
         };
     }
@@ -208,6 +210,7 @@ module plinko::plinko_tests {
         test_scenario::next_tx(scenario, house);
         {
             let house_data = test_scenario::take_shared<HouseData>(scenario);
+            // print(&house_data);
             let ctx = test_scenario::ctx(scenario);
             
             let sig = BLS_SIG_1_BALL; // if (num_balls == 1) {BLS_SIG_1_BALL} else if (num_balls == 2) {BLS_SIG_2_BALL} else {BLS_SIG_3_BALL};

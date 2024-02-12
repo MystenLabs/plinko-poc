@@ -6,7 +6,6 @@
 /// Utilized as a unique VRF input for each Plinko round.
 module plinko::counter_nft {
     // === Imports ===
-
     use std::vector;
     use sui::object::{Self, UID};
     use sui::tx_context::{Self, TxContext};
@@ -76,4 +75,11 @@ module plinko::counter_nft {
     public fun burn_for_testing(self: Counter) {
         burn(self);
     }
+
+    #[test_only]
+    public fun get_vrf_input_for_testing(self: &mut Counter): vector<u8> {
+        let vrf_input: vector<u8> = get_vrf_input_and_increment(self, 1);
+        vrf_input
+    }
+
 }
