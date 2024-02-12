@@ -6,7 +6,7 @@ import MatterSim from "../../components/MatterSim";
 import PlinkoSettings from "@/components/PlinkoSettings";
 import { PlayProvider } from "@/contexts/PlayContext";
 import { GameHistoryProvider } from "@/contexts/GameHistoryContext";
-import { TotalWon } from "@/components/TotalWon";
+import { TotalWon } from "@/components/totalWon";
 
 export const metadata: Metadata = {
   title: "Play Plinko Game",
