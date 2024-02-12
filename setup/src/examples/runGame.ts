@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import { SuiClient } from "@mysten/sui.js/client";
 // import { config } from "./helper/config";
-import { getKeyPairEd25519 } from "./getkeypair";
+import { getKeyPairEd25519 } from "../getkeypair";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import * as bls from "@noble/bls12-381";
 import {bytesToHex} from "@noble/hashes/utils";
@@ -13,7 +13,7 @@ import {
   PACKAGE_ADDRESS, 
   HOUSE_DATA_ID, 
   HOUSE_PRIVATE_KEY,
-  SUI_NETWORK} from "./config";
+  SUI_NETWORK} from "../config";
 
   const client = new SuiClient({
     url: SUI_NETWORK,
@@ -23,9 +23,12 @@ const houseSigner = getKeyPairEd25519(HOUSE_PRIVATE_KEY);
 
 async function runGame() {
 
-  const vrf_input = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; // TBD - get this from the NewGame event emitted from Plinko.move
+  const vrf_input = [117, 195, 54, 14, 177, 159, 210, 194, 15, 187, 165, 226, 218, 140, 241, 163,
+    156, 219, 30, 233, 19, 175, 56, 2, 186, 51, 11, 133, 46, 69, 158, 5,
+    0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]; // TBD - get this from the NewGame event emitted from Plinko.move
 
    let houseSignedInput = await bls.sign(new Uint8Array(vrf_input), deriveBLS_SecretKey(HOUSE_PRIVATE_KEY!));
+   console.log("houseSignedInput=", houseSignedInput);
    let gameId = "0x7a9369e3f439e48524d2a34c8ac649029e615327505d68d88d8bbe8b11452988"; // TBD - get this from the NewGame event emitted from Plinko.move
    let numberofBalls = 2; // User input from UI
 

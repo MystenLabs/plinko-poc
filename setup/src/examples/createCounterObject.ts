@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 import { SuiClient } from "@mysten/sui.js/client";
-import { getKeyPairEd25519 } from "./getkeypair";
+import { getKeyPairEd25519 } from "../getkeypair";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 
 dotenv.config({ path: "../.env.local" });
@@ -10,7 +10,7 @@ import {
   PACKAGE_ADDRESS,
   HOUSE_DATA_ID,
   SUI_NETWORK,
-} from "./config";
+} from "../config";
 
 const client = new SuiClient({
   url: SUI_NETWORK,
