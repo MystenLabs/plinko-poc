@@ -24,7 +24,7 @@ export const GameHistoryProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [colors, setColors] = useState<string[]>([]);
-  const [totalWon, setTotalWon] = useState<number>(-1);
+  const [totalWon, setTotalWon] = useState<number>(0);
   const [lastColorIndexHistory, setLastColorIndexHistory] = useState<number>(0);
 
   const addColor = (color: string | undefined) => {
@@ -43,7 +43,7 @@ export const GameHistoryProvider: React.FC<{ children: React.ReactNode }> = ({
   const resetHistory = () => {
     setLastColorIndexHistory(0);
     setColors([]);
-    setTotalWon(-1);
+    setTotalWon(0);
   };
 
   return (
