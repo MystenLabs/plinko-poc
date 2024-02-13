@@ -15,7 +15,7 @@ export const ProvidersAndLayout = ({ children }: ChildrenProps) => {
 
   return (
     <AuthenticationProvider>
-      <main className={`min-h-screen w-screen bg-gray-100`}>
+      <main className={`min-h-screen w-screen bg-black`}>
         {!!isMobile && <MobileLayout>{children}</MobileLayout>}
         {!isMobile && <LargeScreenLayout>{children}</LargeScreenLayout>}
         <Toaster
