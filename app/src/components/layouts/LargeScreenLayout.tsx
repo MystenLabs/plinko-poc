@@ -26,11 +26,11 @@ export const LargeScreenLayout = ({ children }: ChildrenProps) => {
 
   if (process.env.NEXT_PUBLIC_USE_TOP_NAVBAR_IN_LARGE_SCREEN === "1") {
     return (
-      <div className={`relative w-full h-full role-${user.role} flex-col`}>
+      <div className={`relative w-full h-full role-${user.role} flex-col `}>
         <TopNavbar />
-        <div className="flex-1 p-4 bg-grey-100">
-          <div className="max-w-[1300px] mx-auto">{children}</div>
-        </div>
+        {/* <div className="flex-1 p-4 bg-grey-100"> */}
+        <div>{children}</div>
+        {/* </div> */}
       </div>
     );
   }
@@ -53,9 +53,9 @@ export const LargeScreenLayout = ({ children }: ChildrenProps) => {
           showBurger={!isNavbarOpen}
           onBurgerClick={handleOpenNavbar}
         />
-        <div className="p-4 bg-grey-100">
-          <div className="max-w-[1300px] mx-auto">{children}</div>
-        </div>
+        {/* <div className="p-4 bg-grey-100"> */}
+        <div>{children}</div>
+        {/* </div> */}
       </div>
     </div>
   );
