@@ -110,20 +110,17 @@ export const useCreateCounterObject = () => {
 
     // Fetch API call for the game/plinko/end endpoint
     try {
-      const response = await fetch(
-        "https://plinko-poc-api.vercel.app/game/plinko/end",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            gameId: game__id,
-            vrfInput: vrf__input,
-            numberofBalls: numberofBalls,
-          }),
-        }
-      );
+      const response = await fetch("http://localhost:8080/game/plinko/end", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          gameId: game__id,
+          vrfInput: vrf__input,
+          numberofBalls: numberofBalls,
+        }),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -131,6 +128,7 @@ export const useCreateCounterObject = () => {
 
       const data = await response.json();
       console.log("Response from /game/plinko/end:", data);
+      //Data contains the digest
 
       // Assuming the trace vector is directly in the data object; adjust according to actual structure
       const traceVector = data.trace;
