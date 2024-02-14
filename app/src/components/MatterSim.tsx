@@ -33,7 +33,7 @@ const MatterSim: React.FC = () => {
     betSize,
     finalPaths: predefinedPaths,
   } = usePlayContext();
-  console.log("predefinedPaths:", predefinedPaths);
+  // console.log("predefinedPaths:", predefinedPaths);
   const { addColor, colors, addTotalWon, totalWon } = useGameHistory();
   const [multipliersHistroty, setMultipliersHistory] = useState([0]);
   // Define bucket colors
@@ -147,7 +147,8 @@ const MatterSim: React.FC = () => {
       options: {
         width: worldWidth,
         height: 600,
-        background: "#36454F",
+        // background: "#36454F",
+        background: "transparent",
         showVelocity: true,
         showAngleIndicator: true,
         showPerformance: true, // Show FPS (only for testing) TODO : remove it
@@ -570,18 +571,15 @@ const MatterSim: React.FC = () => {
               style={{
                 backgroundColor: color,
               }}
-            >
-              {multiplier}x {isLastColor && `(+${lastBallWon.toFixed(2)})`}{" "}
-              {/* Display last ball won amount for the last color */}
-            </div>
+            ></div>
           );
         })}
       </div>
       {/* Total won */}
-      <div className="font-bold mt-4">
+      {/* <div className="font-bold mt-4">
         Total won:
         {totalWon !== -1 ? parseFloat(totalWon.toString()).toFixed(2) : "0.00"}$
-      </div>
+      </div> */}
       {/* Display the total won amount here */}
     </div>
   );
