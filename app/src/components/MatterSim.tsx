@@ -147,7 +147,8 @@ const MatterSim: React.FC = () => {
       options: {
         width: worldWidth,
         height: 600,
-        background: "#36454F",
+        // background: "#36454F",
+        background: "transparent",
         showVelocity: true,
         showAngleIndicator: true,
         showPerformance: true, // Show FPS (only for testing) TODO : remove it
