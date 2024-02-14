@@ -1,26 +1,61 @@
-import React from "react";
+"use client";
+import { useGameHistory } from "@/contexts/GameHistoryContext";
+import { usePlayContext } from "@/contexts/PlayContext";
+import React, { useEffect, useState } from "react";
+import { set } from "zod";
 
-// Mock data for demonstration
-const mockData = [
-  { bet: "1 SUI", multiplier: "1.0x", earnings: "-20 SUI" },
-  { bet: "2 SUI", multiplier: "-", earnings: "-" },
-  { bet: "3 SUI", multiplier: "-", earnings: "-" },
-  { bet: "4 SUI", multiplier: "-", earnings: "-" },
-  { bet: "5 SUI", multiplier: "-", earnings: "0 SUI" },
-  { bet: "6 SUI", multiplier: "1.5x", earnings: "-" },
-  { bet: "7 SUI", multiplier: "-", earnings: "-" },
-  { bet: "8 SUI", multiplier: "-", earnings: "-" },
-  { bet: "9 SUI", multiplier: "-", earnings: "20 SUI" },
-  { bet: "10 SUI", multiplier: "-", earnings: "-" },
-  { bet: "11 SUI", multiplier: "2.0x", earnings: "-" },
-  { bet: "12 SUI", multiplier: "-", earnings: "-" },
-  { bet: "13 SUI", multiplier: "-", earnings: "40 SUI" },
-  { bet: "14 SUI", multiplier: "-", earnings: "-" },
-  { bet: "15 SUI", multiplier: "-", earnings: "-" },
+const bucketColors = [
+  "#FF0000", // Red
+  "#FF3000", // Reddish-Orange
+  "#FF6000", // Orange-Red
+  "#FF9000", // Dark Orange
+  "#FFC000", // Light Orange
+  "#FFD800", // Yellow-Orange
+  "#FFFF00", // Yellow (central color)
+  "#FFD800", // Yellow-Orange
+  "#FFC000", // Light Orange
+  "#FF9000", // Dark Orange
+  "#FF6000", // Orange-Red
+  "#FF3000", // Reddish-Orange
+  "#FF0000", // Red
+];
+
+const multipliersNumbers = [
+  9.0, 8.2, 6.5, 3.8, 1.0, 0.6, 0.4, 0.6, 1.0, 3.8, 6.5, 8.2, 9.0,
 ];
 
 const ScoreTable = () => {
   const isScrollNeeded = true;
+  const { colors, addTotalWon } = useGameHistory();
+  const { betSize } = usePlayContext();
+  const [dynamicMockData, setDynamicMockData] = useState([]);
+
+  useEffect(() => {
+    setDynamicMockData([]);
+    let data: any = [];
+    // Only append new data if colors array is not empty
+    if (colors.length > 0) {
+      const newEntries = colors.map((color) => {
+        const position = bucketColors.indexOf(color);
+        const multiplier = multipliersNumbers[position];
+        const earnings = `${betSize * multiplier} SUI`;
+        const earningsValue = betSize * multiplier;
+        return {
+          bet: `${betSize} SUI`,
+          multiplier: `${multiplier}x`,
+          earnings,
+          earningsValue,
+        };
+      });
+      //@ts-ignore
+      data = (prevData) => {
+        // Reverse the array to maintain the newest entry at the top if needed
+        return [...newEntries.reverse(), ...prevData];
+      };
+
+      setDynamicMockData(data);
+    }
+  }, [colors]);
 
   return (
     <div
@@ -46,44 +81,59 @@ const ScoreTable = () => {
         } flex-1 w-full`}
       >
         <div className="flex flex-col gap-5 mr-5">
-          {mockData.map((data, index) => (
+          {dynamicMockData.map((data, index) => (
             <div
               key={index}
               className="text-white text-base font-normal leading-[18.40px]"
             >
-              {data.bet}
+              {
+                //@ts-ignore
+                data.bet
+              }
             </div>
           ))}
         </div>
         <div className="flex flex-col gap-5 mr-10">
           {" "}
           {/* Adjust the right margin here */}
-          {mockData.map((data, index) => (
+          {dynamicMockData.map((data, index) => (
             <div
               key={index}
               className={`text-white ${
+                //@ts-ignore
                 data.multiplier === "-"
                   ? "text-opacity-40"
                   : "text-base font-semibold"
               } leading-[18.40px]`}
             >
-              {data.multiplier}
+              {
+                //@ts-ignore
+                data.multiplier
+              }
             </div>
           ))}
         </div>
         <div className="flex flex-col gap-5">
-          {mockData.map((data, index) => (
+          {dynamicMockData.map((data, index) => (
             <div
               key={index}
               className={`text-white ${
+                //@ts-ignore
                 data.earnings.startsWith("-")
                   ? "text-orange-600"
-                  : data.earnings === "-"
+                  : //@ts-ignore
+                  data.earnings === "-"
                   ? "text-opacity-40"
                   : "text-emerald-400"
-              } text-base font-semibold leading-[18.40px]`}
+              } text-base font-semibold leading-[18.40px] ${
+                //@ts-ignore
+                data.earningsValue < betSize ? "text-red-500" : "text-green-500"
+              }`}
             >
-              {data.earnings}
+              {
+                //@ts-ignore
+                data.earnings
+              }
             </div>
           ))}
         </div>
