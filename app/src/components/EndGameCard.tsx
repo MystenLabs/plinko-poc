@@ -1,10 +1,12 @@
 "use client";
 
+import { useGameHistory } from "@/contexts/GameHistoryContext";
 import React, { useState } from "react";
 
 const PopupComponent = () => {
   // Internal state to control the visibility of the popup
   const [isVisible, setIsVisible] = useState(true);
+  const { totalWon } = useGameHistory();
 
   // Function to toggle the popup visibility
   const togglePopup = () => setIsVisible(!isVisible);
@@ -34,10 +36,10 @@ const PopupComponent = () => {
                   Congratulations, You Won!
                 </div>
                 <div className="text-center text-emerald-600 text-[56px] font-bold">
-                  690 SUI
+                  {totalWon} SUI
                 </div>
                 <div className="opacity-70 text-right text-neutral-900 text-base font-medium">
-                  You Bid: 50 SUI
+                  You Bid:{totalWon} SUI
                 </div>
               </div>
               <div className="self-stretch bg-white border-t-2 justify-start items-center gap-2 inline-flex">
