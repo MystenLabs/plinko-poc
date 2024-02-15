@@ -8,9 +8,9 @@ for i in jq curl sui; do
   fi
 done
 
-NETWORK=http://localhost:9000
-BACKEND_API=http://localhost:3000
-FAUCET=https://localhost:9000/gas
+NETWORK=http://localhost:3000
+BACKEND_API=http://localhost:8080
+FAUCET=https://localhost:3000/gas
 
 MOVE_PACKAGE_PATH=../plinko
 
@@ -18,12 +18,12 @@ if [ $# -ne 0 ]; then
   if [ $1 = "testnet" ]; then
     NETWORK="https://rpc.testnet.sui.io:443"
     FAUCET="https://faucet.testnet.sui.io/gas"
-    BACKEND_API="https://api-testnet.suifrens.sui.io"
+    BACKEND_API="https://plinko-poc-api.vercel.app"
   fi
   if [ $1 = "devnet" ]; then
     NETWORK="https://rpc.devnet.sui.io:443"
     FAUCET="https://faucet.devnet.sui.io/gas"
-    BACKEND_API="https://api-devnet.suifrens.sui.io"
+    BACKEND_API="https://plinko-poc-api.vercel.app"
   fi
 fi
 
@@ -32,8 +32,6 @@ echo "- Admin Address is: ${PLINKO_HOUSE_ADDRESS}"
 import_address=$(sui keytool import "$PLINKO_HOUSE_ADDRESS" ed25519)
 
 switch_res=$(sui client switch --address ${PLINKO_HOUSE_ADDRESS})
-
-#faucet_res=$(curl --location --request POST "$FAUCET" --header 'Content-Type: application/json' --data-raw '{"FixedAmountRequest": { "recipient": '$PLINKO_HOUSE_ADDRESS'}}')
 
 publish_res=$(sui client publish --gas-budget 2000000000 --json ${MOVE_PACKAGE_PATH})
 
@@ -72,7 +70,7 @@ cat >../api/.env.local<<-API_ENV
 SUI_NETWORK=$NETWORK
 BACKEND_API=$BACKEND_API
 PORT=8080
-TRUSTED_ORIGINS=["https://satoshi-flip.mystenlabs.com", "http://localhost:5173", "https://api-satoshi-tnt.mystenlabs.com"]
+TRUSTED_ORIGINS=["http://localhost:3000", "https://plinko-poc.vercel.app/admin"]
 PACKAGE_ADDRESS=$PACKAGE_ID
 PLINKO_HOUSE_ADDRESS=$PLINKO_HOUSE_ADDRESS
 PLINKO_HOUSE_PRIVATE_KEY=$PLINKO_HOUSE_PRIVATE_KEY
