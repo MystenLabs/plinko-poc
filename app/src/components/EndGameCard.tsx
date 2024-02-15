@@ -5,9 +5,8 @@ import { usePlayContext } from "@/contexts/PlayContext";
 import React, { useState } from "react";
 
 const PopupComponent = () => {
-  const [popupIsVisible, setPopupIsVisible] = useState(true);
   const { totalWon } = useGameHistory(); // Assuming bid is also stored in your context
-  const { betSize: bid } = usePlayContext();
+  const { popupIsVisible, setPopupIsVisible, betSize: bid } = usePlayContext();
 
   const togglePopup = () => setPopupIsVisible(!popupIsVisible);
 
