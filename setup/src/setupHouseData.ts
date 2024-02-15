@@ -21,6 +21,7 @@ import * as bls from "@noble/bls12-381";
 
 import fs from "fs";
 
+// The multipliers for the plinko game
 let multiplierArray = [900, 820, 650, 380, 100, 60, 40, 60, 100, 380, 650, 820, 900];
 let privateKeyArray = Uint8Array.from(Array.from(fromB64(HOUSE_PRIVATE_KEY!)));
 
@@ -37,6 +38,7 @@ console.log("Admin Address = " + HOUSE_ADDRESS);
 console.log("Package ID  = " + PACKAGE_ADDRESS);
 console.log("House Cap  = " + HOUSE_CAP);
 
+// The initial balance of the house
 const initHouseBalance = 50000000000;
 
 const tx = new TransactionBlock();
@@ -49,6 +51,7 @@ initializeContract();
 
 function initializeContract() {
   const houseCoin = tx.splitCoins(tx.gas, [tx.pure(initHouseBalance)]);
+  // The BLS public key of the house
   let blsKeyAsMoveParameter = getBLS_KeyAsMoveParameter();
   console.log("PK = ", blsKeyAsMoveParameter);
 
@@ -103,6 +106,7 @@ if (SUI_NETWORK.includes("mainnet")) {
             const houseDataString = `HOUSE_DATA_ID=${obj.objectId}\n`;
             const next_house_data_id = `NEXT_PUBLIC_HOUSE_DATA_ID=${obj.objectId}\n`;
             console.log(houseDataString);
+            // Append the house_data_id to the .env files
             fs.appendFileSync("../.env.local", houseDataString);
             fs.appendFileSync("../../api/.env.local", houseDataString);
             fs.appendFileSync("../../app/.env", next_house_data_id);
