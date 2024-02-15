@@ -19,7 +19,7 @@ export default function Play() {
     <Paper>
       <PlayProvider>
         <GameHistoryProvider>
-          {/* <EndGameCard /> */}
+          <EndGameCard />
           <div className="absolute top-12 right-0 transform scale-75 z-50 opacity-100">
             {/* <div className="absolute top-12 right-0 md:right-10p lg:right-5p transform scale-75 sm:scale-90 md:scale-100 z-50 opacity-100"> */}
             <ScoreTable />
