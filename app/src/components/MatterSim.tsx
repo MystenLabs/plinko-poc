@@ -32,6 +32,7 @@ const MatterSim: React.FC = () => {
     setPlaying,
     betSize,
     finalPaths: predefinedPaths,
+    setPopupIsVisible,
   } = usePlayContext();
   // console.log("predefinedPaths:", predefinedPaths);
   const { addColor, colors, addTotalWon, totalWon } = useGameHistory();
@@ -517,6 +518,7 @@ const MatterSim: React.FC = () => {
       );
       setMultipliersHistory(historyOfMultipliers);
       setPlaying(false);
+      setPopupIsVisible(true);
     }
     console.log("bottomArea.render.fillStyle:", colors);
   }, [finishedBalls, predefinedPaths.length, setPlaying, colors]);
