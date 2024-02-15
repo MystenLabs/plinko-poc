@@ -1,4 +1,5 @@
 "use client";
+import { is } from "@mysten/sui.js";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface IPlayContext {
@@ -27,6 +28,7 @@ export const PlayProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [isPlaying, setPlaying] = useState<boolean>(false);
+  const [isWaitingToPlay, setWaitingToPlay] = useState<boolean>(false);
   const [betSize, setBetSize] = useState<number>(0);
   const [finalPaths, setFinalPaths] = useState<number[][]>([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
