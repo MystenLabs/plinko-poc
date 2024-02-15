@@ -6,6 +6,7 @@ import { SuiService } from "./SuiService";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import * as bls from "@noble/bls12-381";
 import hkdf from "futoin-hkdf";
+import { sponsorAndSignTransaction } from "../utils/sponsorAndSignTransaction";
 
 class PlinkoGameService {
   // private suiService: SuiServiceInterface;
@@ -49,12 +50,33 @@ class PlinkoGameService {
         ],
       });
 
+      const { signedTransaction, sponsoredTransaction } =
+        await sponsorAndSignTransaction({
+          tx,
+          suiClient: this.suiService.getClient(),
+        });
+
+      // this.suiService
+      //   .getClient()
+      //   .signAndExecuteTransactionBlock({
+      //     transactionBlock: tx,
+      //     requestType: "WaitForLocalExecution",
+      //     signer: this.suiService.getSigner(),
+      //     options: {
+      //       showObjectChanges: true,
+      //       showEffects: true,
+      //       showEvents: true,
+      //     },
+      //   })
       this.suiService
         .getClient()
-        .signAndExecuteTransactionBlock({
-          transactionBlock: tx,
+        .executeTransactionBlock({
+          transactionBlock: signedTransaction.bytes,
+          signature: [
+            signedTransaction.signature,
+            sponsoredTransaction.signature,
+          ],
           requestType: "WaitForLocalExecution",
-          signer: this.suiService.getSigner(),
           options: {
             showObjectChanges: true,
             showEffects: true,

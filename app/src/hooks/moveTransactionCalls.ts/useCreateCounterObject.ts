@@ -112,6 +112,7 @@ export const useCreateCounterObject = () => {
     try {
       const response = await fetch(
         "https://plinko-poc-api.vercel.app/game/plinko/end",
+        // "http://localhost:8080/game/plinko/end",
         {
           method: "POST",
           headers: {
