@@ -2,40 +2,27 @@
 
 ## Description
 
-A Typescript project, with ready-to-use:
+`publish.sh` is a shell script that deploys your smart contracts and populates `.env` files.
 
-- environment variable (.env) file reading
-- Sui SDK integration
-- publish shell script
+## Steps to follow
 
-## Environment variables
+- Export your admin address by running: `export PLINKO_HOUSE_ADDRESS=your_house_address`.
+- Export your admin Private Key by running: `export PLINKO_HOUSE_PRIVATE_KEY=your_house_secret_key_here`.
+- After running `./publish.sh testnet`, `.env` files will be created in `setup/.env.local`, `app/.env`, and `api/.env.local`.
 
-- Create a `.env` file following the format of the `.env.example` file, to insert the target sui network, or any other env. variables you need
-- `.env` file is not tracked by Git
-- Add the corresponding export statements in the `src/config.ts` file
-- Export your admin address by running: `export ADMIN_ADDRESS="your address here"`
-- Export your admin Private Key by running: `export ADMIN_SECRET_KEY="your secret key here"`
+## Setting up House Data
 
-Note: If you have a custom admin address, you can change the admin phrase in the publish.sh script: `ADMIN_PHRASE="loop other...."`
+To initialize the house data after deploying your smart contracts and populating `.env` files, you must run the `src/setupHouseData.ts` file. 
 
-## Project structure
+This script configures the necessary parameters like the `multiplier array` for the game, the `public key` of the house, the `house_cap` and the `initial house balace`.
 
-- `publish.sh`: the publish script
-- `src/`:
-  - `config.ts`: retrieves and exports the specified environmental variables of the .env file (and the host machine)
-  - `examples.ts`: some Typescript modules exporting functions with the example usage of the TS SDK
-  - `setup.ts`: the main module, which is ran by `npm run setup`
+### Steps to follow:
 
-## Local Deployment
+1. Make sure you have deployed your smart contracts and populated the `.env` files as per the previous instructions.
 
-- Run the deployment script: `./publish.sh`
+2. Navigate to the `setup/src` directory of your project.
 
-## Testnet Deployment
+3. Run the `setupHouseData.ts` script using the following command:
 
-- Switch your local cli to testnet env:
-
-```shell
-sui client switch --env testnet
-cd setup
-./publish testnet
-```
+   ```bash
+   ts-node setupHouseData.ts

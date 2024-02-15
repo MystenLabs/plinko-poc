@@ -247,7 +247,6 @@ module plinko::plinko {
             vrf_input,
             fee_bp
         };
-
         emit(NewGame {
             game_id,
             player: tx_context::sender(ctx),
