@@ -3,10 +3,17 @@ import React, { useState, useEffect } from "react";
 import { usePlayContext } from "../contexts/PlayContext";
 import { useCreateCounterObject } from "@/hooks/moveTransactionCalls.ts/useCreateCounterObject";
 import { useGameHistory } from "@/contexts/GameHistoryContext";
+import {
+  IsWaitingToPlayProvider,
+  useWaitingToPlayContext,
+} from "@/contexts/IsWaitingToPlay";
+
+import { set } from "zod";
 
 const PlinkoSettings = () => {
   //@ts-ignore
   const { isPlaying, setPlaying, betSize, setBetSize } = usePlayContext();
+  const { isWaitingToPlay, setWaitingToPlay } = useWaitingToPlayContext();
   const { handleCreateCounterObject } = useCreateCounterObject();
   const { resetHistory } = useGameHistory();
 
@@ -24,6 +31,7 @@ const PlinkoSettings = () => {
   const handlePlayClick = async () => {
     if (isPlaying) return;
     resetHistory();
+    setWaitingToPlay(true);
     console.log("Play Clicked", isPlaying);
     console.log(currentBet);
     let currentBetSize = currentBet;
@@ -32,8 +40,7 @@ const PlinkoSettings = () => {
       currentBetSize,
       numberOfBalls
     );
-    // console.log("final_paths", result_create_obj[2]);
-    // setFinalPaths(result_create_obj[2]);
+    setWaitingToPlay(false);
     setPlaying(true);
     console.log("Play Clicked", isPlaying);
     console.log(
@@ -133,13 +140,15 @@ const PlinkoSettings = () => {
           {/* Adjust the hardcoded value as per your dynamic data */}
         </div>
         <button
-          onClick={handlePlayClick}
+          onClick={() => {
+            handlePlayClick();
+          }}
           className={`h-11 px-6 py-2.5 bg-emerald-600 rounded-[999px] flex justify-center items-center gap-2 ${
-            isPlaying ? "cursor-not-allowed opacity-50" : ""
+            isPlaying || isWaitingToPlay ? "cursor-not-allowed opacity-50" : ""
           }`}
         >
           <div className="text-white text-base font-bold leading-[18.40px]">
-            {isPlaying ? "Playing..." : "Play"}
+            {isPlaying || isWaitingToPlay ? "Playing..." : "Play"}
           </div>
         </button>
       </div>
