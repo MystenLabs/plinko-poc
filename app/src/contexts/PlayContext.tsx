@@ -8,6 +8,8 @@ interface IPlayContext {
   setBetSize: (size: number) => void;
   finalPaths: number[][];
   setFinalPaths: (paths: number[][]) => void;
+  popupIsVisible: boolean; // Add this line
+  setPopupIsVisible: (isVisible: boolean) => void; // And this line
 }
 
 // Initialize context with a type assertion to match IPlayContext
@@ -29,6 +31,7 @@ export const PlayProvider: React.FC<{ children: ReactNode }> = ({
   const [finalPaths, setFinalPaths] = useState<number[][]>([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
+  const [popupIsVisible, setPopupIsVisible] = useState<boolean>(false);
 
   // Provide the context with an object that matches IPlayContext
   const value = {
@@ -38,6 +41,8 @@ export const PlayProvider: React.FC<{ children: ReactNode }> = ({
     setBetSize,
     finalPaths,
     setFinalPaths,
+    popupIsVisible, // And this line
+    setPopupIsVisible, // And this one
   };
 
   return <PlayContext.Provider value={value}>{children}</PlayContext.Provider>;
