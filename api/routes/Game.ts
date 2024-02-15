@@ -9,18 +9,18 @@ const GameService = services.PlinkoGameService;
 
 const router: Router = express.Router();
 
+// Endpoint to get the result of the game
 router.post(
   "/plinko/end",
   checkSinglePlayerEnd,
   async (req: Request, res: Response, next: NextFunction) => {
     console.log("POST /game/plinko/end with body:", req.body);
-
     try {
       const vrfInputArray = req.body.vrfInput;
       let {
         trace,
         transactionDigest,
-      } = // Assuming `trace` is now part of the return object //
+      } = 
         await GameService.finishGame(
           req.body.gameId,
           vrfInputArray,
