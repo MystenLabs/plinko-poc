@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import express, { Router, Request, Response, NextFunction } from "express";
-import {
-  checkSinglePlayerEnd,
-} from "../middleware";
+import { checkSinglePlayerEnd } from "../middleware";
 import services from "../services/";
 
 const GameService = services.PlinkoGameService;
@@ -19,11 +17,18 @@ router.post(
 
     try {
       const vrfInputArray = req.body.vrfInput;
-      let {trace, transactionDigest } = // Assuming `trace` is now part of the return object //
-        await GameService.finishGame(req.body.gameId, vrfInputArray, req.body.numberofBalls);
+      let {
+        trace,
+        transactionDigest,
+      } = // Assuming `trace` is now part of the return object //
+        await GameService.finishGame(
+          req.body.gameId,
+          vrfInputArray,
+          req.body.numberofBalls
+        );
       res.status(200).json({
         trace,
-        transactionDigest
+        transactionDigest,
       });
     } catch (e) {
       console.error(
