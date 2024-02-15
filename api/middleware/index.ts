@@ -3,7 +3,6 @@
 
 import { NextFunction, Request, Response } from "express";
 
-// @todo: define in a const files specific error codes
 const errorCode = 400;
 
 // Handles errors related to non existing endpoints
@@ -26,6 +25,7 @@ function errorHandler(
   console.error("Error Handler:", err);
 }
 
+// Check if all paramaters are present in the request body.
 function checkSinglePlayerEnd(req: Request, res: Response, next: NextFunction) {
   try {
     if (!req?.body?.gameId) throw new Error('Parameter "gameId" is required');
