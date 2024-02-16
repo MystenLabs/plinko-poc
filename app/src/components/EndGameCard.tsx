@@ -6,12 +6,19 @@ import React, { useState } from "react";
 
 const PopupComponent = () => {
   const { totalWon } = useGameHistory(); // Assuming bid is also stored in your context
-  const { popupIsVisible, setPopupIsVisible, betSize: bid } = usePlayContext();
+  const {
+    popupIsVisible,
+    setPopupIsVisible,
+    betSize: bid,
+    txDigest,
+  } = usePlayContext();
 
   const togglePopup = () => setPopupIsVisible(!popupIsVisible);
 
   // Check if the player has won or lost
   const hasWon = totalWon - bid > 0;
+  const suiExplorerUrl = `https://suiexplorer.com/txblock/${txDigest}?network=testnet`;
+  console.log("suiExplorerUrl = ", txDigest);
 
   const handlePlayAgain = () => {
     setPopupIsVisible(false); // This will hide the popup
@@ -57,13 +64,15 @@ const PopupComponent = () => {
               </div>
               <div className="justify-center items-center gap-2 inline-flex">
                 <div className="text-neutral-900 text-base font-semibold">
-                  Verify on Sui Explorer
+                  <a
+                    href={suiExplorerUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-neutral-900 text-base font-semibold"
+                  >
+                    Verify on Sui Explorer
+                  </a>
                 </div>
-                <img
-                  className="w-4 h-4 relative"
-                  src="https://via.placeholder.com/8x8"
-                  alt="Icon"
-                />
               </div>
             </div>
           </div>

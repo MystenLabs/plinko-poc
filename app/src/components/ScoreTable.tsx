@@ -40,13 +40,13 @@ const ScoreTable = () => {
         const multiplier = multipliersNumbers[position];
         const earnings = `${betSize * multiplier} SUI`;
         const earningsValue = betSize * multiplier;
-        const isWin = earningsValue > betSize;
+        const isLost = earningsValue < betSize;
         return {
           bet: `${betSize} SUI`,
           multiplier: `${multiplier}x`,
           earnings,
           earningsValue,
-          isWin,
+          isLost,
         };
       });
       //@ts-ignore
@@ -115,7 +115,7 @@ const ScoreTable = () => {
             </div>
           ))}
         </div>
-        <div className="flex flex-col gap-5 ml-10">
+        <div className="flex flex-col gap-5 ml-4">
           {dynamicMockData.map((data, index) => (
             <div
               key={index}
@@ -129,7 +129,7 @@ const ScoreTable = () => {
                   : "text-emerald-400"
               } text-base font-semibold leading-[18.40px] ${
                 //@ts-ignore
-                data.isWin ? "text-red-500" : "text-green-500"
+                data.isLost ? "text-red-500" : "text-green-500"
               }`}
             >
               {
