@@ -26,8 +26,10 @@ export default function Play() {
               <ScoreTable />
             </div>
             <div className="flex flex-col items-center min-h-screen bg-opacity-0 mt-12 px-4">
-              <TotalWon />
-              <div className="scale-125 mb-4 mx-auto pl-10 ">
+              <div className="mb-12 mt-6">
+                <TotalWon />
+              </div>
+              <div className="scale-125 mb-4 mx-auto pl-10">
                 <MatterSim />
               </div>
               <div className="flex-grow flex flex-col items-center justify-center">
