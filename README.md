@@ -32,23 +32,28 @@ To get started with the Plinko game, you need:
 - npm and Node.js installed on your machine.
 
 ## Using the Plinko Game
-Follow these steps to set up and interact with the Plinko game:
+Follow these steps to set up and interact locally with the Plinko game:
 
 ### Testnet | Devnet Deployment
 1. Switch to the desired environment with `sui client switch --env testnet|devnet`.
 2. Ensure your active Sui address has sufficient SUI coins.
-3. Deploy the contract with `./publish testnet | devnet`.
+3. Export your admin address by running: `export PLINKO_HOUSE_ADDRESS=your_house_address`.
+4. Export your admin Private Key by running: `export PLINKO_HOUSE_PRIVATE_KEY=your_house_secret_key_here`.
+5. Move to the `setup/` directory and follow the detailed instructions from the README file 
+6. Deploy the contract and setup the enviro with `./publish testnet | devnet`.
 
 The `publish` script deploys the contract and initializes the game environment. For more details, refer to the `publish` README.
 
 ### API Setup
 1. Move to the `api/` directory and run `npm install`.
 2. Start the server locally with `npm run dev`. It will run at `localhost:8080`.
-
+3. You can follow the api/README.md file for more information
+   
 ### UI Interaction
-1. Navigate to the `ui/` directory.
+1. Navigate to the `app/` directory.
 2. Run `npm install`, followed by `npm run dev` for local testing.
 3. Access the UI at `localhost:3000` and enjoy the Plinko game.
+4. You can follow the app/README.md file for more information
 
 ## Fairness and Transparency
 Our Plinko game leverages the Sui blockchain's capabilities to ensure a fair and transparent gaming experience. All transactions and outcomes are verifiable on the chain, upholding the integrity of the game.
