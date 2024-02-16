@@ -40,11 +40,13 @@ const ScoreTable = () => {
         const multiplier = multipliersNumbers[position];
         const earnings = `${betSize * multiplier} SUI`;
         const earningsValue = betSize * multiplier;
+        const isWin = earningsValue > betSize;
         return {
           bet: `${betSize} SUI`,
           multiplier: `${multiplier}x`,
           earnings,
           earningsValue,
+          isWin,
         };
       });
       //@ts-ignore
@@ -117,7 +119,7 @@ const ScoreTable = () => {
           {dynamicMockData.map((data, index) => (
             <div
               key={index}
-              className={`text-white ${
+              className={`${
                 //@ts-ignore
                 data.earnings.startsWith("-")
                   ? "text-orange-600"
@@ -127,7 +129,7 @@ const ScoreTable = () => {
                   : "text-emerald-400"
               } text-base font-semibold leading-[18.40px] ${
                 //@ts-ignore
-                data.earningsValue < betSize ? "text-red-500" : "text-green-500"
+                data.isWin ? "text-red-500" : "text-green-500"
               }`}
             >
               {
