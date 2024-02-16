@@ -18,7 +18,7 @@ export const useCreateCounterObject = () => {
   const [vrfInput, setVrfInput] = useState("");
   // const [final_paths, setFinalPaths] = useState(<number[][]>[]);
   //@ts-ignore
-  const { final_paths, setFinalPaths } = usePlayContext();
+  const { final_paths, setFinalPaths, setTxDigest } = usePlayContext();
   const handleCreateCounterObject = async (
     total_bet_amount: number,
     numberofBalls: number
@@ -136,6 +136,10 @@ export const useCreateCounterObject = () => {
 
       // Assuming the trace vector is directly in the data object; adjust according to actual structure
       const traceVector = data.trace;
+      const txDigest = data.transactionDigest;
+      console.log("txDigest = ", txDigest);
+      console.log("txDigest to string = ", txDigest.toString());
+      setTxDigest(txDigest.toString());
 
       console.log("Trace vector from /game/plinko/end:", traceVector);
       const final_paths_t = await splitIntoPathsAndNormalize(traceVector);

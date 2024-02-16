@@ -200,8 +200,6 @@ const MatterSim: React.FC = () => {
         dropBallPosision = worldWidth / 2.095 - 20;
       }
       const centerPinX = dropBallPosision;
-      //remove the predefinedPaths[i][0]
-      // predefinedPaths[i].shift(); // because we drop the ball from the top and takes the first value of the array as a starting point
       const ballStartY = 50; // Starting Y position of the ball
       const ball = Bodies.circle(centerPinX, ballStartY, ballSize, {
         restitution: ballElasticity,
@@ -576,12 +574,6 @@ const MatterSim: React.FC = () => {
           );
         })}
       </div>
-      {/* Total won */}
-      {/* <div className="font-bold mt-4">
-        Total won:
-        {totalWon !== -1 ? parseFloat(totalWon.toString()).toFixed(2) : "0.00"}$
-      </div> */}
-      {/* Display the total won amount here */}
     </div>
   );
 };
