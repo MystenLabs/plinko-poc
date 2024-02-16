@@ -152,7 +152,7 @@ const MatterSim: React.FC = () => {
         background: "transparent",
         showVelocity: true,
         showAngleIndicator: true,
-        showPerformance: true, // Show FPS (only for testing) TODO : remove it
+        // showPerformance: true, // Show FPS (only for testing) TODO : remove it//
         //@ts-ignore
         showAngleIndicator: false,
       },

@@ -115,7 +115,7 @@ const ScoreTable = () => {
             </div>
           ))}
         </div>
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 ml-10">
           {dynamicMockData.map((data, index) => (
             <div
               key={index}
@@ -135,7 +135,8 @@ const ScoreTable = () => {
               {
                 //@ts-ignore
                 data.earningsValue
-              }
+              }{" "}
+              SUI
             </div>
           ))}
         </div>
