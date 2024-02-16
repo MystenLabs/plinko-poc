@@ -26,12 +26,15 @@ export default function Play() {
               {/* <div className="absolute top-12 right-0 md:right-10p lg:right-5p transform scale-75 sm:scale-90 md:scale-100 z-50 opacity-100"> */}
               <ScoreTable />
             </div>
-            <div className="flex flex-col items-center min-h-screen bg-opacity-0">
+            <div className="flex flex-col items-center min-h-screen bg-opacity-0 mt-12 px-4">
+              {/* Added mt-12 for top margin and px-4 for horizontal padding */}
               <TotalWon />
-              <div className="mb-4 mx-auto pl-8 ">
+              <div className="mb-4 mx-auto pl-8">
                 <MatterSim />
               </div>
-              <PlinkoSettings />
+              <div className="flex-grow flex flex-col items-center justify-center">
+                <PlinkoSettings />
+              </div>
             </div>
           </IsWaitingToPlayProvider>
         </GameHistoryProvider>

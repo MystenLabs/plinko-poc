@@ -152,7 +152,7 @@ const MatterSim: React.FC = () => {
         background: "transparent",
         showVelocity: true,
         showAngleIndicator: true,
-        // showPerformance: true, // Show FPS (only for testing) TODO : remove it//
+        // showPerformance: true, // Show FPS (only for testing) TODO : remove it
         //@ts-ignore
         showAngleIndicator: false,
       },
@@ -544,7 +544,6 @@ const MatterSim: React.FC = () => {
     <div>
       <div id="matter-canvas-container"></div>
       {/* Last ball won */}
-      <div className="font-bold mt-4">History:</div>
       <div
         className="font-bold overflow-x-auto whitespace-nowrap flex flex-row-reverse justify-end space-x-2"
         style={{
