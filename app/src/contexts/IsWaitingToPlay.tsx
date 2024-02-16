@@ -2,13 +2,13 @@
 import { is } from "@mysten/sui.js";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
-interface IPlayContext {
+interface IWaitingContext {
   isWaitingToPlay: boolean;
   setWaitingToPlay: (waiting: boolean) => void;
 }
 
-// Initialize context with a type assertion to match IPlayContext
-const IsWaitingToPlay = createContext<IPlayContext | undefined>(undefined);
+// Initialize context with a type assertion to match IWaitingContext
+const IsWaitingToPlay = createContext<IWaitingContext | undefined>(undefined);
 
 export const useWaitingToPlayContext = () => {
   const context = useContext(IsWaitingToPlay);
@@ -25,7 +25,7 @@ export const IsWaitingToPlayProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [isPlaying, setPlaying] = useState<boolean>(false);
 
-  // Provide the context with an object that matches IPlayContext
+  // Provide the context with an object that matches IWaitingContext
   const value = {
     isWaitingToPlay: isPlaying,
     setWaitingToPlay: setPlaying,
