@@ -517,8 +517,8 @@ const MatterSim: React.FC = () => {
         colors
       );
       setMultipliersHistory(historyOfMultipliers);
-      setPlaying(false);
       setPopupIsVisible(true);
+      setPlaying(false);
     }
     console.log("bottomArea.render.fillStyle:", colors);
   }, [finishedBalls, predefinedPaths.length, setPlaying, colors]);

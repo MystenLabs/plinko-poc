@@ -132,7 +132,7 @@ const ScoreTable = () => {
             >
               {
                 //@ts-ignore
-                data.earnings
+                data.earningsValue
               }
             </div>
           ))}
