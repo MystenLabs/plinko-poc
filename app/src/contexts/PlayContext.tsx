@@ -1,5 +1,4 @@
 "use client";
-import { is } from "@mysten/sui.js";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface IPlayContext {
@@ -9,8 +8,8 @@ interface IPlayContext {
   setBetSize: (size: number) => void;
   finalPaths: number[][];
   setFinalPaths: (paths: number[][]) => void;
-  popupIsVisible: boolean; // Add this line
-  setPopupIsVisible: (isVisible: boolean) => void; // And this line
+  popupIsVisible: boolean;
+  setPopupIsVisible: (isVisible: boolean) => void;
   txDigest: string;
   setTxDigest: (digest: string) => void;
 }
@@ -46,8 +45,8 @@ export const PlayProvider: React.FC<{ children: ReactNode }> = ({
     setBetSize,
     finalPaths,
     setFinalPaths,
-    popupIsVisible, // And this line
-    setPopupIsVisible, // And this one
+    popupIsVisible,
+    setPopupIsVisible,
     txDigest,
     setTxDigest,
   };
