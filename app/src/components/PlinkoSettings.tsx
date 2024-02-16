@@ -3,17 +3,17 @@ import React, { useState, useEffect } from "react";
 import { usePlayContext } from "../contexts/PlayContext";
 import { useCreateCounterObject } from "@/hooks/moveTransactionCalls.ts/useCreateCounterObject";
 import { useGameHistory } from "@/contexts/GameHistoryContext";
+import { useWaitingToPlayContext } from "@/contexts/IsWaitingToPlay";
 
 const PlinkoSettings = () => {
   //@ts-ignore
   const { isPlaying, setPlaying, betSize, setBetSize } = usePlayContext();
+  const { isWaitingToPlay, setWaitingToPlay } = useWaitingToPlayContext();
   const { handleCreateCounterObject } = useCreateCounterObject();
   const { resetHistory } = useGameHistory();
 
-  // const [betSize, setBetSize] = useState(0.0);
   const [numberOfBalls, setNumberOfBalls] = useState(0);
   const [currentBet, setCurrentBet] = useState(0);
-  const [selectedRisk, setSelectedRisk] = useState("red");
 
   useEffect(() => {
     const bet = parseFloat(betSize.toString()) || 0;
@@ -24,6 +24,7 @@ const PlinkoSettings = () => {
   const handlePlayClick = async () => {
     if (isPlaying) return;
     resetHistory();
+    setWaitingToPlay(true);
     console.log("Play Clicked", isPlaying);
     console.log(currentBet);
     let currentBetSize = currentBet;
@@ -32,25 +33,8 @@ const PlinkoSettings = () => {
       currentBetSize,
       numberOfBalls
     );
-    // console.log("final_paths", result_create_obj[2]);
-    // setFinalPaths(result_create_obj[2]);
+    setWaitingToPlay(false);
     setPlaying(true);
-    console.log("Play Clicked", isPlaying);
-    console.log(
-      "Current Bet:",
-      currentBet.toFixed(2),
-      "Risk Color:",
-      selectedRisk
-    );
-  };
-
-  const adjustBetSize = (delta: any) => {
-    //@ts-ignore
-    setBetSize((prev) => Math.max(0, prev + delta));
-  };
-
-  const adjustNumberOfBalls = (delta: any) => {
-    setNumberOfBalls((prev) => Math.max(0, prev + delta));
   };
 
   const handleBetSizeChange = (e: any) => {
@@ -61,20 +45,6 @@ const PlinkoSettings = () => {
   const handleNumberOfBallsChange = (e: any) => {
     const value = parseInt(e.target.value, 10);
     setNumberOfBalls(isNaN(value) ? 0 : value);
-  };
-
-  const riskButtonClass = (riskColor: any) => {
-    const baseClasses =
-      "px-3 py-1 text-white rounded mx-1 transition-transform duration-300";
-    const colorClasses = {
-      green: "bg-green-500 hover:bg-green-700",
-      yellow: "bg-yellow-500 hover:bg-yellow-700",
-      red: "bg-red-500 hover:bg-red-700",
-    };
-    const selectedClass =
-      selectedRisk === riskColor ? "transform scale-110" : "";
-    //@ts-ignore
-    return `${baseClasses} ${colorClasses[riskColor]} ${selectedClass}`;
   };
 
   return (
@@ -133,13 +103,15 @@ const PlinkoSettings = () => {
           {/* Adjust the hardcoded value as per your dynamic data */}
         </div>
         <button
-          onClick={handlePlayClick}
+          onClick={() => {
+            handlePlayClick();
+          }}
           className={`h-11 px-6 py-2.5 bg-emerald-600 rounded-[999px] flex justify-center items-center gap-2 ${
-            isPlaying ? "cursor-not-allowed opacity-50" : ""
+            isPlaying || isWaitingToPlay ? "cursor-not-allowed opacity-50" : ""
           }`}
         >
           <div className="text-white text-base font-bold leading-[18.40px]">
-            {isPlaying ? "Playing..." : "Play"}
+            {isPlaying || isWaitingToPlay ? "Playing..." : "Play"}
           </div>
         </button>
       </div>
