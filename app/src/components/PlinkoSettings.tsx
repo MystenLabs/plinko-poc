@@ -51,15 +51,6 @@ const PlinkoSettings = () => {
     );
   };
 
-  const adjustBetSize = (delta: any) => {
-    //@ts-ignore
-    setBetSize((prev) => Math.max(0, prev + delta));
-  };
-
-  const adjustNumberOfBalls = (delta: any) => {
-    setNumberOfBalls((prev) => Math.max(0, prev + delta));
-  };
-
   const handleBetSizeChange = (e: any) => {
     const value = parseFloat(e.target.value);
     setBetSize(isNaN(value) ? 0 : value);
@@ -68,20 +59,6 @@ const PlinkoSettings = () => {
   const handleNumberOfBallsChange = (e: any) => {
     const value = parseInt(e.target.value, 10);
     setNumberOfBalls(isNaN(value) ? 0 : value);
-  };
-
-  const riskButtonClass = (riskColor: any) => {
-    const baseClasses =
-      "px-3 py-1 text-white rounded mx-1 transition-transform duration-300";
-    const colorClasses = {
-      green: "bg-green-500 hover:bg-green-700",
-      yellow: "bg-yellow-500 hover:bg-yellow-700",
-      red: "bg-red-500 hover:bg-red-700",
-    };
-    const selectedClass =
-      selectedRisk === riskColor ? "transform scale-110" : "";
-    //@ts-ignore
-    return `${baseClasses} ${colorClasses[riskColor]} ${selectedClass}`;
   };
 
   return (

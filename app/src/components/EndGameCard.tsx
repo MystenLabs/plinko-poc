@@ -11,12 +11,13 @@ const PopupComponent = () => {
     setPopupIsVisible,
     betSize: bid,
     txDigest,
+    finalPaths,
   } = usePlayContext();
 
   const togglePopup = () => setPopupIsVisible(!popupIsVisible);
 
   // Check if the player has won or lost
-  const hasWon = totalWon - bid > 0;
+  const hasWon = totalWon - bid * finalPaths.length > 0;
   const suiExplorerUrl = `https://suiexplorer.com/txblock/${txDigest}?network=testnet`;
   console.log("suiExplorerUrl = ", txDigest);
 
@@ -49,7 +50,7 @@ const PopupComponent = () => {
                   </div>
                 )}
                 <div className="opacity-70 text-right text-neutral-900 text-base font-medium">
-                  You Bid: {bid} SUI
+                  You Bid: {bid * finalPaths.length} SUI
                 </div>
               </div>
               <div className="self-stretch bg-white border-t-2 justify-start items-center gap-2 inline-flex">
