@@ -8,6 +8,10 @@ interface IPlayContext {
   setBetSize: (size: number) => void;
   finalPaths: number[][];
   setFinalPaths: (paths: number[][]) => void;
+  popupIsVisible: boolean;
+  setPopupIsVisible: (isVisible: boolean) => void;
+  txDigest: string;
+  setTxDigest: (digest: string) => void;
 }
 
 // Initialize context with a type assertion to match IPlayContext
@@ -25,10 +29,13 @@ export const PlayProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [isPlaying, setPlaying] = useState<boolean>(false);
+  const [isWaitingToPlay, setWaitingToPlay] = useState<boolean>(false);
   const [betSize, setBetSize] = useState<number>(0);
   const [finalPaths, setFinalPaths] = useState<number[][]>([
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
+  const [popupIsVisible, setPopupIsVisible] = useState<boolean>(false);
+  const [txDigest, setTxDigest] = useState<string>("");
 
   // Provide the context with an object that matches IPlayContext
   const value = {
@@ -38,6 +45,10 @@ export const PlayProvider: React.FC<{ children: ReactNode }> = ({
     setBetSize,
     finalPaths,
     setFinalPaths,
+    popupIsVisible,
+    setPopupIsVisible,
+    txDigest,
+    setTxDigest,
   };
 
   return <PlayContext.Provider value={value}>{children}</PlayContext.Provider>;

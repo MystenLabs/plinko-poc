@@ -3,7 +3,6 @@ import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { useState } from "react";
 import { usePlayContext } from "../../contexts/PlayContext";
 import { useAuthentication } from "@/contexts/Authentication";
-import { number, set } from "zod";
 import { splitIntoPathsAndNormalize } from "@/helpers/traceFromTheEventToPathsForBalls";
 
 const client = new SuiClient({
@@ -18,7 +17,7 @@ export const useCreateCounterObject = () => {
   const [vrfInput, setVrfInput] = useState("");
   // const [final_paths, setFinalPaths] = useState(<number[][]>[]);
   //@ts-ignore
-  const { final_paths, setFinalPaths } = usePlayContext();
+  const { final_paths, setFinalPaths, setTxDigest } = usePlayContext();
   const handleCreateCounterObject = async (
     total_bet_amount: number,
     numberofBalls: number
@@ -131,21 +130,16 @@ export const useCreateCounterObject = () => {
       }
 
       const data = await response.json();
-      console.log("Response from /game/plinko/end:", data);
-      //Data contains the digest
 
       // Assuming the trace vector is directly in the data object; adjust according to actual structure
       const traceVector = data.trace;
-
-      console.log("Trace vector from /game/plinko/end:", traceVector);
+      const txDigest = data.transactionDigest;
+      setTxDigest(txDigest.toString());
       const final_paths_t = await splitIntoPathsAndNormalize(traceVector);
-      console.log("Final paths from /game/plinko/end:", final_paths_t);
       setFinalPaths(final_paths_t);
     } catch (error) {
       console.error("Error in calling /game/plinko/end:", error);
     }
-
-    // Continue with the rest of your hook logic
 
     return [game__id, vrf__input, final_paths];
   };

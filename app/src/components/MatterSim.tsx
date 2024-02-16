@@ -16,14 +16,10 @@ import { usePlayContext } from "../contexts/PlayContext";
 
 import { useGameHistory } from "@/contexts/GameHistoryContext";
 import {
-  checkIfTheMultipliersAreCorrect,
   findTheExpectedMultipliers,
-  findTheMultiplier,
   findTheMultipliers,
   generateMultiplierText,
-  generateRandomPaths,
 } from "@/helpers/automatedTests";
-import { set } from "zod";
 
 const MatterSim: React.FC = () => {
   //@ts-ignore
@@ -32,6 +28,7 @@ const MatterSim: React.FC = () => {
     setPlaying,
     betSize,
     finalPaths: predefinedPaths,
+    setPopupIsVisible,
   } = usePlayContext();
   // console.log("predefinedPaths:", predefinedPaths);
   const { addColor, colors, addTotalWon, totalWon } = useGameHistory();
@@ -53,7 +50,6 @@ const MatterSim: React.FC = () => {
     "#FF0000", // Red
   ];
 
-  const [ballFloors, setBallFloors] = useState<number[]>([0, 0]);
   // Array to store positions for the multiplier text
   const multiplierPositions: any = [];
   const multipliersNumbers = [
@@ -61,50 +57,10 @@ const MatterSim: React.FC = () => {
   ];
   // Define the multipliers for each spot
   const multipliers = generateMultiplierText(multipliersNumbers);
-  // State for matrix
-  const [dropBallPosision, setDropBallPosision] = useState<number[]>([0, 0]);
   // Create a physics engine
   const engine = Engine.create();
 
-  // Convert traceVector to a binary path (even = 1, odd = 0)
-  // const binaryPath = traceVector.map(value => value % 2 === 0 ? 1 : 0);
-
-  // const predefinedPaths: number[][] = [
-  //   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  //   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //   [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
-  //   [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
-  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
-  //   [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], // Example path for the second ball
-  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  //   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  //   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  //   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  //   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //   [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
-  //   [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
-  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
-  //   [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], // Example path for the second ball
-  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  //   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  //   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  // ];
   console.log("predifinedPaths:", predefinedPaths);
-  // const predefinedPaths: number[][] = finalPaths;
-  // let prePaths = generateRandomPaths(30);
-  // // const predefinedPaths = prePaths;
-  // console.log("prePaths:", prePaths);
-  // const predefinedPaths = prePaths;
   console.log("predefinedPaths:", predefinedPaths);
 
   const predefinedPathsForTesting = predefinedPaths;
@@ -151,7 +107,7 @@ const MatterSim: React.FC = () => {
         background: "transparent",
         showVelocity: true,
         showAngleIndicator: true,
-        showPerformance: true, // Show FPS (only for testing) TODO : remove it
+        // showPerformance: true, // Show FPS (only for testing) TODO : remove it
         //@ts-ignore
         showAngleIndicator: false,
       },
@@ -199,8 +155,6 @@ const MatterSim: React.FC = () => {
         dropBallPosision = worldWidth / 2.095 - 20;
       }
       const centerPinX = dropBallPosision;
-      //remove the predefinedPaths[i][0]
-      // predefinedPaths[i].shift(); // because we drop the ball from the top and takes the first value of the array as a starting point
       const ballStartY = 50; // Starting Y position of the ball
       const ball = Bodies.circle(centerPinX, ballStartY, ballSize, {
         restitution: ballElasticity,
@@ -516,6 +470,7 @@ const MatterSim: React.FC = () => {
         colors
       );
       setMultipliersHistory(historyOfMultipliers);
+      setPopupIsVisible(true);
       setPlaying(false);
     }
     console.log("bottomArea.render.fillStyle:", colors);
@@ -542,7 +497,6 @@ const MatterSim: React.FC = () => {
     <div>
       <div id="matter-canvas-container"></div>
       {/* Last ball won */}
-      <div className="font-bold mt-4">History:</div>
       <div
         className="font-bold overflow-x-auto whitespace-nowrap flex flex-row-reverse justify-end space-x-2"
         style={{
@@ -575,12 +529,6 @@ const MatterSim: React.FC = () => {
           );
         })}
       </div>
-      {/* Total won */}
-      {/* <div className="font-bold mt-4">
-        Total won:
-        {totalWon !== -1 ? parseFloat(totalWon.toString()).toFixed(2) : "0.00"}$
-      </div> */}
-      {/* Display the total won amount here */}
     </div>
   );
 };
