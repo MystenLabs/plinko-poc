@@ -28,9 +28,9 @@ const PopupComponent = () => {
   return (
     <>
       {popupIsVisible && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-10 ">
           <div
-            className="p-5 border w-[600px] bg-white rounded-3xl shadow-lg"
+            className="p-5 border w-[600px] bg-white rounded-3xl shadow-lg "
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col justify-center items-center gap-10">
