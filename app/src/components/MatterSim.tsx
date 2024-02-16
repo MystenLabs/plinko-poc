@@ -16,14 +16,10 @@ import { usePlayContext } from "../contexts/PlayContext";
 
 import { useGameHistory } from "@/contexts/GameHistoryContext";
 import {
-  checkIfTheMultipliersAreCorrect,
   findTheExpectedMultipliers,
-  findTheMultiplier,
   findTheMultipliers,
   generateMultiplierText,
-  generateRandomPaths,
 } from "@/helpers/automatedTests";
-import { set } from "zod";
 
 const MatterSim: React.FC = () => {
   //@ts-ignore
@@ -54,7 +50,6 @@ const MatterSim: React.FC = () => {
     "#FF0000", // Red
   ];
 
-  const [ballFloors, setBallFloors] = useState<number[]>([0, 0]);
   // Array to store positions for the multiplier text
   const multiplierPositions: any = [];
   const multipliersNumbers = [
@@ -62,50 +57,10 @@ const MatterSim: React.FC = () => {
   ];
   // Define the multipliers for each spot
   const multipliers = generateMultiplierText(multipliersNumbers);
-  // State for matrix
-  const [dropBallPosision, setDropBallPosision] = useState<number[]>([0, 0]);
   // Create a physics engine
   const engine = Engine.create();
 
-  // Convert traceVector to a binary path (even = 1, odd = 0)
-  // const binaryPath = traceVector.map(value => value % 2 === 0 ? 1 : 0);
-
-  // const predefinedPaths: number[][] = [
-  //   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  //   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //   [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
-  //   [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
-  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
-  //   [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], // Example path for the second ball
-  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  //   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  //   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  //   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-  //   [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  //   [1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0],
-  //   [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // Example path for the second ball
-  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1],
-  //   [1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0], // Example path for the second ball
-  //   [0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  //   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  //   [1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0],
-  //   [1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-  // ];
   console.log("predifinedPaths:", predefinedPaths);
-  // const predefinedPaths: number[][] = finalPaths;
-  // let prePaths = generateRandomPaths(30);
-  // // const predefinedPaths = prePaths;
-  // console.log("prePaths:", prePaths);
-  // const predefinedPaths = prePaths;
   console.log("predefinedPaths:", predefinedPaths);
 
   const predefinedPathsForTesting = predefinedPaths;

@@ -14,7 +14,7 @@ export const useWaitingToPlayContext = () => {
   const context = useContext(IsWaitingToPlay);
   if (context === undefined) {
     throw new Error(
-      "usePlayContext must be used within a WaitingToPlayProvider"
+      "useWaitingToPlayContext must be used within a WaitingToPlayProvider"
     );
   }
   return context;

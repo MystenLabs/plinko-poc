@@ -3,12 +3,7 @@ import React, { useState, useEffect } from "react";
 import { usePlayContext } from "../contexts/PlayContext";
 import { useCreateCounterObject } from "@/hooks/moveTransactionCalls.ts/useCreateCounterObject";
 import { useGameHistory } from "@/contexts/GameHistoryContext";
-import {
-  IsWaitingToPlayProvider,
-  useWaitingToPlayContext,
-} from "@/contexts/IsWaitingToPlay";
-
-import { set } from "zod";
+import { useWaitingToPlayContext } from "@/contexts/IsWaitingToPlay";
 
 const PlinkoSettings = () => {
   //@ts-ignore
@@ -17,10 +12,8 @@ const PlinkoSettings = () => {
   const { handleCreateCounterObject } = useCreateCounterObject();
   const { resetHistory } = useGameHistory();
 
-  // const [betSize, setBetSize] = useState(0.0);
   const [numberOfBalls, setNumberOfBalls] = useState(0);
   const [currentBet, setCurrentBet] = useState(0);
-  const [selectedRisk, setSelectedRisk] = useState("red");
 
   useEffect(() => {
     const bet = parseFloat(betSize.toString()) || 0;
@@ -42,13 +35,6 @@ const PlinkoSettings = () => {
     );
     setWaitingToPlay(false);
     setPlaying(true);
-    console.log("Play Clicked", isPlaying);
-    console.log(
-      "Current Bet:",
-      currentBet.toFixed(2),
-      "Risk Color:",
-      selectedRisk
-    );
   };
 
   const handleBetSizeChange = (e: any) => {
