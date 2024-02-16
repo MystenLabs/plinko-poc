@@ -8,6 +8,7 @@ import { useRegisterServiceWorker } from "@/hooks/useRegisterServiceWorker";
 import { ChildrenProps } from "@/types/ChildrenProps";
 import React from "react";
 import { Toaster } from "react-hot-toast";
+import backgroundImage from "../../public/Tablebackground.svg";
 
 export const ProvidersAndLayout = ({ children }: ChildrenProps) => {
   const _ = useRegisterServiceWorker();
@@ -15,7 +16,17 @@ export const ProvidersAndLayout = ({ children }: ChildrenProps) => {
 
   return (
     <AuthenticationProvider>
-      <main className={`min-h-screen w-screen bg-black`}>
+      <main
+        className={`min-h-screen w-screen bg-black`}
+        style={{
+          // use the src property of the image object
+          backgroundImage: `url(${backgroundImage.src})`,
+          // other styles
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
         {!!isMobile && <MobileLayout>{children}</MobileLayout>}
         {!isMobile && <LargeScreenLayout>{children}</LargeScreenLayout>}
         <Toaster
