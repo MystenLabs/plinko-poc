@@ -41,7 +41,7 @@ export const PlayProvider: React.FC<{ children: ReactNode }> = ({
   const [
     popupInsufficientCoinBalanceIsVisible,
     setPopupInsufficientCoinBalanceIsVisible,
-  ] = useState<boolean>(true);
+  ] = useState<boolean>(false);
 
   // Provide the context with an object that matches IPlayContext
   const value = {
