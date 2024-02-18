@@ -32,7 +32,6 @@ export const useGetBalance = () => {
     try {
       const coin_balance = await suiClient.getBalance({
         owner: address!,
-        coinType: "SUI",
       }); //! Check the address
 
       setCoinBalance(coin_balance);
