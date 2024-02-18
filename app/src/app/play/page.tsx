@@ -10,6 +10,7 @@ import { TotalWon } from "@/components/totalWon";
 import ScoreTable from "@/components/ScoreTable";
 import EndGameCard from "@/components/EndGameCard";
 import { IsWaitingToPlayProvider } from "@/contexts/IsWaitingToPlay";
+// import InsufficientCoinBalance from "@/components/InsufficientCoinBalance";
 
 export const metadata: Metadata = {
   title: "Play Plinko Game",
@@ -22,6 +23,7 @@ export default function Play() {
         <GameHistoryProvider>
           <IsWaitingToPlayProvider>
             <EndGameCard />
+            {/* <InsufficientCoinBalance /> */}
             <div className="absolute top-15 right-0 transform scale-75 z-50 opacity-100">
               <ScoreTable />
             </div>
