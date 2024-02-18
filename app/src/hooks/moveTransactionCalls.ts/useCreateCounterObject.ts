@@ -10,7 +10,7 @@ const client = new SuiClient({
 });
 
 export const useCreateCounterObject = () => {
-  const { enokiFlow } = useAuthentication();
+  const { enokiFlow, handleLogout } = useAuthentication();
   const [isLoading, setIsLoading] = useState(false);
   const [counterNftId, setCounterNftId] = useState("");
   const [gameId, setGameId] = useState("");
@@ -23,6 +23,11 @@ export const useCreateCounterObject = () => {
     numberofBalls: number
   ) => {
     setIsLoading(true);
+    try {
+      const keypair = await enokiFlow.getKeypair();
+    } catch (error) {
+      handleLogout();
+    }
     const keypair = await enokiFlow.getKeypair();
     console.log("keypair = ", keypair);
     //log a type of total_bet_amount
