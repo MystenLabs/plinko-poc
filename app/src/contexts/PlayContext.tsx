@@ -10,6 +10,8 @@ interface IPlayContext {
   setFinalPaths: (paths: number[][]) => void;
   popupIsVisible: boolean;
   setPopupIsVisible: (isVisible: boolean) => void;
+  popupInsufficientCoinBalanceIsVisible: boolean;
+  setPopupInsufficientCoinBalanceIsVisible: (isVisible: boolean) => void;
   txDigest: string;
   setTxDigest: (digest: string) => void;
 }
@@ -36,6 +38,10 @@ export const PlayProvider: React.FC<{ children: ReactNode }> = ({
   ]);
   const [popupIsVisible, setPopupIsVisible] = useState<boolean>(false);
   const [txDigest, setTxDigest] = useState<string>("");
+  const [
+    popupInsufficientCoinBalanceIsVisible,
+    setPopupInsufficientCoinBalanceIsVisible,
+  ] = useState<boolean>(true);
 
   // Provide the context with an object that matches IPlayContext
   const value = {
@@ -47,6 +53,8 @@ export const PlayProvider: React.FC<{ children: ReactNode }> = ({
     setFinalPaths,
     popupIsVisible,
     setPopupIsVisible,
+    popupInsufficientCoinBalanceIsVisible,
+    setPopupInsufficientCoinBalanceIsVisible,
     txDigest,
     setTxDigest,
   };
