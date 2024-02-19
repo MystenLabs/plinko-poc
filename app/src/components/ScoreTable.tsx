@@ -26,12 +26,18 @@ const multipliersNumbers = [
 
 const ScoreTable = () => {
   const isScrollNeeded = true;
-  const { colors, addTotalWon } = useGameHistory();
+  const {
+    colors,
+    addTotalWon,
+    currentGameHistory,
+    setCurrentGameHistory,
+    historyFromPreviousGames,
+  } = useGameHistory();
   const { betSize } = usePlayContext();
-  const [dynamicMockData, setDynamicMockData] = useState([]);
+  // const [currentGameHistory, setCurrentGameHistory] = useState([]);
 
   useEffect(() => {
-    setDynamicMockData([]);
+    setCurrentGameHistory([]);
     let data: any = [];
     // Only append new data if colors array is not empty
     if (colors.length > 0) {
@@ -55,7 +61,7 @@ const ScoreTable = () => {
         return [...newEntries.reverse(), ...prevData];
       };
 
-      setDynamicMockData(data);
+      setCurrentGameHistory(data);
     }
   }, [colors]);
 
@@ -83,62 +89,116 @@ const ScoreTable = () => {
         } flex-1 w-full`}
       >
         <div className="flex flex-col gap-5 mr-5">
-          {dynamicMockData.map((data, index) => (
-            <div
-              key={index}
-              className="text-white text-base font-normal leading-[18.40px]"
-            >
-              {
-                //@ts-ignore
-                data.bet
-              }
-            </div>
-          ))}
+          {
+            //@ts-ignore
+            currentGameHistory.map((data, index) => (
+              <div
+                key={index}
+                className="text-white text-base font-normal leading-[18.40px]"
+              >
+                {
+                  //@ts-ignore
+                  data.bet
+                }
+              </div>
+            ))
+          }
+          {historyFromPreviousGames.length > 1 &&
+            [...historyFromPreviousGames] // Create a shallow copy to avoid mutating the original array
+              .slice(1)
+              .reverse() // Reverse the copied array(
+              .map((data, index) =>
+                // @ts-ignore
+                data.map((data2, index2) => (
+                  <div
+                    key={index2 + 1}
+                    className="text-white text-opacity-40 text-base font-normal leading-[18.40px]"
+                  >
+                    {data2.bet}
+                  </div>
+                ))
+              )}
         </div>
         <div className="flex flex-col gap-5 mr-10">
           {" "}
           {/* Adjust the right margin here */}
-          {dynamicMockData.map((data, index) => (
-            <div
-              key={index}
-              className={`text-white ${
-                //@ts-ignore
-                data.multiplier === "-"
-                  ? "text-opacity-40"
-                  : "text-base font-semibold"
-              } leading-[18.40px]`}
-            >
-              {
-                //@ts-ignore
-                data.multiplier
-              }
-            </div>
-          ))}
+          {
+            //@ts-ignore
+            currentGameHistory.map((data, index) => (
+              <div
+                key={index}
+                className={`text-white ${
+                  //@ts-ignore
+                  data.multiplier === "-"
+                    ? "text-opacity-40"
+                    : "text-base font-semibold"
+                } leading-[18.40px]`}
+              >
+                {
+                  //@ts-ignore
+                  data.multiplier
+                }
+              </div>
+            ))
+          }
+          {historyFromPreviousGames.length > 1 &&
+            [...historyFromPreviousGames] // Create a shallow copy to avoid mutating the original array
+              .slice(1)
+              .reverse() // Reverse the copied array(
+              .map((data, index) =>
+                // @ts-ignore
+                data.map((data2, index) => (
+                  <div
+                    key={index + 1}
+                    className="text-white text-opacity-40 text-base font-normal leading-[18.40px]"
+                  >
+                    {data2.multiplier}
+                  </div>
+                ))
+              )}
         </div>
         <div className="flex flex-col gap-5 ml-4">
-          {dynamicMockData.map((data, index) => (
-            <div
-              key={index}
-              className={`${
-                //@ts-ignore
-                data.earnings.startsWith("-")
-                  ? "text-orange-600"
-                  : //@ts-ignore
-                  data.earnings === "-"
-                  ? "text-opacity-40"
-                  : "text-emerald-400"
-              } text-base font-semibold leading-[18.40px] ${
-                //@ts-ignore
-                data.isLost ? "text-red-500" : "text-green-500"
-              }`}
-            >
-              {
-                //@ts-ignore
-                data.earningsValue
-              }{" "}
-              SUI
-            </div>
-          ))}
+          {
+            //@ts-ignore
+            currentGameHistory.map((data, index) => (
+              <div
+                key={index}
+                className={`${
+                  //@ts-ignore
+                  data.earnings.startsWith("-")
+                    ? "text-orange-600"
+                    : //@ts-ignore
+                    data.earnings === "-"
+                    ? "text-opacity-40"
+                    : "text-emerald-400"
+                } text-base font-semibold leading-[18.40px] ${
+                  //@ts-ignore
+                  data.isLost ? "text-red-500" : "text-green-500"
+                }`}
+              >
+                {
+                  //@ts-ignore
+                  data.earningsValue
+                }{" "}
+                SUI
+              </div>
+            ))
+          }
+          {historyFromPreviousGames.length > 1 &&
+            [...historyFromPreviousGames] // Create a shallow copy to avoid mutating the original array
+              .slice(1)
+              .reverse() // Reverse the copied array(
+              .map((data, index) =>
+                // @ts-ignore
+                data.map((data2, index) => (
+                  <div
+                    key={index + 1}
+                    className="text-white text-opacity-40 text-base font-normal leading-[18.40px]"
+                  >
+                    {data2.earnings}
+                  </div>
+                ))
+              )}
         </div>
       </div>
     </div>

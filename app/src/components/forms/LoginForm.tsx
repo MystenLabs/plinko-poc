@@ -53,7 +53,7 @@ export const LoginForm = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <h3 className="font-semibold text-lg text-center mb-5">Login</h3>
+      <h3 className="font-semibold text-lg text-center mb-5"></h3>
       {!!authURLs && (
         <div className="flex flex-col md:flex-row items-center justify-center">
           <Link

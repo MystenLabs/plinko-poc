@@ -29,7 +29,7 @@ const PopupComponent2 = () => {
                   <p>Not enough balance</p>
                 </div>
 
-                <p>Sent tSUI to your address</p>
+                <p>Sent SUI to your address</p>
               </div>
               <div className="self-stretch bg-white border-t-2 justify-start items-center gap-2 inline-flex">
                 <button
