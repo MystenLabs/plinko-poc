@@ -43,7 +43,7 @@ export const LoginForm = () => {
 
   useEffect(() => {
     if (user.role !== USER_ROLES.ROLE_4 && !isAuthLoading) {
-      router.push(`/${user.role}`);
+      router.push(`/play`);
     }
   }, [user, isAuthLoading]);
 
