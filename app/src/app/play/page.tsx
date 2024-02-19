@@ -34,7 +34,7 @@ export default function Play() {
               <div className="scale-125 mb-4 mx-auto pl-10">
                 <MatterSim />
               </div>
-              <div className="flex-grow flex flex-col items-center justify-center">
+              <div className="flex-grow flex flex-col items-center justify-center mt-4 md:mt-8 lg:mt-12 z-10">
                 <PlinkoSettings />
               </div>
             </div>
