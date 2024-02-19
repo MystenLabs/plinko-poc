@@ -12,6 +12,7 @@ const PopupComponent = () => {
     betSize: bid,
     txDigest,
     finalPaths,
+    setFinalPaths,
   } = usePlayContext();
 
   const togglePopup = () => setPopupIsVisible(!popupIsVisible);
@@ -23,6 +24,7 @@ const PopupComponent = () => {
 
   const handlePlayAgain = () => {
     setPopupIsVisible(false); // This will hide the popup
+    setFinalPaths([[15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]]); // Reset the final paths
   };
 
   return (

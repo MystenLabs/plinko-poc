@@ -10,19 +10,30 @@ const client = new SuiClient({
 });
 
 export const useCreateCounterObject = () => {
-  const { enokiFlow } = useAuthentication();
+  const { enokiFlow, handleLogout } = useAuthentication();
   const [isLoading, setIsLoading] = useState(false);
   const [counterNftId, setCounterNftId] = useState("");
   const [gameId, setGameId] = useState("");
   const [vrfInput, setVrfInput] = useState("");
   // const [final_paths, setFinalPaths] = useState(<number[][]>[]);
   //@ts-ignore
-  const { final_paths, setFinalPaths, setTxDigest } = usePlayContext();
+  const {
+    //@ts-ignore
+    final_paths,
+    setFinalPaths,
+    setPopupInsufficientCoinBalanceIsVisible,
+    setTxDigest,
+  } = usePlayContext();
   const handleCreateCounterObject = async (
     total_bet_amount: number,
     numberofBalls: number
   ) => {
     setIsLoading(true);
+    try {
+      const keypair = await enokiFlow.getKeypair();
+    } catch (error) {
+      handleLogout();
+    }
     const keypair = await enokiFlow.getKeypair();
     console.log("keypair = ", keypair);
     //log a type of total_bet_amount
@@ -106,6 +117,10 @@ export const useCreateCounterObject = () => {
     console.log("game_id = ", game__id);
     console.log("VRF_Input = ", vrf__input);
     console.log("Number of Balls = ", numberofBalls);
+
+    if (typeof game__id === "undefined" || typeof vrf__input === "undefined") {
+      setPopupInsufficientCoinBalanceIsVisible(true);
+    }
 
     // Fetch API call for the game/plinko/end endpoint
     try {

@@ -10,6 +10,8 @@ interface IPlayContext {
   setFinalPaths: (paths: number[][]) => void;
   popupIsVisible: boolean;
   setPopupIsVisible: (isVisible: boolean) => void;
+  popupInsufficientCoinBalanceIsVisible: boolean;
+  setPopupInsufficientCoinBalanceIsVisible: (isVisible: boolean) => void;
   txDigest: string;
   setTxDigest: (digest: string) => void;
 }
@@ -32,10 +34,14 @@ export const PlayProvider: React.FC<{ children: ReactNode }> = ({
   const [isWaitingToPlay, setWaitingToPlay] = useState<boolean>(false);
   const [betSize, setBetSize] = useState<number>(0);
   const [finalPaths, setFinalPaths] = useState<number[][]>([
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15],
   ]);
   const [popupIsVisible, setPopupIsVisible] = useState<boolean>(false);
   const [txDigest, setTxDigest] = useState<string>("");
+  const [
+    popupInsufficientCoinBalanceIsVisible,
+    setPopupInsufficientCoinBalanceIsVisible,
+  ] = useState<boolean>(false);
 
   // Provide the context with an object that matches IPlayContext
   const value = {
@@ -47,6 +53,8 @@ export const PlayProvider: React.FC<{ children: ReactNode }> = ({
     setFinalPaths,
     popupIsVisible,
     setPopupIsVisible,
+    popupInsufficientCoinBalanceIsVisible,
+    setPopupInsufficientCoinBalanceIsVisible,
     txDigest,
     setTxDigest,
   };

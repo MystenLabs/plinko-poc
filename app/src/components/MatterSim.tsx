@@ -122,6 +122,13 @@ const MatterSim: React.FC = () => {
 
     //between each ball spawn i want to wait 750ms
     const asyncCompositeBallAdd = async (balls: Matter.Body[]) => {
+      if (
+        JSON.stringify(predefinedPaths) ===
+        JSON.stringify([[15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]])
+      ) {
+        setPlaying(false);
+        return;
+      }
       while (balls.length > ballsSpawned) {
         if (document.visibilityState === "visible" && isPlaying) {
           console.log("isPlaying:", isPlaying);
@@ -425,6 +432,7 @@ const MatterSim: React.FC = () => {
           x: startPoint.x + forceTrackers[i].x * 5000, // Scale factor for visualization
           y: startPoint.y + forceTrackers[i].y * 5000, // Scale factor for visualization
         };
+        //Buckets positions
 
         const context = render.context;
         context.font = "14px Arial";
