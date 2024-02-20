@@ -90,14 +90,14 @@ const PopupComponent = () => {
                   <div className="w-full overflow-auto">
                     {historyFromPreviousGames.length > 1 &&
                       [...historyFromPreviousGames] // Create a shallow copy to avoid mutating the original array
-                        .slice(1)
+                        .slice(2)
                         .reverse() // Reverse the copied array
                         .map((data, index) => (
                           <React.Fragment key={index}>
                             <div className="text-neutral-900 text-lg font-semibold">
                               {/* Display the game number, considering the reverse order */}
                               Game #
-                              {historyFromPreviousGames.length - 1 - index}
+                              {historyFromPreviousGames.length - 1 - index - 1}
                             </div>
 
                             {
