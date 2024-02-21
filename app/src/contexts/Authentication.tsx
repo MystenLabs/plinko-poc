@@ -60,7 +60,7 @@ export const AuthenticationProvider = ({ children }: ChildrenProps) => {
   const handleLoginAs = (newUser: UserProps) => {
     setUser(newUser);
     localStorage.setItem("user", JSON.stringify(newUser));
-    router.push(`/${newUser.role}`);
+    router.push(`/play`);
   };
 
   const handleLogout = () => {
