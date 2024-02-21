@@ -1,22 +1,42 @@
-import "server-only";
-
-import { Paper } from "@/components/general/Paper";
-import { Metadata } from "next";
-import MatterSim from "../../components/MatterSim";
-import PlinkoSettings from "@/components/PlinkoSettings";
-import { PlayProvider } from "@/contexts/PlayContext";
-import { GameHistoryProvider } from "@/contexts/GameHistoryContext";
-import { TotalWon } from "@/components/totalWon";
-import ScoreTable from "@/components/ScoreTable";
+"use client";
 import EndGameCard from "@/components/EndGameCard";
-import { IsWaitingToPlayProvider } from "@/contexts/IsWaitingToPlay";
 import InsufficientCoinBalance from "@/components/InsufficientCoinBalance";
+import MatterSim from "@/components/MatterSim";
+import PlinkoSettings from "@/components/PlinkoSettings";
+import { Paper } from "@/components/general/Paper";
+import { GameHistoryProvider } from "@/contexts/GameHistoryContext";
+import { IsWaitingToPlayProvider } from "@/contexts/IsWaitingToPlay";
+import { PlayProvider } from "@/contexts/PlayContext";
+import React, { useEffect, useRef, useState } from "react";
 
-export const metadata: Metadata = {
-  title: "Play Plinko Game",
-};
+export default function Page() {
+  const containerRef = useRef(null);
+  const [scale, setScale] = useState(1);
 
-export default function Play() {
+  useEffect(() => {
+    const calculateScale = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      //@ts-ignore
+      const containerWidth = container.offsetWidth;
+      //@ts-ignore
+      const containerHeight = container.offsetHeight;
+
+      const matterSimWidth = 800; // Replace with MatterSim's actual width
+      const matterSimHeight = 600; // Replace with MatterSim's actual height
+
+      const scaleX = containerWidth / matterSimWidth;
+      const scaleY = containerHeight / matterSimHeight;
+      const newScale = Math.min(scaleX, scaleY);
+
+      setScale(newScale);
+    };
+
+    calculateScale();
+    window.addEventListener("resize", calculateScale);
+    return () => window.removeEventListener("resize", calculateScale);
+  }, []);
+
   return (
     <Paper>
       <PlayProvider>
@@ -24,19 +44,29 @@ export default function Play() {
           <IsWaitingToPlayProvider>
             <EndGameCard />
             <InsufficientCoinBalance />
-            <div className="absolute top-15 right-0 transform scale-75 z-50 opacity-100">
-              <ScoreTable />
+            <div
+              ref={containerRef}
+              className="relative max-w-full max-h-full overflow-hidden"
+            >
+              {/* Adjust this div to take 60% of the height of its parent */}
+              <div className="w-full h-3/5 flex justify-center items-center overflow-hidden bg-slate-600">
+                <div
+                  style={{
+                    transform: `scale(${scale})`,
+                    transformOrigin: "center center",
+                    display: "flex", // Ensures the div is a flex container
+                    justifyContent: "center", // Centers horizontally in the flex container
+                    alignItems: "center", // Centers vertically in the flex container
+                    width: "100%", // Ensures it tries to fill the container before scaling
+                    // Removed height: "100%" to respect the parent's adjusted height
+                  }}
+                >
+                  <MatterSim />
+                </div>
+              </div>
             </div>
-            <div className="flex flex-col items-center min-h-screen bg-opacity-0 mt-12 px-4">
-              <div className="mb-12 mt-6">
-                <TotalWon />
-              </div>
-              <div className="scale-125 mb-4 mx-auto pl-10">
-                <MatterSim />
-              </div>
-              <div className="flex-grow flex flex-col items-center justify-center mt-4 md:mt-8 lg:mt-12 z-10">
-                <PlinkoSettings />
-              </div>
+            <div>
+              <PlinkoSettings />
             </div>
           </IsWaitingToPlayProvider>
         </GameHistoryProvider>
