@@ -12,7 +12,7 @@ const PlinkoSettings = () => {
   const { handleCreateCounterObject } = useCreateCounterObject();
   const { resetHistory } = useGameHistory();
 
-  const [numberOfBalls, setNumberOfBalls] = useState(0);
+  const [numberOfBalls, setNumberOfBalls] = useState(1);
   const [currentBet, setCurrentBet] = useState(0);
 
   useEffect(() => {
@@ -38,13 +38,13 @@ const PlinkoSettings = () => {
   };
 
   const handleBetSizeChange = (e: any) => {
-    const value = parseFloat(e.target.value);
-    setBetSize(isNaN(value) ? 0 : value);
+    const newBetSize = Math.max(1, Number(e.target.value));
+    setBetSize(newBetSize);
   };
 
   const handleNumberOfBallsChange = (e: any) => {
-    const value = parseInt(e.target.value, 10);
-    setNumberOfBalls(isNaN(value) ? 0 : value);
+    const newNumberOfBalls = Math.max(1, Number(e.target.value));
+    setNumberOfBalls(newNumberOfBalls);
   };
 
   return (
@@ -84,18 +84,6 @@ const PlinkoSettings = () => {
         </div>
       </div>
 
-      {/* Number of Rows (New) */}
-      <div className="flex flex-col justify-start items-start gap-2.5">
-        <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
-          Number of Rows
-        </div>
-        <div className="flex items-center h-11 p-5 bg-emerald-950 rounded-[40px] border border-white border-opacity-25 gap-2.5">
-          <div className="text-white text-opacity-80 text-base font-normal leading-[18.40px]">
-            12 {/* Adjust the hardcoded value as per your dynamic data */}
-          </div>
-        </div>
-      </div>
-
       {/* Total Bid & Play Button */}
       <div className="flex flex-col justify-start items-start gap-2.5">
         <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
@@ -107,7 +95,9 @@ const PlinkoSettings = () => {
             handlePlayClick();
           }}
           className={`h-11 px-6 py-2.5 bg-emerald-600 rounded-[999px] flex justify-center items-center gap-2 ${
-            isPlaying || isWaitingToPlay ? "cursor-not-allowed opacity-50" : ""
+            isPlaying || isWaitingToPlay || currentBet > 10
+              ? "cursor-not-allowed opacity-50"
+              : ""
           }`}
         >
           <div className="text-white text-base font-bold leading-[18.40px]">
