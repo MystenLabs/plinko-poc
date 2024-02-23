@@ -3,7 +3,6 @@
 
 module plinko::house_data {
     // === Imports ===
-    
     use std::vector;
     use sui::object::{Self, UID};
     use sui::balance::{Self, Balance};
@@ -14,11 +13,9 @@ module plinko::house_data {
     use sui::transfer::{Self};
 
     // === Friends ===
-
     friend plinko::plinko;
 
     // === Errors ===
-    
     const ECallerNotHouse: u64 = 0;
     const EInsufficientBalance: u64 = 1;
 
@@ -28,21 +25,21 @@ module plinko::house_data {
     /// Configuration and Treasury shared object, managed by the house.
     struct HouseData has key {
         id: UID,
-        /// House's balance which also contains the acrued winnings of the house.
+        // House's balance which also contains the accrued winnings of the house.
         balance: Balance<SUI>, 
-        /// Address of the house or the game operator.
+        // Address of the house or the game operator.
         house: address,
-        /// Public key used to verify the beacon produced by the back-end.
+        // Public key used to verify the beacon produced by the back-end.
         public_key: vector<u8>, 
-        /// Maximum stake amount a player can bet in a single game.
+        // Maximum stake amount a player can bet in a single game.
         max_stake: u64,
-        /// Minimum stake amount required to play the game.
+        // Minimum stake amount required to play the game.
         min_stake: u64,
-        /// The accrued fees from games played.
+        // The accrued fees from games played.
         fees: Balance<SUI>, 
-        /// The default fee in basis points. 1 basis point = 0.01%.
+        // The default fee in basis points. 1 basis point = 0.01%.
         base_fee_in_bp: u16, 
-        /// Multipliers used to calculate winnings based on the game outcome.
+        // Multipliers used to calculate winnings based on the game outcome.
         multiplier: vector<u64>
     }
 
@@ -54,7 +51,6 @@ module plinko::house_data {
 
     /// Used as a one time witness to generate the publisher.
     struct HOUSE_DATA has drop {}
-
 
     fun init(otw: HOUSE_DATA, ctx: &mut TxContext) {
         // Creating and sending the Publisher object to the sender.

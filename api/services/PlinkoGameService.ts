@@ -15,8 +15,7 @@ class PlinkoGameService {
   constructor() {
     this.suiService = new SuiService();
   }
-
-  // end-game for single player satoshi
+  
   public finishGame(
     gameId: string,
     vrfInputArray: Uint8Array,
