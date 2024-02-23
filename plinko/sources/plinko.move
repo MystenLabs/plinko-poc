@@ -15,10 +15,10 @@ module plinko::plinko {
     use sui::hash::{blake2b256};
     use sui::dynamic_object_field::{Self as dof};
 
-    // Counter library
+    // Import Counter NFT module
     use plinko::counter_nft::{Self, Counter};
 
-    // HouseData library
+    // Import HouseData module
     use plinko::house_data::{Self as hd, HouseData};
 
     // === Errors ===
@@ -28,19 +28,15 @@ module plinko::plinko {
     const EInsufficientHouseBalance: u64 = 5;
     const EGameDoesNotExist: u64 = 6;
 
-    // === Constants ===
-    const GAME_RETURN: u8 = 2;
-
     // === Structs ===
 
     /// Represents a game and holds the acrued stake.
-    /// The guess field could have also been represented as a u8 or boolean, but we chose to use "H" and "T" strings for readability and safety.
-    /// Makes it easier for the user to assess if a selection they made on a DApp matches with the txn they are signing on their wallet.
     struct Game has key, store {
         id: UID,
         game_start_epoch: u64,
         stake: Balance<SUI>,
         player: address,
+        // The VRF input used to generate the extended beacon
         vrf_input: vector<u8>,
         fee_bp: u16
     }
@@ -54,7 +50,6 @@ module plinko::plinko {
         vrf_input: vector<u8>,
         user_stake: u64,
         fee_bp: u16
-        // is it worth it to save the multiplier vector
     }
 
     /// Emitted when a game has finished.
@@ -62,22 +57,23 @@ module plinko::plinko {
         game_id: ID,
         result: u64,
         player: address,
-        trace: vector<u8>
+        // The trace path of the extended beacon
+        trace: vector<u8> 
     }
 
     // === Public Functions ===
 
-    /// Function used to create a new game. The player must provide a guess and a Counter NFT.
-    /// Stake is taken from the player's coin and added to the game's stake. The house's stake is also added to the game's stake.
+    /// Function used to create a new game. The player must provide a Counter NFT and the number of balls.
     public fun start_game(counter: &mut Counter, num_balls: u64, coin: Coin<SUI>, house_data: &mut HouseData, ctx: &mut TxContext): ID {
         let fee_bp = hd::base_fee_in_bp(house_data);
         let (id, new_game) = internal_start_game(counter, num_balls, coin, house_data, fee_bp, ctx);
-
         dof::add(hd::borrow_mut(house_data), id, new_game);
         id
     }
 
-    /// Completes a game, calculating the outcome and transferring winnings.
+    /// Completes the game by calculating the outcome and transferring the funds to the player.
+    /// The player must provide a BLS signature of the VRF input and the number of balls to calculate the outcome.
+    /// It emits an Outcome event with the game result and the trace path of the extended beacon.
     public fun finish_game(game_id: ID, bls_sig: vector<u8>, house_data: &mut HouseData, num_balls: u64, ctx: &mut TxContext): (u64, address, vector<u8>) {
         // Ensure that the game exists.
         assert!(game_exists(house_data, game_id), EGameDoesNotExist);
@@ -128,24 +124,29 @@ module plinko::plinko {
             let state: u64 = 0;
             let i = 0;
             while (i < 12) {
+                // Calculate the byte index for the current ball and iteration.
                 let byte_index = (ball_index * 12) + i;
+                // Retrieve the byte from the extended beacon.
                 let byte = *vector::borrow(&extended_beacon, byte_index);
                 // Add the byte to the trace vector
                 vector::push_back<u8>(&mut trace, byte);
                 // Count the number of even bytes
                 // If even, add 1 to the state
                 // Odd byte -> 0, Even byte -> 1
+                // The state is used to calculate the multiplier index
                 state = if (byte % 2 == 0) { state + 1 } else { state };
                 i = i + 1;
             };
 
         // Calculate multiplier index based on state
         let multiplier_index = state % vector::length(&hd::multiplier(house_data));
+        // Retrieve the multiplier from the house data
         let result = *vector::borrow(&hd::multiplier(house_data), multiplier_index);
         
         // Calculate funds amount for this particular ball
         // Divide by 100 to adjust for multiplier scale and SUI units
         let funds_amount_per_ball = (result * stake_per_ball)/100; 
+        // Add the funds amount to the total funds amount
         total_funds_amount = total_funds_amount + funds_amount_per_ball;
         ball_index = ball_index + 1;
     };
@@ -158,7 +159,7 @@ module plinko::plinko {
 
     // transfer the payout coins to the player
     transfer::public_transfer(payout_coin, player);
-
+    // Emit the Outcome event
     emit(Outcome {
         game_id,
         result: total_funds_amount,
@@ -166,20 +167,20 @@ module plinko::plinko {
         trace
     });
 
-    // return the total amount to be sent to the player, (and the player address) the transaction will happen by a PTB
+    // return the total amount to be sent to the player, (and the player address)
     (total_funds_amount, player, trace)
 }
 
     // === Public-View Functions ===
 
-    /// Returns the epoch in which the gane started.
+    /// Returns the epoch in which the game started.
     public fun game_start_epoch(game: &Game): u64 {
         game.game_start_epoch
     }
 
     /// Returns the total stake.
     public fun stake(game: &Game): u64 {
-        balance::value(&game.stake) // TODO: update this
+        balance::value(&game.stake)
     }
 
     /// Returns the player's address.
@@ -199,12 +200,6 @@ module plinko::plinko {
 
     // === Admin Functions ===
 
-    /// Helper function to calculate the amount of fees to be paid.
-    /// Fees are only applied on the player's stake.
-    public fun fee_amount(game_stake: u64, fee_in_bp: u16): u64 {
-        ((((game_stake / (GAME_RETURN as u64)) as u128) * (fee_in_bp as u128) / 10_000) as u64)
-    }
-
     /// Helper function to check if a game exists.
     public fun game_exists(house_data: &HouseData, game_id: ID): bool {
         dof::exists_(hd::borrow(house_data), game_id)
@@ -219,13 +214,10 @@ module plinko::plinko {
 
     // === Private Functions ===
 
-    /// Internal helper function ussed to create a new game. 
+    /// Internal helper function used to create a new game. 
     /// The player must provide a guess and a Counter NFT.
     /// Stake is taken from the player's coin and added to the game's stake. 
-    /// The house's stake is also added to the game's stake.
     fun internal_start_game(counter: &mut Counter, num_balls: u64, coin: Coin<SUI>, house_data: &HouseData, fee_bp: u16, ctx: &mut TxContext): (ID, Game) {
-        // Ensure guess is valid.
-        // map_guess(guess);
         let user_stake = coin::value(&coin);
         // Ensure that the stake is not higher than the max stake.
         assert!(user_stake <= hd::max_stake(house_data), EStakeTooHigh);
@@ -234,11 +226,13 @@ module plinko::plinko {
         // Ensure that the house has enough balance to play for this game.
         assert!(hd::balance(house_data) >= (user_stake*(*vector::borrow(&hd::multiplier(house_data), 0)))/100, EInsufficientHouseBalance);
 
+        // Get the VRF input and increment the counter
         let vrf_input = counter_nft::get_vrf_input_and_increment(counter, num_balls);
 
         let id = object::new(ctx);
         let game_id = object::uid_to_inner(&id);
 
+        // Create a new game object and emit a NewGame event.
         let new_game = Game {
             id,
             game_start_epoch: tx_context::epoch(ctx),
@@ -247,6 +241,7 @@ module plinko::plinko {
             vrf_input,
             fee_bp
         };
+        // Emit a NewGame event
         emit(NewGame {
             game_id,
             player: tx_context::sender(ctx),
@@ -257,5 +252,4 @@ module plinko::plinko {
 
         (game_id, new_game)
     }
-
 }
