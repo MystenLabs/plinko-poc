@@ -1,42 +1,97 @@
-import "server-only";
-
-import { Paper } from "@/components/general/Paper";
-import { Metadata } from "next";
-import MatterSim from "../../components/MatterSim";
-import PlinkoSettings from "@/components/PlinkoSettings";
-import { PlayProvider } from "@/contexts/PlayContext";
-import { GameHistoryProvider } from "@/contexts/GameHistoryContext";
-import { TotalWon } from "@/components/totalWon";
-import ScoreTable from "@/components/ScoreTable";
+"use client";
 import EndGameCard from "@/components/EndGameCard";
-import { IsWaitingToPlayProvider } from "@/contexts/IsWaitingToPlay";
 import InsufficientCoinBalance from "@/components/InsufficientCoinBalance";
+import MatterSim from "@/components/MatterSim";
+import PlinkoSettings from "@/components/PlinkoSettings";
+import ScoreTable from "@/components/ScoreTable";
+import { Paper } from "@/components/general/Paper";
+import { TotalWon } from "@/components/totalWon";
+import { GameHistoryProvider } from "@/contexts/GameHistoryContext";
+import { IsWaitingToPlayProvider } from "@/contexts/IsWaitingToPlay";
+import { PlayProvider } from "@/contexts/PlayContext";
+import React, { useEffect, useRef, useState } from "react";
 
-export const metadata: Metadata = {
-  title: "Play Plinko Game",
-};
+export default function Page() {
+  const containerRef = useRef(null);
+  const [scale, setScale] = useState(1);
+  const [scoreTableScale, setScoreTableScale] = useState(1);
 
-export default function Play() {
+  useEffect(() => {
+    const calculateScale = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      //@ts-ignore
+      const containerWidth = container.offsetWidth;
+      //@ts-ignore
+      const containerHeight = container.offsetHeight;
+
+      const matterSimWidth = 800; // Replace with MatterSim's actual width
+      const matterSimHeight = 600; // Replace with MatterSim's actual height
+
+      const scaleX = containerWidth / matterSimWidth;
+      const scaleY = containerHeight / matterSimHeight;
+      const newScale = Math.min(scaleX, scaleY);
+
+      setScale(newScale);
+      if (newScale > 0.8) {
+        setScoreTableScale(newScale - 0.3);
+      } else {
+        setScoreTableScale(newScale);
+      }
+    };
+
+    calculateScale();
+    window.addEventListener("resize", calculateScale);
+    return () => window.removeEventListener("resize", calculateScale);
+  }, []);
+
   return (
     <Paper>
       <PlayProvider>
         <GameHistoryProvider>
           <IsWaitingToPlayProvider>
             <EndGameCard />
+
             <InsufficientCoinBalance />
-            <div className="absolute top-15 right-0 transform scale-75 z-50 opacity-100">
-              <ScoreTable />
-            </div>
-            <div className="flex flex-col items-center min-h-screen bg-opacity-0 mt-12 px-4">
-              <div className="mb-12 mt-6">
+            <div
+              ref={containerRef}
+              className="relative max-w-full max-h-full overflow-hidden"
+            >
+              {/* Overlay TotalWon at the top middle */}
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-10">
                 <TotalWon />
               </div>
-              <div className="scale-125 mb-4 mx-auto pl-10">
-                <MatterSim />
+
+              {/* Overlay History at the top right with dynamic scaling */}
+              <div
+                className="absolute top-12 right-0 z-5"
+                style={{
+                  transform: `scale(${scoreTableScale})`,
+                  transformOrigin: "top right", // Set the transform origin to top right
+                }}
+              >
+                <ScoreTable />
               </div>
-              <div className="flex-grow flex flex-col items-center justify-center mt-4 md:mt-8 lg:mt-12 z-10">
-                <PlinkoSettings />
+
+              {/* Existing content */}
+              <div className="w-full h-3/5 flex justify-center items-center overflow-hidden ">
+                <div
+                  style={{
+                    transform: `scale(${scale}) translateX(22px)`,
+                    transformOrigin: "center center",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "100%",
+                  }}
+                >
+                  <MatterSim />
+                </div>
               </div>
+            </div>
+
+            <div>
+              <PlinkoSettings />
             </div>
           </IsWaitingToPlayProvider>
         </GameHistoryProvider>
