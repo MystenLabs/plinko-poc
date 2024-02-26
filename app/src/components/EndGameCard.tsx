@@ -34,7 +34,11 @@ const PopupComponent = () => {
       {popupIsVisible && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-10">
           <div
-            className="p-5 border w-[600px] bg-white rounded-3xl shadow-lg"
+            className="p-5 border bg-white rounded-3xl shadow-lg"
+            style={{
+              width: "80%", // Use percentage for responsiveness
+              maxWidth: "600px", // Maximum width
+            }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col justify-center items-center gap-10">
@@ -68,7 +72,8 @@ const PopupComponent = () => {
                   </div>
                 </button>
               </div>
-              <div className="w-[480px] h-auto min-h-[50px] p-4 rounded-lg border border-zinc-300 flex flex-col justify-center gap-6">
+
+              {/* <div className="w-[480px] h-auto min-h-[50px] p-4 rounded-lg border border-zinc-300 flex flex-col justify-center gap-6">
                 <div className="flex justify-between items-center">
                   <div className="text-black text-base font-bold font-['Inter']">
                     Game History
@@ -81,8 +86,7 @@ const PopupComponent = () => {
                       {showHistory ? "Hide" : "Show"}
                     </div>
                     <div className="w-4 h-4 relative">
-                      {/* Optionally, insert an icon for the dropdown indicator here */}
-                      {/* Icon can change based on showHistory state */}
+                      
                     </div>
                   </button>
                 </div>
@@ -95,7 +99,7 @@ const PopupComponent = () => {
                         .map((data, index) => (
                           <React.Fragment key={index}>
                             <div className="text-neutral-900 text-lg font-semibold">
-                              {/* Display the game number, considering the reverse order */}
+
                               Game #
                               {historyFromPreviousGames.length - 1 - index - 1}
                             </div>
@@ -107,7 +111,7 @@ const PopupComponent = () => {
                                   key={index2}
                                   className="text-neutral-900 text-sm"
                                 >
-                                  {/* Display your game history details here */}
+
                                   Ball {index2 + 1}: bet: {data2.bet} ,
                                   multiplier: {data2.multiplier}, earnings:{" "}
                                   {data2.earnings}
@@ -118,7 +122,7 @@ const PopupComponent = () => {
                         ))}
                   </div>
                 )}
-              </div>
+              </div> */}
               <div className="justify-center items-center gap-2 inline-flex">
                 <div className="text-neutral-900 text-base font-semibold">
                   <a
