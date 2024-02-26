@@ -36,6 +36,10 @@ const PlinkoSettings = () => {
     setWaitingToPlay(false);
     setPlaying(true);
   };
+  // Function to handle focusing on the input - selects the text
+  const handleInputFocus = (event: any) => {
+    event.target.select();
+  };
 
   const handleBetSizeChange = (e: any) => {
     const newBetSize = Math.max(1, Number(e.target.value));
@@ -59,6 +63,7 @@ const PlinkoSettings = () => {
             type="number"
             value={betSize}
             onChange={handleBetSizeChange}
+            onFocus={handleInputFocus} // Add this line
             className="bg-transparent text-white text-opacity-50 text-base font-normal leading-[18.40px] w-full outline-none"
             placeholder="0"
           />
@@ -78,6 +83,7 @@ const PlinkoSettings = () => {
             type="number"
             value={numberOfBalls}
             onChange={handleNumberOfBallsChange}
+            onFocus={handleInputFocus} // Add this line
             className="bg-transparent text-white text-opacity-50 text-base font-normal leading-[18.40px] w-full outline-none"
             placeholder="0"
           />
