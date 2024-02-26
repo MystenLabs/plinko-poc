@@ -25,14 +25,12 @@ async function runGame() {
 
   const vrf_input = [117, 195, 54, 14, 177, 159, 210, 194, 15, 187, 165, 226, 218, 140, 241, 163,
     156, 219, 30, 233, 19, 175, 56, 2, 186, 51, 11, 133, 46, 69, 158, 5,
-    0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]; // TBD - get this from the NewGame event emitted from Plinko.move
+    0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]; // get this from the NewGame event emitted from Plinko.move
 
    let houseSignedInput = await bls.sign(new Uint8Array(vrf_input), deriveBLS_SecretKey(HOUSE_PRIVATE_KEY!));
    console.log("houseSignedInput=", houseSignedInput);
-   let gameId = "0x7a9369e3f439e48524d2a34c8ac649029e615327505d68d88d8bbe8b11452988"; // TBD - get this from the NewGame event emitted from Plinko.move
+   let gameId = "0x7a9369e3f439e48524d2a34c8ac649029e615327505d68d88d8bbe8b11452988"; // get this from the NewGame event emitted from Plinko.move
    let numberofBalls = 2; // User input from UI
-
-  //  const gameId = await client.getObject({ id: "coinObjectId" });
 
     const tx = new TransactionBlock(); 
     

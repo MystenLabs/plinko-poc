@@ -6,7 +6,6 @@ import { Ed25519Keypair } from '@mysten/sui.js/keypairs/ed25519';
 import { fromB64 } from '@mysten/sui.js/utils';
 
 class SuiService {
-  // private provider: JsonRpcProvider;
   private signer: Ed25519Keypair;
   private gasCoins: string[];
   private gasCoinSelection: string;
@@ -64,7 +63,6 @@ class SuiService {
   }
 
   public async getObject(objectId: string) {
-    //: Promise<GetObjectDataResponse> {
     return this.client.getObject({
       id: objectId,
       options: {
