@@ -68,8 +68,6 @@ export default function Page() {
                 style={{
                   transform: `scale(${scoreTableScale})`,
                   transformOrigin: "top right", // Set the transform origin to top right
-                  // maxWidth: `${500}px`, // Set maximum width
-                  // maxHeight: `${20}px`, // Set maximum height
                 }}
               >
                 <ScoreTable />
@@ -79,7 +77,7 @@ export default function Page() {
               <div className="w-full h-3/5 flex justify-center items-center overflow-hidden ">
                 <div
                   style={{
-                    transform: `scale(${scale})`,
+                    transform: `scale(${scale}) translateX(22px)`,
                     transformOrigin: "center center",
                     display: "flex",
                     justifyContent: "center",
