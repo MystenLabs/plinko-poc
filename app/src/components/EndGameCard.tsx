@@ -49,7 +49,7 @@ const PopupComponent = () => {
                       Congratulations, You Won!
                     </div>
                     <div className="text-center text-emerald-600 text-[56px] font-bold">
-                      {totalWon} SUI
+                      {Number(totalWon).toFixed(2)} SUI
                     </div>
                   </>
                 ) : (
