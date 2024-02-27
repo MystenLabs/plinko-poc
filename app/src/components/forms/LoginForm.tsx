@@ -65,11 +65,11 @@ export const LoginForm = () => {
               Plinko on Sui Blockchain <br /> 
             </div>
             <div className="text-center text-opacity-90 text-[14px] text-[#4F4F4F]">
-              Plinko is a game of chance where balls are dropped from 
+              Welcome to Mysten Plinko. Plinko is a game of chance where balls are dropped from 
               the top of a pegged board, and the outcome is determined by the path they take. 
               Our Sui blockchain implementation offers a unique experience by integrating cryptographic 
               techniques to ensure fairness and transparency.
-             You can test the Plinko game on testnet.<p> Log in with you google account to play.</p>
+              You can test the Plinko game on testnet. <p>Log in with you google account to play.</p>
             </div>
           </div>
           {!!authURLs && (
