@@ -9,12 +9,14 @@ import { TotalWon } from "@/components/totalWon";
 import { GameHistoryProvider } from "@/contexts/GameHistoryContext";
 import { IsWaitingToPlayProvider } from "@/contexts/IsWaitingToPlay";
 import { PlayProvider } from "@/contexts/PlayContext";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import React, { useEffect, useRef, useState } from "react";
 
 export default function Page() {
   const containerRef = useRef(null);
   const [scale, setScale] = useState(1);
   const [scoreTableScale, setScoreTableScale] = useState(1);
+  const { isMobile } = useIsMobile();
 
   useEffect(() => {
     const calculateScale = () => {
@@ -32,7 +34,11 @@ export default function Page() {
       const scaleY = containerHeight / matterSimHeight;
       const newScale = Math.min(scaleX, scaleY);
 
-      setScale(newScale);
+      if (newScale + 0.2 > 1) {
+        setScale(newScale);
+      } else {
+        setScale(newScale + 0.2);
+      }
       if (newScale > 0.8) {
         setScoreTableScale(newScale - 0.3);
       } else {
@@ -57,27 +63,31 @@ export default function Page() {
               ref={containerRef}
               className="relative max-w-full max-h-full overflow-hidden"
             >
-              {/* Overlay TotalWon at the top middle */}
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-10">
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-5">
                 <TotalWon />
               </div>
 
-              {/* Overlay History at the top right with dynamic scaling */}
-              <div
-                className="absolute top-12 right-0 z-5"
-                style={{
-                  transform: `scale(${scoreTableScale})`,
-                  transformOrigin: "top right", // Set the transform origin to top right
-                }}
-              >
-                <ScoreTable />
-              </div>
+              {/* Only if not isMobile to show this  */}
+              {!isMobile && (
+                <div
+                  className="absolute top-12 right-0 z-5"
+                  style={{
+                    transform: `scale(${scoreTableScale})`,
+                    transformOrigin: "top right", // Set the transform origin to top right
+                  }}
+                >
+                  <ScoreTable />
+                </div>
+              )}
 
               {/* Existing content */}
-              <div className="w-full h-3/5 flex justify-center items-center overflow-hidden ">
+              <div
+                className="w-full flex justify-center items-center overflow-hidden"
+                style={{ height: "auto", minHeight: "20%" }}
+              >
                 <div
                   style={{
-                    transform: `scale(${scale}) translateX(22px)`,
+                    transform: `scale(${scale}) translateX(22px)`, // Adjust scale based on screen width
                     transformOrigin: "center center",
                     display: "flex",
                     justifyContent: "center",
