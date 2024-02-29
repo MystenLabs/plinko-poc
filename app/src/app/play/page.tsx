@@ -70,7 +70,7 @@ export default function Page() {
               {/* Only if not isMobile to show this  */}
               {!isMobile && (
                 <div
-                  className="absolute top-12 right-0 z-5"
+                  className="absolute top-12 right-0 z-10"
                   style={{
                     transform: `scale(${scoreTableScale})`,
                     transformOrigin: "top right", // Set the transform origin to top right

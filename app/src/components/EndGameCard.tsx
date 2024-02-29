@@ -5,7 +5,7 @@ import { usePlayContext } from "@/contexts/PlayContext";
 import React, { useState } from "react";
 
 const PopupComponent = () => {
-  const { totalWon, historyFromPreviousGames } = useGameHistory(); // Assuming you store previous games' history here
+  const { totalWon, historyFromPreviousGames, resetHistory } = useGameHistory(); // Assuming you store previous games' history here
   const {
     popupIsVisible,
     setPopupIsVisible,
@@ -27,12 +27,25 @@ const PopupComponent = () => {
   const handlePlayAgain = () => {
     setPopupIsVisible(false); // This will hide the popup
     setFinalPaths([[15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]]); // Reset the final paths
+    resetHistory(); // Reset the history
   };
 
   return (
     <>
       {popupIsVisible && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-10">
+        <div
+          className={`fixed inset-0 bg-gray-600 bg-opacity-50 ${
+            hasWon
+              ? 'bg-[url("/confetti.svg")] bg-no-repeat bg-cover'
+              : "bg-gray-600 bg-opacity-50"
+          } overflow-y-auto h-full w-full flex justify-center items-center z-10`}
+        >
+          {/* {hasWon && (
+            <div
+              className="absolute inset-0 bg-[url('/confetti.svg')] bg-no-repeat bg-cover opacity-50"
+              aria-hidden="true"
+            ></div>
+          )} */}
           <div
             className="p-5 border bg-white rounded-3xl shadow-lg"
             style={{
@@ -62,7 +75,7 @@ const PopupComponent = () => {
                 </div>
               </div>
 
-              <div className="self-stretch bg-white border-t-2 justify-start items-center gap-2 inline-flex">
+              <div className="self-stretch bg-white  justify-start items-center gap-2 inline-flex">
                 <button
                   onClick={handlePlayAgain}
                   className="grow shrink basis-0 self-stretch px-5 py-4 bg-black rounded-[38px] justify-center items-center gap-2 flex"
