@@ -8,7 +8,7 @@ export const TotalWon = () => {
 
   return (
     <div className="w-[183px] h-[41px] px-5 py-2.5 bg-emerald-400 rounded-full shadow flex justify-center items-center gap-2.5">
-      <div className="text-neutral-900 text-base font-medium font-['Inter'] leading-[18.40px] whitespace-nowrap">
+      <div className="text-black text-opacity-80 text-base font-medium leading-[18.40px] whitespace-nowrap">
         {isWaitingToPlay ? "Prepare the game ..." : "Round Earnings"}
       </div>
       {!isWaitingToPlay && (
