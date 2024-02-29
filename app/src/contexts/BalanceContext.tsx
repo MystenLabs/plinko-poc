@@ -1,4 +1,10 @@
-import { useContext, useEffect, useState, createContext, useCallback } from "react";
+import {
+  useContext,
+  useEffect,
+  useState,
+  createContext,
+  useCallback,
+} from "react";
 import { ChildrenProps } from "@/types/ChildrenProps";
 import BigNumber from "bignumber.js";
 import { MIST_PER_SUI } from "@mysten/sui.js/utils";
@@ -28,11 +34,10 @@ export const BalanceProvider = ({ children }: ChildrenProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const { suiClient } = useSui();
   const { user } = useAuthentication();
-  const { effectTrigger } = useRequestSui();
 
   useEffect(() => {
     if (user.address) handleRefreshBalance();
-  }, [user.address, effectTrigger]); 
+  }, [user.address]);
 
   const handleRefreshBalance = useCallback(async () => {
     if (!user.address) return;

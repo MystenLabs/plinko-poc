@@ -4,6 +4,7 @@ import { useAuthentication } from "@/contexts/Authentication";
 import toast from "react-hot-toast";
 import { useSui } from "./useSui";
 import { MIST_PER_SUI } from "@mysten/sui.js/utils";
+import { useBalance } from "@/contexts/BalanceContext";
 
 export const useRequestSui = () => {
   const { suiClient } = useSui();
@@ -12,26 +13,8 @@ export const useRequestSui = () => {
   const {
     user: { zkLoginSession, address },
   } = useAuthentication();
-  const [effectTrigger, setEffectTrigger] = useState(0);
   const { user } = useAuthentication();
-
-  useEffect(() => {
-    if (user.address) handleRefreshBalance();
-  }, [user.address]);
-
-  const handleRefreshBalance = useCallback(async () => {
-    await suiClient
-      .getBalance({
-        owner: user.address,
-      })
-      .then((resp) => {
-        setBalance(Number(resp.totalBalance) / Number(MIST_PER_SUI));
-      })
-      .catch((err) => {
-        console.error(err);
-        setBalance(0);
-      });
-    }, [user.address, suiClient]);
+  const { handleRefreshBalance } = useBalance();
 
   const handleRequestSui = useCallback(async () => {
     setIsLoading(true);
@@ -59,13 +42,11 @@ export const useRequestSui = () => {
         console.error(err);
         toast.error("Failed to receive SUI");
       });
-      setEffectTrigger(prev => prev + 1); // Increment to signal change
-  }, [zkLoginSession?.jwt, setEffectTrigger]);
+  }, [zkLoginSession?.jwt]);
 
   return {
     isLoading,
     balance,
     handleRequestSui,
-    effectTrigger
   };
 };
