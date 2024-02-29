@@ -1,9 +1,10 @@
-import { useContext, useEffect, useState, createContext } from "react";
+import { useContext, useEffect, useState, createContext, useCallback } from "react";
 import { ChildrenProps } from "@/types/ChildrenProps";
 import BigNumber from "bignumber.js";
-import { useZkLogin } from "@mysten/enoki/react";
 import { MIST_PER_SUI } from "@mysten/sui.js/utils";
 import { useSui } from "@/hooks/useSui";
+import { useAuthentication } from "@/contexts/Authentication";
+import { useRequestSui } from "@/hooks/useRequestSui";
 
 export const useBalance = () => {
   const context = useContext(BalanceContext);
@@ -26,19 +27,20 @@ export const BalanceProvider = ({ children }: ChildrenProps) => {
   const [balance, setBalance] = useState(BigNumber(0));
   const [isLoading, setIsLoading] = useState(false);
   const { suiClient } = useSui();
-  const { address } = useZkLogin();
+  const { user } = useAuthentication();
+  const { effectTrigger } = useRequestSui();
 
   useEffect(() => {
-    if (address) handleRefreshBalance();
-  }, [address]);
+    if (user.address) handleRefreshBalance();
+  }, [user.address, effectTrigger]); 
 
-  const handleRefreshBalance = async () => {
-    if (!address) return;
-    console.log(`Refreshing balance for ${address}...`);
+  const handleRefreshBalance = useCallback(async () => {
+    if (!user.address) return;
+    console.log(`Refreshing balance for ${user.address}...`);
     setIsLoading(true);
     await suiClient
       .getBalance({
-        owner: address!,
+        owner: user.address!,
       })
       .then((resp) => {
         setIsLoading(false);
@@ -53,7 +55,7 @@ export const BalanceProvider = ({ children }: ChildrenProps) => {
         setIsLoading(false);
         setBalance(BigNumber(0));
       });
-  };
+  }, [user.address, suiClient]);
 
   return (
     <BalanceContext.Provider

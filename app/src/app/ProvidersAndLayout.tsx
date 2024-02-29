@@ -18,7 +18,7 @@ export const ProvidersAndLayout = ({ children }: ChildrenProps) => {
 
   return (
     <EnokiFlowProvider apiKey={process.env.NEXT_PUBLIC_ENOKI_API_KEY!}>
-      <AuthenticationProvider>
+       <AuthenticationProvider>
         <BalanceProvider>
           <main
             className={`min-h-screen w-screen bg-black`}
@@ -41,7 +41,7 @@ export const ProvidersAndLayout = ({ children }: ChildrenProps) => {
             />
           </main>
         </BalanceProvider>
-      </AuthenticationProvider>
+        </AuthenticationProvider>
       </EnokiFlowProvider>
   );
 };
