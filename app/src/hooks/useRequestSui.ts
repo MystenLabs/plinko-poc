@@ -12,15 +12,17 @@ export const useRequestSui = () => {
   const {
     user: { zkLoginSession, address },
   } = useAuthentication();
+  const [effectTrigger, setEffectTrigger] = useState(0);
+  const { user } = useAuthentication();
 
   useEffect(() => {
-    if (address) handleRefreshBalance();
-  }, [address]);
+    if (user.address) handleRefreshBalance();
+  }, [user.address]);
 
-  const handleRefreshBalance = async () => {
+  const handleRefreshBalance = useCallback(async () => {
     await suiClient
       .getBalance({
-        owner: address,
+        owner: user.address,
       })
       .then((resp) => {
         setBalance(Number(resp.totalBalance) / Number(MIST_PER_SUI));
@@ -29,7 +31,7 @@ export const useRequestSui = () => {
         console.error(err);
         setBalance(0);
       });
-  };
+    }, [user.address, suiClient]);
 
   const handleRequestSui = useCallback(async () => {
     setIsLoading(true);
@@ -57,11 +59,13 @@ export const useRequestSui = () => {
         console.error(err);
         toast.error("Failed to receive SUI");
       });
-  }, [zkLoginSession?.jwt]);
+      setEffectTrigger(prev => prev + 1); // Increment to signal change
+  }, [zkLoginSession?.jwt, setEffectTrigger]);
 
   return {
     isLoading,
     balance,
     handleRequestSui,
+    effectTrigger
   };
 };

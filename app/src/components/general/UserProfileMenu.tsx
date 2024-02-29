@@ -10,6 +10,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { useAuthentication } from "@/contexts/Authentication";
 import { CopyIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import { formatAddress } from "@mysten/sui.js/utils";
@@ -53,12 +54,12 @@ export const UserProfileMenu = ({ trigger }: UserProfileMenuProps) => {
               <CopyIcon className="w-4 h-4 text-black" />
             </button>
           </DropdownMenuItem>
-          <DropdownMenuItem className="flex items-center justify-between w-full">
+          {/* <DropdownMenuItem className="flex items-center justify-between w-full">
             <div>{formatAmount(BigNumber(balance))} SUI</div>
             <LoadingButton onClick={handleRequestSui} isLoading={isLoading}>
               Request SUI
             </LoadingButton>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuGroup>
         <DropdownMenuItem
           onClick={handleLogout}
