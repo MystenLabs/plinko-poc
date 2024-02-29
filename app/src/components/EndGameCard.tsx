@@ -63,7 +63,7 @@ const PopupComponent = () => {
                 </div>
               </div>
 
-              <div className="self-stretch bg-white border-t-2 justify-start items-center gap-2 inline-flex">
+              <div className="self-stretch bg-white  justify-start items-center gap-2 inline-flex">
                 <button
                   onClick={handlePlayAgain}
                   className="grow shrink basis-0 self-stretch px-5 py-4 bg-black rounded-[38px] justify-center items-center gap-2 flex"
