@@ -5,7 +5,7 @@ import { usePlayContext } from "@/contexts/PlayContext";
 import React, { useState } from "react";
 
 const PopupComponent = () => {
-  const { totalWon, historyFromPreviousGames } = useGameHistory(); // Assuming you store previous games' history here
+  const { totalWon, historyFromPreviousGames, resetHistory } = useGameHistory(); // Assuming you store previous games' history here
   const {
     popupIsVisible,
     setPopupIsVisible,
@@ -27,6 +27,7 @@ const PopupComponent = () => {
   const handlePlayAgain = () => {
     setPopupIsVisible(false); // This will hide the popup
     setFinalPaths([[15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]]); // Reset the final paths
+    resetHistory(); // Reset the history
   };
 
   return (
