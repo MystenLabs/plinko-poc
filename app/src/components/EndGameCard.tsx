@@ -61,8 +61,8 @@ const PopupComponent = () => {
               <div className="flex flex-col justify-center items-center gap-1.5">
                 {hasWon ? (
                   <>
-                    <div className="w-[380px] opacity-90 text-center text-black text-2xl font-semibold">
-                      Congratulations, You Won!
+                    <div className="w-[310px] opacity-90 text-center text-black text-2xl font-semibold">
+                      Congratulation,You Won!
                     </div>
                     <div className="text-center text-emerald-600 text-[56px] font-bold">
                       {Number(totalWon).toFixed(2)} SUI
