@@ -1,10 +1,12 @@
 "use client";
 
+import { useBalance } from "@/contexts/BalanceContext";
 import { useGameHistory } from "@/contexts/GameHistoryContext";
 import { usePlayContext } from "@/contexts/PlayContext";
 import React, { useState } from "react";
 
 const PopupComponent = () => {
+  const { handleRefreshBalance } = useBalance();
   const { totalWon, historyFromPreviousGames, resetHistory } = useGameHistory(); // Assuming you store previous games' history here
   const {
     popupIsVisible,
@@ -28,6 +30,7 @@ const PopupComponent = () => {
     setPopupIsVisible(false); // This will hide the popup
     setFinalPaths([[15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]]); // Reset the final paths
     resetHistory(); // Reset the history
+    handleRefreshBalance(); // Refresh the balance
   };
 
   return (
