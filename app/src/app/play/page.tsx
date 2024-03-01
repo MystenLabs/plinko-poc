@@ -32,7 +32,7 @@ export default function Page() {
 
       const scaleX = containerWidth / matterSimWidth;
       const scaleY = containerHeight / matterSimHeight;
-      const newScale = Math.min(scaleX, scaleY);
+      const newScale = Math.min(scaleX, scaleY) * 0.8;
 
       if (newScale + 0.2 > 1) {
         setScale(newScale);
@@ -57,52 +57,36 @@ export default function Page() {
         <GameHistoryProvider>
           <IsWaitingToPlayProvider>
             <EndGameCard />
-
             <InsufficientCoinBalance />
-            <div
-              ref={containerRef}
-              className="relative max-w-full max-h-full overflow-hidden"
-            >
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-5">
-                <TotalWon />
-              </div>
-
-              {/* Only if not isMobile to show this  */}
-              {!isMobile && (
-                <div
-                  className="absolute top-12 right-0 z-10"
-                  style={{
-                    transform: `scale(${scoreTableScale})`,
-                    transformOrigin: "top right", // Set the transform origin to top right
-                  }}
-                >
-                  <ScoreTable />
-                </div>
-              )}
-
-              {/* Existing content */}
-              <div
-                className="w-full flex justify-center items-center overflow-hidden"
-                style={{ height: "auto", minHeight: "20%" }}
-              >
-                <div
-                  style={{
-                    transform: `scale(${scale}) translateX(22px)`, // Adjust scale based on screen width
-                    transformOrigin: "center center",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: "100%",
-                  }}
-                >
-                  <MatterSim />
+            <div className="relative flex flex-col space-y-[10px] items-center bg-green-300">
+              <TotalWon />
+              <div className="flex justify-center bg-red-300 w-full">
+                <div ref={containerRef} className="relative max-w-full">
+                  {/* Existing content */}
+                  <div
+                    className="w-full flex justify-center items-center overflow-hidden"
+                    style={{ height: 600 * scale }}
+                  >
+                    <div
+                      style={{
+                        transform: `scale(${scale}) translateX(22px)`, // Adjust scale based on screen width
+                        transformOrigin: "center center",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
+                    >
+                      <MatterSim />
+                    </div>
+                  </div>
                 </div>
               </div>
+              <div className="hidden md:block absolute top-0 right-0">
+                <ScoreTable />
+              </div>
             </div>
-
-            <div>
-              <PlinkoSettings />
-            </div>
+            <PlinkoSettings />
           </IsWaitingToPlayProvider>
         </GameHistoryProvider>
       </PlayProvider>
