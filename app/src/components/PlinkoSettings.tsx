@@ -4,13 +4,23 @@ import { usePlayContext } from "../contexts/PlayContext";
 import { useCreateCounterObject } from "@/hooks/moveTransactionCalls.ts/useCreateCounterObject";
 import { useGameHistory } from "@/contexts/GameHistoryContext";
 import { useWaitingToPlayContext } from "@/contexts/IsWaitingToPlay";
+import { number, set } from "zod";
+import { Balance } from "./general/Balance";
+import { useBalance } from "@/contexts/BalanceContext";
 
 const PlinkoSettings = () => {
   //@ts-ignore
-  const { isPlaying, setPlaying, betSize, setBetSize } = usePlayContext();
+  const {
+    isPlaying,
+    setPlaying,
+    betSize,
+    setBetSize,
+    setPopupInsufficientCoinBalanceIsVisible,
+  } = usePlayContext();
   const { isWaitingToPlay, setWaitingToPlay } = useWaitingToPlayContext();
   const { handleCreateCounterObject } = useCreateCounterObject();
   const { resetHistory } = useGameHistory();
+  const { balance } = useBalance();
 
   const [numberOfBalls, setNumberOfBalls] = useState(1);
   const [currentBet, setCurrentBet] = useState(0);
@@ -23,6 +33,10 @@ const PlinkoSettings = () => {
 
   const handlePlayClick = async () => {
     if (isPlaying) return;
+    if (currentBet >= balance.toNumber() - 1) {
+      setPopupInsufficientCoinBalanceIsVisible(true);
+      return;
+    }
     resetHistory();
     setWaitingToPlay(true);
     console.log("Play Clicked", isPlaying);
