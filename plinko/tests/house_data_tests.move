@@ -244,7 +244,7 @@ module plinko::house_data_tests {
         {
             let house_data = test_scenario::take_shared<HouseData>(scenario);
             let ctx = test_scenario::ctx(scenario);
-                hd::update_min_stake(&mut house_data, 60000000000, ctx);
+                hd::update_max_stake(&mut house_data, 60000000000, ctx);
                 print(&house_data);
                 test_scenario::return_shared(house_data);
             };
