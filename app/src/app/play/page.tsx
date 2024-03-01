@@ -10,6 +10,7 @@ import { GameHistoryProvider } from "@/contexts/GameHistoryContext";
 import { IsWaitingToPlayProvider } from "@/contexts/IsWaitingToPlay";
 import { PlayProvider } from "@/contexts/PlayContext";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { is } from "@mysten/sui.js";
 import React, { useEffect, useRef, useState } from "react";
 
 export default function Page() {
@@ -32,7 +33,13 @@ export default function Page() {
 
       const scaleX = containerWidth / matterSimWidth;
       const scaleY = containerHeight / matterSimHeight;
-      const newScale = Math.min(scaleX, scaleY);
+      let scale = 0;
+      if (!!isMobile) {
+        scale = 0.8;
+      } else {
+        scale = 1;
+      }
+      const newScale = Math.min(scaleX, scaleY) * scale;
 
       if (newScale + 0.2 > 1) {
         setScale(newScale);
@@ -49,7 +56,7 @@ export default function Page() {
     calculateScale();
     window.addEventListener("resize", calculateScale);
     return () => window.removeEventListener("resize", calculateScale);
-  }, []);
+  }, [isMobile]);
 
   return (
     <Paper>
@@ -57,18 +64,32 @@ export default function Page() {
         <GameHistoryProvider>
           <IsWaitingToPlayProvider>
             <EndGameCard />
-
             <InsufficientCoinBalance />
-            <div
-              ref={containerRef}
-              className="relative max-w-full max-h-full overflow-hidden"
-            >
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 z-5">
-                <TotalWon />
+            <div className="relative flex flex-col space-y-[10px] items-center  ">
+              <TotalWon />
+              <div className="flex justify-center  w-full">
+                <div ref={containerRef} className="relative max-w-full">
+                  {/* Existing content */}
+                  <div
+                    className="w-full flex justify-center items-center overflow-hidden"
+                    style={{ height: 600 * scale }}
+                  >
+                    <div
+                      style={{
+                        transform: `scale(${scale}) translateX(22px)`, // Adjust scale based on screen width
+                        transformOrigin: "center center",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
+                    >
+                      <MatterSim />
+                    </div>
+                  </div>
+                </div>
               </div>
-
-              {/* Only if not isMobile to show this  */}
-              {!isMobile && (
+              <div className="hidden md:block absolute top-0 right-0">
                 <div
                   className="absolute top-12 right-0 z-10"
                   style={{
@@ -78,29 +99,9 @@ export default function Page() {
                 >
                   <ScoreTable />
                 </div>
-              )}
-
-              {/* Existing content */}
-              <div
-                className="w-full flex justify-center items-center overflow-hidden"
-                style={{ height: "auto", minHeight: "20%" }}
-              >
-                <div
-                  style={{
-                    transform: `scale(${scale}) translateX(22px)`, // Adjust scale based on screen width
-                    transformOrigin: "center center",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: "100%",
-                  }}
-                >
-                  <MatterSim />
-                </div>
               </div>
             </div>
-
-            <div>
+            <div className="flex justify-center w-full 2xl:mt-32">
               <PlinkoSettings />
             </div>
           </IsWaitingToPlayProvider>

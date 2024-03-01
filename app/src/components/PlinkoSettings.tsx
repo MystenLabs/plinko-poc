@@ -66,9 +66,9 @@ const PlinkoSettings = () => {
   };
 
   return (
-    <div className="w-[950px] max-w-full px-5 pt-5 pb-[25px] bg-emerald-950 rounded-[20px] mx-auto my-4 flex justify-start items-end gap-5">
+    <div className="w-[950px] max-w-full px-5 pt-5 pb-[25px] bg-emerald-950 rounded-[20px] mx-auto my-4 flex justify-center items-center gap-5">
       {/* Bid Amount (per ball) */}
-      <div className="flex flex-col justify-start items-start gap-2.5">
+      <div className="flex flex-col justify-center items-center gap-2.5">
         <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
           Bid Amount (per ball)
         </div>
@@ -81,7 +81,7 @@ const PlinkoSettings = () => {
             type="number"
             value={betSize}
             onChange={handleBetSizeChange}
-            onFocus={handleInputFocus} // Add this line
+            onFocus={handleInputFocus}
             className="bg-transparent text-white text-opacity-50 text-base font-normal leading-[18.40px] w-full outline-none"
             placeholder="0"
           />
@@ -92,11 +92,10 @@ const PlinkoSettings = () => {
       </div>
 
       {/* Number of Balls */}
-      <div className="flex flex-col justify-start items-start gap-2.5 lg:mr-20">
+      <div className="flex flex-col justify-center items-center gap-2.5">
         <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
           Number of Balls
         </div>
-        {/* <div className="flex items-center h-11 p-5 bg-emerald-950 rounded-[40px] border border-white border-opacity-25 gap-2.5"> */}
         <div
           className={`flex items-center h-11 p-5 bg-emerald-950 rounded-[40px] ${
             currentBet < 11 ? "border border-white" : "border-2 border-rose-500"
@@ -106,7 +105,7 @@ const PlinkoSettings = () => {
             type="number"
             value={numberOfBalls}
             onChange={handleNumberOfBallsChange}
-            onFocus={handleInputFocus} // Add this line
+            onFocus={handleInputFocus}
             className="bg-transparent text-white text-opacity-50 text-base font-normal leading-[18.40px] w-full outline-none"
             placeholder="0"
           />
@@ -114,10 +113,9 @@ const PlinkoSettings = () => {
       </div>
 
       {/* Total Bid & Play Button */}
-      <div className="flex flex-col justify-start items-start gap-2.5">
+      <div className="flex flex-col justify-center items-center gap-2.5">
         <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
-          Total Bid: {currentBet} SUI{" "}
-          {/* Adjust the hardcoded value as per your dynamic data */}
+          Total Bid: {currentBet} SUI
         </div>
         <button
           onClick={() => {
