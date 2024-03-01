@@ -5,7 +5,7 @@ module plinko::plinko_tests {
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
     use sui::transfer;
-    // use std::debug::print;
+    use std::debug::print;
     use sui::object::ID;
     use sui::bls12381::bls12381_min_pk_verify;
     use sui::test_scenario::{Self, Scenario};
@@ -15,7 +15,6 @@ module plinko::plinko_tests {
 
     const HOUSE: address = @0x21ba535ffa74e261a6281a205398ac9400bbbac41b49bfa967882abdf86b1486;
     const PLAYER: address = @0x4670405fc30d04de9946ad2d6ad822a2859af40a12a0a6ea4516a526884359cf;
-    const PLAYER2: address = @0x6670405fc30d04de9946ad2d6ad822a2859af40a12a0a6ea4516a526884359bf;
     const INITIAL_HOUSE_BALANCE: u64 = 50000000000; // 50 SUI
     const LOW_HOUSE_BALANCE: u64 = 10000000000; // 10 SUI   
     const INITIAL_PLAYER_BALANCE: u64 = 20_000_000_000; // 20 SUI
@@ -111,6 +110,7 @@ module plinko::plinko_tests {
         start_game(1000000000, 1, false, true, false);
     }
 
+    //  --- Helper functions ---
 
     fun start_game(player_stake: u64, num_balls: u64, low_house_balance: bool, valid_bls_sig: bool, valid_game_id: bool){
 
@@ -132,6 +132,7 @@ module plinko::plinko_tests {
 
         if (valid_game_id){
             game_id = create_counter_nft_and_start_game(scenario, PLAYER, player_stake, num_balls);
+            print(&game_id);
         } else {
             let ctx = test_scenario::ctx(scenario);
             let temp_game_uid = sui::object::new(ctx); 
@@ -144,7 +145,6 @@ module plinko::plinko_tests {
 
         test_scenario::end(scenario_val);
     }
-     //  --- Helper functions ---
 
     /// Deployment & house object initialization.
     /// Variable valid_coin is used to test expected failures.
@@ -184,6 +184,17 @@ module plinko::plinko_tests {
         let ctx = test_scenario::ctx(scenario);
         let stake_coin = coin::split(&mut player_coin, stake, ctx);
         let game_id = plk::start_game(&mut player_counter, num_balls, stake_coin, &mut house_data, ctx);
+        let game = plk::borrow_game(game_id, &house_data);
+        let game_start_epoch: u64 = plk::game_start_epoch(game);
+        let game_stake: u64 = plk::stake(game);
+        let game_player: address = plk::player(game);
+        let game_vrf_input: vector<u8> = plk::vrf_input(game);
+        let game_gee_in_bp: u16 = plk::fee_in_bp(game);
+        print(&game_start_epoch);
+        print(&game_stake);
+        print(&game_player);
+        print(&game_vrf_input);
+        print(&game_gee_in_bp);
         test_scenario::return_shared(house_data);
         test_scenario::return_to_sender(scenario, player_counter);
         test_scenario::return_to_sender(scenario, player_coin);
