@@ -17,6 +17,7 @@ export const useCreateCounterObject = () => {
   const [vrfInput, setVrfInput] = useState("");
   // const [final_paths, setFinalPaths] = useState(<number[][]>[]);
   //@ts-ignore
+
   const {
     //@ts-ignore
     final_paths,
@@ -34,6 +35,7 @@ export const useCreateCounterObject = () => {
     } catch (error) {
       handleLogout();
     }
+
     const keypair = await enokiFlow.getKeypair();
     console.log("keypair = ", keypair);
     //log a type of total_bet_amount
@@ -42,7 +44,6 @@ export const useCreateCounterObject = () => {
     console.log("numberofBalls = ------------------- > ", numberofBalls);
     let player = keypair.getPublicKey().toSuiAddress();
     console.log("Player Address = **************" + player);
-
     const tx = new TransactionBlock();
 
     const betAmountCoin = tx.splitCoins(tx.gas, [
@@ -68,8 +69,6 @@ export const useCreateCounterObject = () => {
       target: `${process.env.NEXT_PUBLIC_PACKAGE_ADDRESS}::counter_nft::transfer_to_sender`,
       arguments: [counterNFT],
     });
-
-    tx.setGasBudget(1000000000);
 
     let res = await client.signAndExecuteTransactionBlock({
       transactionBlock: tx,

@@ -23,7 +23,7 @@ export const Balance = () => {
 
       {
         //@ts-ignore
-        balance.c[0] <= BigNumber(3) && (
+        (balance.c[0] <= BigNumber(3) || balance.c.length == 1) && (
           <LoadingButton
             onClick={handleRequestSui}
             isLoading={isLoading}
