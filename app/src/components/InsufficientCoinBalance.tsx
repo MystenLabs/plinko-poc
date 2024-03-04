@@ -30,7 +30,7 @@ const PopupComponent2 = () => {
                 </div>
 
                 <p>Sent SUI to your address</p>
-                <p>Or request SUI from a header</p>
+                <p>Or request SUI from the header</p>
               </div>
               <div className="self-stretch bg-white border-t-2 justify-start items-center gap-2 inline-flex">
                 <button
