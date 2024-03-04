@@ -33,7 +33,8 @@ const PlinkoSettings = () => {
 
   const handlePlayClick = async () => {
     if (isPlaying) return;
-    if (currentBet >= balance.toNumber() - 1) {
+    //@ts-ignore
+    if (currentBet > balance.c[0]) {
       setPopupInsufficientCoinBalanceIsVisible(true);
       return;
     }
@@ -133,7 +134,7 @@ const PlinkoSettings = () => {
             }`}
           >
             <div className="text-white text-base font-bold leading-[18.40px]">
-              {isPlaying || isWaitingToPlay ? "Playing..." : "Play"}
+              Play
             </div>
           </button>
         </div>
