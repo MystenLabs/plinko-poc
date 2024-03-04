@@ -1,9 +1,6 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-// code by:
-// https://github.com/MystenLabs/sui/blob/main/apps/core/src/utils/formatAmount.ts
-
 import BigNumber from "bignumber.js";
 
 export function formatAmountParts(amount?: BigNumber | null) {

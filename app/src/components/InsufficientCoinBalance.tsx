@@ -1,6 +1,4 @@
 "use client";
-
-import { useAuthentication } from "@/contexts/Authentication";
 import { usePlayContext } from "@/contexts/PlayContext";
 import React from "react";
 
@@ -9,7 +7,6 @@ const PopupComponent2 = () => {
     popupInsufficientCoinBalanceIsVisible,
     setPopupInsufficientCoinBalanceIsVisible,
   } = usePlayContext();
-  const { user } = useAuthentication();
 
   const handleTryAgain = () => {
     setPopupInsufficientCoinBalanceIsVisible(false); // This will hide the popup

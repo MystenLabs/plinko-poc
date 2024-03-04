@@ -52,8 +52,6 @@ export const GeneralTable = ({
     return { startIndex, endIndex, hasPreviousPage, hasNextPage };
   }, [currentState]);
 
-  console.log({ startIndex, endIndex, hasPreviousPage, hasNextPage });
-
   const handleNextPage = () => {
     setCurrentState((prevState) => ({
       ...prevState,

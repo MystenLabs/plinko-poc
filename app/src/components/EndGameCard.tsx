@@ -7,7 +7,7 @@ import React, { useState } from "react";
 
 const PopupComponent = () => {
   const { handleRefreshBalance } = useBalance();
-  const { totalWon, historyFromPreviousGames, resetHistory } = useGameHistory(); // Assuming you store previous games' history here
+  const { totalWon, resetHistory } = useGameHistory(); // Assuming you store previous games' history here
   const {
     popupIsVisible,
     setPopupIsVisible,
@@ -24,7 +24,6 @@ const PopupComponent = () => {
   // Check if the player has won or lost
   const hasWon = totalWon - bid * finalPaths.length > 0;
   const suiExplorerUrl = `https://suiexplorer.com/txblock/${txDigest}?network=testnet`;
-  console.log("suiExplorerUrl = ", txDigest);
 
   const handlePlayAgain = () => {
     setPopupIsVisible(false); // This will hide the popup
@@ -43,12 +42,6 @@ const PopupComponent = () => {
               : "bg-gray-600 bg-opacity-50"
           } overflow-y-auto h-full w-full flex justify-center items-center z-10`}
         >
-          {/* {hasWon && (
-            <div
-              className="absolute inset-0 bg-[url('/confetti.svg')] bg-no-repeat bg-cover opacity-50"
-              aria-hidden="true"
-            ></div>
-          )} */}
           <div
             className="p-5 border bg-white rounded-3xl shadow-lg"
             style={{
@@ -88,57 +81,6 @@ const PopupComponent = () => {
                   </div>
                 </button>
               </div>
-
-              {/* <div className="w-[480px] h-auto min-h-[50px] p-4 rounded-lg border border-zinc-300 flex flex-col justify-center gap-6">
-                <div className="flex justify-between items-center">
-                  <div className="text-black text-base font-bold font-['Inter']">
-                    Game History
-                  </div>
-                  <button
-                    onClick={toggleHistory}
-                    className="flex justify-center items-center gap-2"
-                  >
-                    <div className="text-neutral-900 text-sm font-semibold font-['Inter']">
-                      {showHistory ? "Hide" : "Show"}
-                    </div>
-                    <div className="w-4 h-4 relative">
-                      
-                    </div>
-                  </button>
-                </div>
-                {showHistory && (
-                  <div className="w-full overflow-auto">
-                    {historyFromPreviousGames.length > 1 &&
-                      [...historyFromPreviousGames] // Create a shallow copy to avoid mutating the original array
-                        .slice(2)
-                        .reverse() // Reverse the copied array
-                        .map((data, index) => (
-                          <React.Fragment key={index}>
-                            <div className="text-neutral-900 text-lg font-semibold">
-
-                              Game #
-                              {historyFromPreviousGames.length - 1 - index - 1}
-                            </div>
-
-                            {
-                              // @ts-ignore
-                              data.map((data2, index2) => (
-                                <div
-                                  key={index2}
-                                  className="text-neutral-900 text-sm"
-                                >
-
-                                  Ball {index2 + 1}: bet: {data2.bet} ,
-                                  multiplier: {data2.multiplier}, earnings:{" "}
-                                  {data2.earnings}
-                                </div>
-                              ))
-                            }
-                          </React.Fragment>
-                        ))}
-                  </div>
-                )}
-              </div> */}
               <div className="justify-center items-center gap-2 inline-flex">
                 <div className="text-neutral-900 text-base font-semibold">
                   <a

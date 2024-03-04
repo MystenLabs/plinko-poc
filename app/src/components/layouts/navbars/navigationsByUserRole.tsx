@@ -12,67 +12,9 @@ import {
 import { NavigationLink } from "@/types/NavigationLink";
 import { USER_ROLES } from "@/constants/USER_ROLES";
 
-// const playNavigation: NavigationLink = {
-//   title: "Play",
-//   href: "/play",
-//   icon: <LightningBoltIcon />,
-// };
+const authenticatedNavigations: NavigationLink[] = [];
 
-// const aboutNavigation: NavigationLink = {
-//   title: "About",
-//   href: "/about",
-//   icon: <CodeIcon />,
-// };
-
-// const ownedObjectsNavigation: NavigationLink = {
-//   title: "My Objects",
-//   href: "/objects",
-//   icon: <BackpackIcon />,
-// };
-
-// const apiNavigations: NavigationLink[] = [
-//   {
-//     title: "API Health",
-//     href: "/api/health",
-//     icon: <CheckCircledIcon />,
-//   },
-//   {
-//     title: "API Visits",
-//     href: "/api/visits",
-//     icon: <CountdownTimerIcon />,
-//   },
-// ];
-
-// const accountNavigation: NavigationLink = {
-//   title: "Account",
-//   href: "/account",
-//   icon: <PersonIcon />,
-// };
-
-// const transferNavigation: NavigationLink = {
-//   title: "Transfer SUI",
-//   href: "/transfer",
-//   icon: <PaperPlaneIcon />,
-// };
-
-// const pwaShowcaseNavigation: NavigationLink = {
-//   title: "PWA Showcase",
-//   href: "/pwa",
-//   icon: <LightningBoltIcon />,
-// };
-
-const authenticatedNavigations: NavigationLink[] = [
-  // ownedObjectsNavigation,
-  // transferNavigation,
-  // accountNavigation,
-];
-
-const globalNavigations: NavigationLink[] = [
-  // aboutNavigation,
-  // ...apiNavigations,
-  // pwaShowcaseNavigation,
-  // playNavigation,
-];
+const globalNavigations: NavigationLink[] = [];
 
 export const navigationsByUserRole = {
   anonymous: [
@@ -89,11 +31,6 @@ export const navigationsByUserRole = {
       href: `/${USER_ROLES.ROLE_3}`,
       icon: <HomeIcon />,
     },
-    // {
-    //   title: `Member Test`,
-    //   href: `/${USER_ROLES.ROLE_3}/test`,
-    //   icon: <LetterCaseCapitalizeIcon />,
-    // },
     ...authenticatedNavigations,
     ...globalNavigations,
   ],
@@ -103,11 +40,6 @@ export const navigationsByUserRole = {
       href: `/${USER_ROLES.ROLE_2}`,
       icon: <HomeIcon />,
     },
-    // {
-    //   title: `Moderator Test`,
-    //   href: `/${USER_ROLES.ROLE_2}/test`,
-    //   icon: <LetterCaseCapitalizeIcon />,
-    // },
     ...authenticatedNavigations,
     ...globalNavigations,
   ],
@@ -117,11 +49,6 @@ export const navigationsByUserRole = {
       href: `/${USER_ROLES.ROLE_1}`,
       icon: <HomeIcon />,
     },
-    // {
-    //   title: `Admin Test`,
-    //   href: `/${USER_ROLES.ROLE_1}/test`,
-    //   icon: <LetterCaseCapitalizeIcon />,
-    // },
     ...authenticatedNavigations,
     ...globalNavigations,
   ],

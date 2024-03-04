@@ -1,7 +1,6 @@
-import { CopyIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
+import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import React, { ReactElement, cloneElement } from "react";
 import { Button } from "../../ui/button";
-import toast from "react-hot-toast";
 import { useAuthentication } from "@/contexts/Authentication";
 
 interface AppBarProps {

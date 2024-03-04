@@ -40,8 +40,6 @@ const PlinkoSettings = () => {
     }
     resetHistory();
     setWaitingToPlay(true);
-    console.log("Play Clicked", isPlaying);
-    console.log(currentBet);
     let currentBetSize = currentBet;
     //@ts-ignore
     let result_create_obj = await handleCreateCounterObject(
@@ -101,9 +99,6 @@ const PlinkoSettings = () => {
         </div>
         {/* Number of Balls */}
         <div className="flex flex-col justify-center gap-2.5">
-          {/* <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
-            Number of Balls
-          </div> */}
           <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px] ml-4">
             Number{" "}
             <span className="md:hidden">

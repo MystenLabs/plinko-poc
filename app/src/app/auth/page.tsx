@@ -20,9 +20,6 @@ const AuthPage = () => {
     enokiFlow
       .handleAuthCallback(hash)
       .then(async (res) => {
-        console.log({ res });
-        // const keypair2 = await enokiFlow.getKeypair();
-        // const address1 = keypair2.getPublicKey().toSuiAddress();
         const session = await enokiFlow.getSession();
         const address = enokiFlow.$zkLoginState.get().address!;
         const jwt = session?.jwt;
