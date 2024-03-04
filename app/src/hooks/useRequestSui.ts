@@ -18,10 +18,6 @@ export const useRequestSui = () => {
 
   const handleRequestSui = useCallback(async () => {
     setIsLoading(true);
-    console.log({
-      enokiApiKey: process.env.NEXT_PUBLIC_ENOKI_API_KEY!,
-      jwt: zkLoginSession?.jwt,
-    });
     await axios
       .get("https://pocs-faucet.vercel.app/api/faucet", {
         headers: {

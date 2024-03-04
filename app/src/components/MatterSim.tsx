@@ -31,7 +31,6 @@ const MatterSim: React.FC = () => {
     finalPaths: predefinedPaths,
     setPopupIsVisible,
   } = usePlayContext();
-  // console.log("predefinedPaths:", predefinedPaths);
   const { addColor, colors, addTotalWon, totalWon } = useGameHistory();
   const [multipliersHistroty, setMultipliersHistory] = useState([0]);
   const { isWaitingToPlay } = useWaitingToPlayContext();
@@ -63,16 +62,12 @@ const MatterSim: React.FC = () => {
   // Create a physics engine
   const engine = Engine.create();
 
-  console.log("predifinedPaths:", predefinedPaths);
-  console.log("predefinedPaths:", predefinedPaths);
-
   const predefinedPathsForTesting = predefinedPaths;
 
   const expectedMultipliers = findTheExpectedMultipliers(
     predefinedPathsForTesting,
     multipliersNumbers
   );
-  console.log("expectedMultipliers:", expectedMultipliers);
 
   // Ball properties
   const ballSize = 7;
@@ -134,7 +129,6 @@ const MatterSim: React.FC = () => {
       }
       while (balls.length > ballsSpawned) {
         if (document.visibilityState === "visible" && isPlaying) {
-          console.log("isPlaying:", isPlaying);
           await new Promise((resolve) => setTimeout(resolve, 750));
 
           // Generate a unique collision group for each ball
@@ -345,8 +339,6 @@ const MatterSim: React.FC = () => {
 
             // Get the color of the bottomArea and add it to the history
             const color = bottomArea.render.fillStyle;
-
-            console.log("bottomArea.render.fillStyle:", color);
             addColor(color);
 
             // Temporarily increase the size of the bottomArea
@@ -469,11 +461,6 @@ const MatterSim: React.FC = () => {
 
   useEffect(() => {
     //Find the history of multipliers that balls have landed on
-    //@ts-ignore
-    console.log(
-      "History of multipliers:",
-      findTheMultipliers(bucketColors, multipliersNumbers, colors)
-    );
     if (finishedBalls === predefinedPaths.length) {
       let historyOfMultipliers = findTheMultipliers(
         bucketColors,
@@ -484,7 +471,6 @@ const MatterSim: React.FC = () => {
       setPopupIsVisible(true);
       setPlaying(false);
     }
-    console.log("bottomArea.render.fillStyle:", colors);
   }, [finishedBalls, predefinedPaths.length, setPlaying, colors]);
 
   useEffect(() => {
@@ -493,7 +479,7 @@ const MatterSim: React.FC = () => {
         (value, index) => value === expectedMultipliers[index]
       );
       console.log(
-        "********************Check if all balls goes to the correct bucket",
+        "*Check if all balls goes to the correct bucket",
         //@ts-ignore
         areEqual,
         "With expected multipliers:",
