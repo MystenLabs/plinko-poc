@@ -20,6 +20,7 @@ import {
   findTheMultipliers,
   generateMultiplierText,
 } from "@/helpers/automatedTests";
+import { useWaitingToPlayContext } from "@/contexts/IsWaitingToPlay";
 
 const MatterSim: React.FC = () => {
   //@ts-ignore
@@ -33,6 +34,8 @@ const MatterSim: React.FC = () => {
   // console.log("predefinedPaths:", predefinedPaths);
   const { addColor, colors, addTotalWon, totalWon } = useGameHistory();
   const [multipliersHistroty, setMultipliersHistory] = useState([0]);
+  const { isWaitingToPlay } = useWaitingToPlayContext();
+
   // Define bucket colors
   const bucketColors = [
     "#FF0000", // Red
@@ -503,7 +506,10 @@ const MatterSim: React.FC = () => {
 
   return (
     <div>
-      <div id="matter-canvas-container"></div>
+      <div
+        id="matter-canvas-container"
+        className={`${isWaitingToPlay ? "opacity-35" : ""}`}
+      ></div>
       {/* Last ball won */}
       <div
         className="font-bold overflow-x-auto whitespace-nowrap flex flex-row-reverse justify-end space-x-2"

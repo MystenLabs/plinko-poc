@@ -7,7 +7,10 @@ import ScoreTable from "@/components/ScoreTable";
 import { Paper } from "@/components/general/Paper";
 import { TotalWon } from "@/components/totalWon";
 import { GameHistoryProvider } from "@/contexts/GameHistoryContext";
-import { IsWaitingToPlayProvider } from "@/contexts/IsWaitingToPlay";
+import {
+  IsWaitingToPlayProvider,
+  useWaitingToPlayContext,
+} from "@/contexts/IsWaitingToPlay";
 import { PlayProvider } from "@/contexts/PlayContext";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { is } from "@mysten/sui.js";
@@ -71,7 +74,7 @@ export default function Page() {
                 <div ref={containerRef} className="relative max-w-full">
                   {/* Existing content */}
                   <div
-                    className="w-full flex justify-center items-center overflow-hidden"
+                    className="w-full flex justify-center items-center overflow-hidden "
                     style={{ height: 600 * scale }}
                   >
                     <div
