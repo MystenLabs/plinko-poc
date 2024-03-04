@@ -15,8 +15,6 @@ export const useCreateCounterObject = () => {
   const [counterNftId, setCounterNftId] = useState("");
   const [gameId, setGameId] = useState("");
   const [vrfInput, setVrfInput] = useState("");
-  // const [final_paths, setFinalPaths] = useState(<number[][]>[]);
-  //@ts-ignore
 
   const {
     //@ts-ignore
@@ -37,13 +35,7 @@ export const useCreateCounterObject = () => {
     }
 
     const keypair = await enokiFlow.getKeypair();
-    console.log("keypair = ", keypair);
-    //log a type of total_bet_amount
-    console.log("total_bet_amount = ", typeof total_bet_amount);
-    console.log("total_bet_amount = *************", total_bet_amount);
-    console.log("numberofBalls = ------------------- > ", numberofBalls);
     let player = keypair.getPublicKey().toSuiAddress();
-    console.log("Player Address = **************" + player);
     const tx = new TransactionBlock();
 
     const betAmountCoin = tx.splitCoins(tx.gas, [
@@ -82,9 +74,6 @@ export const useCreateCounterObject = () => {
       },
     });
 
-    console.log("************************", res);
-    //vrf & game_id
-
     if (res?.effects?.status.status === "success") {
       res?.objectChanges?.find((obj) => {
         if (
@@ -99,7 +88,6 @@ export const useCreateCounterObject = () => {
       console.log("Error = ", res?.effects);
     }
 
-    console.log("****game_id*** ", res?.events);
     let events = res?.events?.find((obj) => {
       //@ts-ignore
       if (obj.parsedJson?.game_id) {
@@ -113,9 +101,6 @@ export const useCreateCounterObject = () => {
     let vrf__input = events?.parsedJson?.vrf_input;
     setGameId(game__id);
     setVrfInput(vrf__input);
-    console.log("game_id = ", game__id);
-    console.log("VRF_Input = ", vrf__input);
-    console.log("Number of Balls = ", numberofBalls);
 
     if (typeof game__id === "undefined" || typeof vrf__input === "undefined") {
       setPopupInsufficientCoinBalanceIsVisible(true);

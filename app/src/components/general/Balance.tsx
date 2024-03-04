@@ -9,7 +9,6 @@ import BigNumber from "bignumber.js";
 export const Balance = () => {
   const { isLoading, handleRequestSui } = useRequestSui();
   const { balance } = useBalance();
-  console.log("Balance", balance);
 
   return (
     <div className="flex space-x-2 items-center">
@@ -28,7 +27,6 @@ export const Balance = () => {
             onClick={handleRequestSui}
             isLoading={isLoading}
             className="flex space-x-0 md:space-x-2 items-center border-[1px] border-custom-border rounded-[36px] px-[10px] bg-[inherit] hover:bg-[#12BF77]"
-            //   spinnerClassName="!w-5 !h-5"
           >
             <Image src="/general/plus.svg" alt="plus" width={20} height={20} />
             <div className="hidden md:block font-semibold">Request SUI</div>

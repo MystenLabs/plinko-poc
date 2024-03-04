@@ -8,8 +8,6 @@ import { useAuthentication } from "@/contexts/Authentication";
 import { TopNavbar } from "./navbars/TopNavbar";
 import { BreadCrumbs } from "../breadcrumbs/BreadCrumbs";
 
-// if true => top appbar will be used in large screen
-// if false => side appbar will be used in large screen
 const NAVBAR_WIDTH = 350;
 
 export const LargeScreenLayout = ({ children }: ChildrenProps) => {
@@ -53,9 +51,7 @@ export const LargeScreenLayout = ({ children }: ChildrenProps) => {
           showBurger={!isNavbarOpen}
           onBurgerClick={handleOpenNavbar}
         />
-        {/* <div className="p-4 bg-grey-100"> */}
         <div>{children}</div>
-        {/* </div> */}
       </div>
     </div>
   );

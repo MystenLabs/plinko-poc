@@ -7,7 +7,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
@@ -15,10 +14,6 @@ import { useAuthentication } from "@/contexts/Authentication";
 import { CopyIcon, DotsVerticalIcon } from "@radix-ui/react-icons";
 import { formatAddress } from "@mysten/sui.js/utils";
 import toast from "react-hot-toast";
-import { useRequestSui } from "@/hooks/useRequestSui";
-import { LoadingButton } from "./LoadingButton";
-import { formatAmount } from "@/helpers/formatAmount";
-import BigNumber from "bignumber.js";
 
 interface UserProfileMenuProps {
   trigger?: React.ReactNode;
@@ -26,7 +21,6 @@ interface UserProfileMenuProps {
 
 export const UserProfileMenu = ({ trigger }: UserProfileMenuProps) => {
   const { user, handleLogout } = useAuthentication();
-  const { handleRequestSui, isLoading, balance } = useRequestSui();
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(user.address);
     toast.success("Address copied to clipboard");
@@ -54,12 +48,6 @@ export const UserProfileMenu = ({ trigger }: UserProfileMenuProps) => {
               <CopyIcon className="w-4 h-4 text-black" />
             </button>
           </DropdownMenuItem>
-          {/* <DropdownMenuItem className="flex items-center justify-between w-full">
-            <div>{formatAmount(BigNumber(balance))} SUI</div>
-            <LoadingButton onClick={handleRequestSui} isLoading={isLoading}>
-              Request SUI
-            </LoadingButton>
-          </DropdownMenuItem> */}
         </DropdownMenuGroup>
         <DropdownMenuItem
           onClick={handleLogout}
