@@ -67,12 +67,17 @@ const PlinkoSettings = () => {
   };
 
   return (
-    <div className="w-[950px] max-w-full px-5 pt-5 pb-[25px] bg-emerald-950 rounded-[20px] mx-auto my-4">
+    <div className="w-[950px] max-w-full px-5 pt-5 pb-[25px] bg-emerald-950 rounded-[20px] mx-auto my-4 ">
       <div className="flex justify-center items-center gap-5">
         {/* Bid Amount (per ball) */}
-        <div className="flex flex-col justify-center items-center gap-2.5">
-          <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
-            Bid Amount (per ball)
+        <div className="flex flex-col justify-center  gap-2.5">
+          <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px] ml-4">
+            Bid{" "}
+            <span className="md:hidden">
+              {" "}
+              <br />{" "}
+            </span>{" "}
+            (Per Ball)
           </div>
           <div
             className={`flex items-center h-11 p-5 bg-emerald-950 rounded-[40px] ${
@@ -95,9 +100,17 @@ const PlinkoSettings = () => {
           </div>
         </div>
         {/* Number of Balls */}
-        <div className="flex flex-col justify-center items-center gap-2.5">
-          <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
+        <div className="flex flex-col justify-center gap-2.5">
+          {/* <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
             Number of Balls
+          </div> */}
+          <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px] ml-4">
+            Number{" "}
+            <span className="md:hidden">
+              {" "}
+              <br />{" "}
+            </span>{" "}
+            of Balls
           </div>
           <div
             className={`flex items-center h-11 p-5 bg-emerald-950 rounded-[40px] ${
@@ -117,9 +130,14 @@ const PlinkoSettings = () => {
           </div>
         </div>
         {/* Total Bid & Play Button */}
-        <div className="flex flex-col justify-center items-center gap-2.5">
-          <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
-            Total Bid: {currentBet} SUI
+        <div className="flex flex-col justify-center  gap-2.5">
+          <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px] ml-4">
+            Total Bid:{" "}
+            <span className="md:hidden">
+              {" "}
+              <br />{" "}
+            </span>{" "}
+            {currentBet} SUI
           </div>
           <button
             onClick={() => {
