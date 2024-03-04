@@ -71,7 +71,7 @@ module plinko::plinko {
         id
     }
 
-    /// Completes the game by calculating the outcome and transferring the funds to the player.
+    /// finish_game Completes the game by calculating the outcome and transferring the funds to the player.
     /// The player must provide a BLS signature of the VRF input and the number of balls to calculate the outcome.
     /// It emits an Outcome event with the game result and the trace path of the extended beacon.
     public fun finish_game(game_id: ID, bls_sig: vector<u8>, house_data: &mut HouseData, num_balls: u64, ctx: &mut TxContext): (u64, address, vector<u8>) {
