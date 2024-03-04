@@ -72,7 +72,12 @@ const PlinkoSettings = () => {
         {/* Bid Amount (per ball) */}
         <div className="flex flex-col justify-center items-center gap-2.5">
           <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
-            Bid Amount (per ball)
+            Bid{" "}
+            <span className="md:hidden">
+              {" "}
+              <br />{" "}
+            </span>{" "}
+            (Per Ball)
           </div>
           <div
             className={`flex items-center h-11 p-5 bg-emerald-950 rounded-[40px] ${
@@ -119,7 +124,12 @@ const PlinkoSettings = () => {
         {/* Total Bid & Play Button */}
         <div className="flex flex-col justify-center items-center gap-2.5">
           <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px]">
-            Total Bid: {currentBet} SUI
+            Total Bid:{" "}
+            <span className="md:hidden">
+              {" "}
+              <br />{" "}
+            </span>{" "}
+            {currentBet} SUI
           </div>
           <button
             onClick={() => {
