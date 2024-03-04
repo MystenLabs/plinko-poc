@@ -19,6 +19,9 @@ module.exports = {
       backgroundImage: {
         "custom-bg": "url('../public/Tablebackground.svg')",
       },
+      confetti: {
+        "custom-bg": "url('../public/Confetti.svg')",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
