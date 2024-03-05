@@ -28,7 +28,10 @@ const PlinkoSettings = () => {
   useEffect(() => {
     const bet = parseFloat(betSize.toString()) || 0;
     const balls = parseInt(numberOfBalls.toString(), 10) || 0;
-    setCurrentBet(bet * balls);
+    // i want to keep only 2 decimal places and if the last was 9, i want to round it up
+    let totalBet = bet * balls;
+    totalBet = Math.round(totalBet * 100) / 100;
+    setCurrentBet(totalBet);
   }, [betSize, numberOfBalls]);
 
   const handlePlayClick = async () => {
@@ -55,8 +58,15 @@ const PlinkoSettings = () => {
   };
 
   const handleBetSizeChange = (e: any) => {
-    const newBetSize = Math.max(1, Number(e.target.value));
-    setBetSize(newBetSize);
+    const value = e.target.value;
+
+    // Regular expression to match up to 3 digits in total, allowing for 0 or 1 decimal places
+    const isValidInput = /^(?:\d{1,3}|\d{0,2}\.\d)$/.test(value);
+
+    if (isValidInput || value === "") {
+      // Allows empty value for backspace functionality
+      setBetSize(value);
+    }
   };
 
   const handleNumberOfBallsChange = (e: any) => {
@@ -89,6 +99,7 @@ const PlinkoSettings = () => {
               value={betSize}
               onChange={handleBetSizeChange}
               onFocus={handleInputFocus}
+              step="0.1"
               className="bg-transparent text-white text-opacity-50 text-base font-normal leading-[18.40px] w-full outline-none"
               placeholder="0"
             />
