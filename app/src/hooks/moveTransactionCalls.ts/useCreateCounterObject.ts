@@ -2,15 +2,15 @@ import { SuiClient } from "@mysten/sui.js/client";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { useState } from "react";
 import { usePlayContext } from "../../contexts/PlayContext";
-import { useAuthentication } from "@/contexts/Authentication";
 import { splitIntoPathsAndNormalize } from "@/helpers/traceFromTheEventToPathsForBalls";
+import { useEnokiFlow } from "@mysten/enoki/react";
 
 const client = new SuiClient({
   url: process.env.NEXT_PUBLIC_SUI_NETWORK!,
 });
 
 export const useCreateCounterObject = () => {
-  const { enokiFlow, handleLogout } = useAuthentication();
+  const enokiFlow = useEnokiFlow();
   const [isLoading, setIsLoading] = useState(false);
   const [counterNftId, setCounterNftId] = useState("");
   const [gameId, setGameId] = useState("");
@@ -28,12 +28,6 @@ export const useCreateCounterObject = () => {
     numberofBalls: number
   ) => {
     setIsLoading(true);
-    try {
-      const keypair = await enokiFlow.getKeypair();
-    } catch (error) {
-      handleLogout();
-    }
-
     const keypair = await enokiFlow.getKeypair();
     let player = keypair.getPublicKey().toSuiAddress();
     const tx = new TransactionBlock();
