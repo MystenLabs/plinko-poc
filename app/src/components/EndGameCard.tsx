@@ -40,7 +40,7 @@ const PopupComponent = () => {
             hasWon
               ? 'bg-[url("/confetti.svg")] bg-no-repeat bg-cover'
               : "bg-gray-600 bg-opacity-50"
-          } overflow-y-auto h-full w-full flex justify-center items-center z-10`}
+          } overflow-y-auto h-full w-full flex justify-center items-center z-20`}
         >
           <div
             className="p-5 border bg-white rounded-3xl shadow-lg"
