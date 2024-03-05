@@ -44,7 +44,7 @@ const ScoreTable = () => {
       const newEntries = colors.map((color) => {
         const position = bucketColors.indexOf(color);
         const multiplier = multipliersNumbers[position];
-        const earnings = `${betSize * multiplier} SUI`;
+        const earnings = `${(betSize * multiplier).toFixed(2)} SUI`;
         const earningsValue = betSize * multiplier;
         const isLost = earningsValue < betSize;
         return {
@@ -160,29 +160,35 @@ const ScoreTable = () => {
         <div className="flex flex-col gap-5 ml-4">
           {
             //@ts-ignore
-            currentGameHistory.map((data, index) => (
-              <div
-                key={index}
-                className={`${
-                  //@ts-ignore
-                  data.earnings.startsWith("-")
-                    ? "text-orange-600"
-                    : //@ts-ignore
-                    data.earnings === "-"
-                    ? "text-opacity-40"
-                    : "text-emerald-400"
-                } text-base font-semibold leading-[18.40px] ${
-                  //@ts-ignore
-                  data.isLost ? "text-red-500" : "text-green-500"
-                }`}
-              >
-                {
-                  //@ts-ignore
-                  Math.round(data.earningsValue * 100) / 100
-                }{" "}
-                SUI
-              </div>
-            ))
+            currentGameHistory.map((data, index) => {
+              // Round earningsValue to two decimal places
+              data.earningsValue = (
+                Math.round(data.earningsValue * 100) / 100
+              ).toFixed(2);
+              return (
+                <div
+                  key={index}
+                  className={`${
+                    //@ts-ignore
+                    data.earnings.startsWith("-")
+                      ? "text-orange-600"
+                      : //@ts-ignore
+                      data.earnings === "-"
+                      ? "text-opacity-40"
+                      : "text-emerald-400"
+                  } text-base font-semibold leading-[18.40px] ${
+                    //@ts-ignore
+                    data.isLost ? "text-red-500" : "text-green-500"
+                  }`}
+                >
+                  {
+                    //@ts-ignore
+                    (Math.round(data.earningsValue * 100) / 100).toFixed(2)
+                  }{" "}
+                  SUI
+                </div>
+              );
+            })
           }
           {historyFromPreviousGames.length > 1 &&
             [...historyFromPreviousGames] // Create a shallow copy to avoid mutating the original array
