@@ -178,7 +178,7 @@ const ScoreTable = () => {
               >
                 {
                   //@ts-ignore
-                  data.earningsValue
+                  Math.round(data.earningsValue * 100) / 100
                 }{" "}
                 SUI
               </div>
