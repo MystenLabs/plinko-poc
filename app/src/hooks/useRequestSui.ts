@@ -36,7 +36,7 @@ export const useRequestSui = () => {
       .catch((err) => {
         setIsLoading(false);
         console.error(err);
-        toast.error("Failed to receive SUI");
+        toast.error("Faucet limitation reached. Try again later.");
       });
   }, [zkLoginSession?.jwt]);
 
