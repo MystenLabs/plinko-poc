@@ -37,7 +37,7 @@ const PlinkoSettings = () => {
   const handlePlayClick = async () => {
     if (isPlaying) return;
     //@ts-ignore
-    if (currentBet > balance.c[0]) {
+    if (currentBet >= balance.c[0] + 0.9) {
       setPopupInsufficientCoinBalanceIsVisible(true);
       return;
     }
