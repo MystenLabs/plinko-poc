@@ -70,8 +70,12 @@ const PlinkoSettings = () => {
   };
 
   const handleNumberOfBallsChange = (e: any) => {
-    const newNumberOfBalls = Math.max(1, Number(e.target.value));
-    setNumberOfBalls(newNumberOfBalls);
+    const value = e.target.value;
+    //Regular expression to match integers only from 1 to 100
+    const isValidInput = /^(?:[1-9][0-9]?|100)$/.test(value);
+    if (isValidInput || value === "") {
+      setNumberOfBalls(value);
+    }
   };
 
   return (
@@ -143,7 +147,7 @@ const PlinkoSettings = () => {
               {" "}
               <br />{" "}
             </span>{" "}
-            {currentBet} SUI
+            {currentBet.toFixed(1)} SUI
           </div>
           <button
             onClick={() => {
