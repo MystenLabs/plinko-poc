@@ -1,20 +1,22 @@
 "use client";
 
 import { ChildrenProps } from "@/types/ChildrenProps";
-import { useAuthentication } from "@/contexts/Authentication";
-import { Spinner } from "@/components/general/Spinner";
 import { useRouter } from "next/navigation";
+import { useZkLogin } from "@mysten/enoki/react";
+import { useEffect } from "react";
 
 export default function AdminRootLayout({ children }: ChildrenProps) {
-  const { user, isLoading } = useAuthentication();
   const router = useRouter();
+  const { address } = useZkLogin();
 
-  if (isLoading) {
-    return <Spinner />;
-  }
+  useEffect(() => {
+    if (!address) {
+      console.log("No address found, taking you back to '/'");
+      router.push("/");
+    }
+  }, [address]);
 
-  if (user?.role !== "admin") {
-    router.push("/");
+  if (!address) {
     return "Not allowed";
   }
 

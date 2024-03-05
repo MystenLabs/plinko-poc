@@ -2,7 +2,6 @@
 
 import { LargeScreenLayout } from "@/components/layouts/LargeScreenLayout";
 import { MobileLayout } from "@/components/layouts/MobileLayout";
-import { AuthenticationProvider } from "@/contexts/Authentication";
 import { BalanceProvider } from "@/contexts/BalanceContext";
 import { EnokiFlowProvider } from "@mysten/enoki/react";
 import { useIsMobile } from "@/hooks/useIsMobile";
@@ -18,28 +17,26 @@ export const ProvidersAndLayout = ({ children }: ChildrenProps) => {
 
   return (
     <EnokiFlowProvider apiKey={process.env.NEXT_PUBLIC_ENOKI_API_KEY!}>
-      <AuthenticationProvider>
-        <BalanceProvider>
-          <main
-            className={`min-h-screen w-screen bg-black`}
-            style={{
-              backgroundImage: `url(${backgroundImage.src})`,
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
+      <BalanceProvider>
+        <main
+          className={`min-h-screen w-screen bg-black`}
+          style={{
+            backgroundImage: `url(${backgroundImage.src})`,
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
+          {!!isMobile && <MobileLayout>{children}</MobileLayout>}
+          {!isMobile && <LargeScreenLayout>{children}</LargeScreenLayout>}
+          <Toaster
+            position="bottom-center"
+            toastOptions={{
+              duration: 5000,
             }}
-          >
-            {!!isMobile && <MobileLayout>{children}</MobileLayout>}
-            {!isMobile && <LargeScreenLayout>{children}</LargeScreenLayout>}
-            <Toaster
-              position="bottom-center"
-              toastOptions={{
-                duration: 5000,
-              }}
-            />
-          </main>
-        </BalanceProvider>
-      </AuthenticationProvider>
+          />
+        </main>
+      </BalanceProvider>
     </EnokiFlowProvider>
   );
 };
