@@ -1,19 +1,16 @@
 import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
-import { useAuthentication } from "@/contexts/Authentication";
 import toast from "react-hot-toast";
 import { useSui } from "./useSui";
-import { MIST_PER_SUI } from "@mysten/sui.js/utils";
 import { useBalance } from "@/contexts/BalanceContext";
+import { useZkLogin, useZkLoginSession } from "@mysten/enoki/react";
 
 export const useRequestSui = () => {
   const { suiClient } = useSui();
   const [isLoading, setIsLoading] = useState(false);
   const [balance, setBalance] = useState(0);
-  const {
-    user: { zkLoginSession, address },
-  } = useAuthentication();
-  const { user } = useAuthentication();
+  const { address } = useZkLogin();
+  const zkLoginSession = useZkLoginSession();
   const { handleRefreshBalance } = useBalance();
 
   const handleRequestSui = useCallback(async () => {

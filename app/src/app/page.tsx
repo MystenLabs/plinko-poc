@@ -2,31 +2,24 @@
 
 import { Paper } from "@/components/general/Paper";
 import { LoginForm } from "@/components/forms/LoginForm";
-// import { Metadata } from "next";
-import { useAuthentication } from "@/contexts/Authentication";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-
-// export const metadata: Metadata = {
-//   title: "PoC Template",
-//   description: "A NextJS app to bootstrap PoCs faster",
-// };
+import { useZkLogin } from "@mysten/enoki/react";
 
 export default function Home() {
   const router = useRouter();
-  const { user } = useAuthentication();
+  const { address } = useZkLogin();
 
   useEffect(() => {
-    if (user.address) {
+    if (address) {
+      console.log(address);
       router.push("/play");
     }
-  }, [user.address]);
+  }, [address]);
 
   console.log("page.tsx is on server:", !!process.env.IS_SERVER_SIDE);
 
   return (
-    <Paper className="max-w-[600px] mx-auto">
-      {!user.address && <LoginForm />}
-    </Paper>
+    <Paper className="max-w-[600px] mx-auto">{!address && <LoginForm />}</Paper>
   );
 }
