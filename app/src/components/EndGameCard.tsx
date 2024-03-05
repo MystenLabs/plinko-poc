@@ -67,7 +67,7 @@ const PopupComponent = () => {
                   </div>
                 )}
                 <div className="opacity-70 text-right text-neutral-900 text-base font-medium">
-                  You Bid: {bid * finalPaths.length} SUI
+                  You Bid: {Math.round(bid * finalPaths.length * 100) / 100} SUI
                 </div>
               </div>
 
