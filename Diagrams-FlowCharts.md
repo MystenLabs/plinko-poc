@@ -6,7 +6,7 @@
 ### Move Component Diagram
 ![Component Diagram](docs/component_diagram_sc.png)
 
-## Flowcharts and Sequence Diagrams
+## Flowcharts
 
 ### Start a Plinko Game
 This flowchart illustrates the process for a player to start a new game of Plinko, including staking SUI tokens and utilizing the Counter NFT for randomness.
@@ -52,4 +52,3 @@ flowchart TD
     classDef error fill:#bb3333,stroke:#333,stroke-width:2px,color:#fff;
     classDef event fill:#33bb33,stroke:#333,stroke-width:2px,color:#fff;
 ```
-[Project Diagrams and FlowCharts](/Diagrams-FlowCharts.md)
