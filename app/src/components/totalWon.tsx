@@ -10,6 +10,10 @@ export const TotalWon = () => {
     ? (Math.round(currentGameHistory[0].earningsValue * 100) / 100).toFixed(2)
     : "0.00"; // Fallback to "+0.00" if no earningsValue is available
 
+  const isLost = currentGameHistory[0]?.isLost
+    ? currentGameHistory[0].isLost
+    : false;
+
   return (
     <div className="w-[205px] h-[41px] px-5 py-2.5 bg-emerald-400 rounded-full shadow flex justify-center items-center gap-2.5">
       <div className="text-black text-opacity-80 text-base font-medium leading-[18.40px] whitespace-nowrap">
@@ -20,7 +24,13 @@ export const TotalWon = () => {
           {totalWon !== -1 ? (
             <>
               {parseFloat(totalWon.toString()).toFixed(2)}
-              <span className="text-sm font-normal">+{firstEarningsValue}</span>
+              <span
+                className={`text-sm font-normal ${
+                  isLost ? "text-red-500" : "text-green-900"
+                }`}
+              >
+                +{firstEarningsValue}
+              </span>
             </>
           ) : (
             "0.00"
