@@ -36,11 +36,19 @@ const PopupComponent = () => {
     <>
       {popupIsVisible && (
         <div
-          className={`fixed inset-0 bg-gray-600 bg-opacity-50 ${
-            hasWon
-              ? 'bg-[url("/confetti.svg")] bg-no-repeat bg-cover'
-              : "bg-gray-600 bg-opacity-50"
+          className={`fixed inset-0 ${
+            hasWon ? "" : "bg-gray-600 bg-opacity-50"
           } overflow-y-auto h-full w-full flex justify-center items-center z-20`}
+          style={{
+            ...(hasWon
+              ? {
+                  backgroundImage: "url('/general/confetti.svg')",
+                  backgroundSize: "cover",
+                  backgroundPositionX: "center",
+                  backgroundPositionY: "top",
+                }
+              : {}),
+          }}
         >
           <div
             className="p-5 border bg-white rounded-3xl shadow-lg"
@@ -55,16 +63,21 @@ const PopupComponent = () => {
                 {hasWon ? (
                   <>
                     <div className="w-[310px] opacity-90 text-center text-black text-2xl font-semibold">
-                      Congratulation,You Won!
+                      Congratulations, You Won!
                     </div>
                     <div className="text-center text-emerald-600 text-[56px] font-bold">
                       {Number(totalWon).toFixed(2)} SUI
                     </div>
                   </>
                 ) : (
-                  <div className="w-[380px] opacity-90 text-center text-black text-2xl font-semibold">
-                    Better luck next time
-                  </div>
+                  <>
+                    <div className="w-[380px] opacity-90 text-center text-black text-2xl font-semibold">
+                      Better luck next time
+                    </div>
+                    <div className="text-center text-black text-[56px] font-bold">
+                      {Number(totalWon).toFixed(2)} SUI
+                    </div>
+                  </>
                 )}
                 <div className="opacity-70 text-right text-neutral-900 text-base font-medium">
                   You Bid: {Math.round(bid * finalPaths.length * 100) / 100} SUI
