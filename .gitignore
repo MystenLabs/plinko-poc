@@ -48,3 +48,6 @@ setup/src/tx_res.json
 api/.env
 api/.env.local
 setup/.publish.res.json
+
+.structurizr
+workspace.json
