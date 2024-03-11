@@ -6,6 +6,8 @@ workspace {
         }
 
         plinkoPlayer = person "Player" "User who plays the Plinko game, interacting through a web application." "Main Actor"
+        
+        houseAdmin = person "House Admin" "Responsible for configuring and managing the smart contracts, and overall administration of the Plinko game." "Secondary Actor"
 
         plinkoGame = softwaresystem "Plinko Game on Sui Blockchain" "A Plinko game implementation on the Sui blockchain, incorporating cryptographic techniques for fairness and transparency." "Main System" {
 
@@ -18,7 +20,6 @@ workspace {
                 houseData -> plinkoGameContract "Provides configuration and treasury management for"
             }
 
-            // Correctly defined container
             plinkoWebApplication = container "Web Application" "Web application for users to interact with the Plinko Game." {
                 technology "ReactJS/NextJS"
                 tags "User Interface"
@@ -30,6 +31,8 @@ workspace {
 
         plinkoPlayer -> plinkoGame "Plays the Plinko game using"
         plinkoGame -> suiBlockchain "Interacts with Sui Blockchain for game logic and transactions"
+        
+        houseAdmin -> plinkoGame "Configures and manages"
 
         deploymentEnvironment "Production" {
             deploymentNode "Sui Blockchain" "https://sui.io/" "Blockchain / Smart Contracts"  {
@@ -78,10 +81,10 @@ workspace {
                 color #ffffff
             }
 
-            element "Secondary System" {
+            element "Secondary Actor" {
+                shape person
                 background #1168bd
                 color #ffffff
-                shape RoundedBox
             }
 
             element "Main System" {
