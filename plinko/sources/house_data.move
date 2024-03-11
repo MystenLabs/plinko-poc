@@ -94,11 +94,8 @@ module plinko::house_data {
 
     // === Public-Mutative Functions ===
 
-    fun set_multiplier_vector(house_data: &mut HouseData, v: vector<u64>) {
-        vector::append<u64>(&mut house_data.multiplier, v);
-    }
-
-    public fun update_multiplier_vector(house_data: &mut HouseData, v: vector<u64>) {
+    public fun update_multiplier_vector(house_data: &mut HouseData, v: vector<u64>, ctx: &mut TxContext) {
+        assert!(tx_context::sender(ctx) == house(house_data), ECallerNotHouse);
         house_data.multiplier = vector::empty<u64>();
         set_multiplier_vector(house_data, v);
     }
@@ -146,27 +143,7 @@ module plinko::house_data {
         house_data.min_stake = min_stake;
     }
 
-    /// Returns a mutable reference to the balance of the house.
-    public(friend) fun borrow_balance_mut(house_data: &mut HouseData): &mut Balance<SUI> {
-        &mut house_data.balance
-    }
-
-    /// Returns a mutable reference to the fees of the house.
-    public(friend) fun borrow_fees_mut(house_data: &mut HouseData): &mut Balance<SUI> {
-        &mut house_data.fees
-    }
-
-    /// Returns a mutable reference to the house id.
-    public(friend) fun borrow_mut(house_data: &mut HouseData): &mut UID {
-        &mut house_data.id
-    }
-
     // === Public-View Functions ===
-
-    /// Returns a reference to the house id.
-    public(friend) fun borrow(house_data: &HouseData): &UID {
-        &house_data.id
-    }
 
     /// Returns the balance of the house.
     public fun balance(house_data: &HouseData): u64 {
@@ -206,6 +183,34 @@ module plinko::house_data {
     /// Returns the multiplier vector
     public fun multiplier(house_data: &HouseData): vector<u64> {
         house_data.multiplier
+    }
+
+    // === Public-Friend Functions ===
+
+    /// Returns a reference to the house id.
+    public(friend) fun borrow(house_data: &HouseData): &UID {
+        &house_data.id
+    }
+
+        /// Returns a mutable reference to the balance of the house.
+    public(friend) fun borrow_balance_mut(house_data: &mut HouseData): &mut Balance<SUI> {
+        &mut house_data.balance
+    }
+
+    /// Returns a mutable reference to the fees of the house.
+    public(friend) fun borrow_fees_mut(house_data: &mut HouseData): &mut Balance<SUI> {
+        &mut house_data.fees
+    }
+
+    /// Returns a mutable reference to the house id.
+    public(friend) fun borrow_mut(house_data: &mut HouseData): &mut UID {
+        &mut house_data.id
+    }
+
+    // === Private Functions ===
+
+    fun set_multiplier_vector(house_data: &mut HouseData, v: vector<u64>) {
+        vector::append<u64>(&mut house_data.multiplier, v);
     }
 
     // === Test Functions ===
