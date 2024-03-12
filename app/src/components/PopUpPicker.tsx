@@ -11,18 +11,35 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, onSubmit }) => {
   const itemHeight = 40; // Height of an individual item in pixels
   const halfVisibleItems = Math.floor(containerHeight / itemHeight / 2);
 
-  const [betSize, setBetSize] = useState("5.0");
-  const [numberOfBalls, setNumberOfBalls] = useState("50");
+  const [betSize, setBetSize] = useState("0.1");
+  const [numberOfBalls, setNumberOfBalls] = useState("1");
   const betSizeRef = useRef<HTMLDivElement>(null);
   const numberOfBallsRef = useRef<HTMLDivElement>(null);
 
   // Utility function to generate options for bet size and number of balls
   const generateBetSizeOptions = (): string[] => {
-    return Array.from({ length: 100 }, (_, i) => ((i + 1) / 10).toFixed(1));
+    let array = [];
+    array.push("");
+    array.push("");
+    for (let i = 1; i <= 100; i++) {
+      array.push((i / 10).toFixed(1));
+    }
+    array.push("");
+    array.push("");
+    return array;
   };
 
   const generateNumberOfBallsOptions = (): string[] => {
-    return Array.from({ length: 100 }, (_, i) => (i + 1).toString());
+    // return Array.from({ length: 100 }, (_, i) => (i + 1).toString());
+    let array = [];
+    array.push("");
+    array.push("");
+    for (let i = 1; i <= 100; i++) {
+      array.push(i.toString());
+    }
+    array.push("");
+    array.push("");
+    return array;
   };
 
   const betSizeOptions = generateBetSizeOptions();
@@ -60,10 +77,12 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, onSubmit }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white rounded-lg p-4 w-full max-w-lg">
-        <div className="grid grid-cols-2 gap-4">
+      <div className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg p-4 w-11/12 max-w-md shadow-lg">
+        <div className="grid grid-cols-2 gap-4 text-white">
           <div>
-            <h2 className="text-lg font-semibold text-center mb-2">Bid</h2>
+            <h2 className="text-lg font-semibold text-center mb-2 border-b border-white pb-2">
+              Bid
+            </h2>
             <div
               className="overflow-auto"
               style={{ height: containerHeight }}
@@ -76,7 +95,7 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, onSubmit }) => {
                 <div
                   key={index}
                   className={`p-2 text-center ${
-                    betSize === option ? "bg-blue-100" : ""
+                    betSize === option ? "bg-black" : ""
                   }`}
                   style={{ height: itemHeight }}
                 >
@@ -86,7 +105,7 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, onSubmit }) => {
             </div>
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-center mb-2">
+            <h2 className="text-lg font-semibold text-center mb-2 border-b border-white pb-2">
               Number of Balls
             </h2>
             <div
@@ -105,7 +124,7 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, onSubmit }) => {
                 <div
                   key={index}
                   className={`p-2 text-center ${
-                    numberOfBalls === option ? "bg-blue-100" : ""
+                    numberOfBalls === option ? "bg-black" : ""
                   }`}
                   style={{ height: itemHeight }}
                 >
