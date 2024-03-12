@@ -1,10 +1,12 @@
 "use client";
 import { useGameHistory } from "@/contexts/GameHistoryContext";
 import { useWaitingToPlayContext } from "@/contexts/IsWaitingToPlay";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export const TotalWon = () => {
   const { totalWon, currentGameHistory } = useGameHistory();
   const { isWaitingToPlay } = useWaitingToPlayContext();
+  const { isMobile } = useIsMobile();
   // Extract the first earningsValue, if it exists
   const firstEarningsValue = currentGameHistory?.[0]?.earningsValue
     ? (Math.round(currentGameHistory[0].earningsValue * 100) / 100).toFixed(2)
@@ -24,13 +26,15 @@ export const TotalWon = () => {
           {totalWon !== -1 ? (
             <>
               {parseFloat(totalWon.toString()).toFixed(2)}
-              <span
-                className={`text-sm font-normal ${
-                  isLost ? "text-red-500" : "text-green-900"
-                }`}
-              >
-                +{firstEarningsValue}
-              </span>
+              {isMobile && firstEarningsValue != "0.00" && (
+                <span
+                  className={`text-sm font-normal ${
+                    isLost ? "text-red-500" : "text-lime-600"
+                  }`}
+                >
+                  +{firstEarningsValue}
+                </span>
+              )}
             </>
           ) : (
             "0.00"
