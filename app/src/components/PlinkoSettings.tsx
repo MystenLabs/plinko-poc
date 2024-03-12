@@ -27,7 +27,7 @@ const PlinkoSettings = () => {
 
   const [numberOfBalls, setNumberOfBalls] = useState(1);
   const [currentBet, setCurrentBet] = useState(0);
-  const [showPopup, setShowPopup] = useState(true);
+  const [showPopup, setShowPopup] = useState(false);
 
   // Handle changes from the Popup component
   const handlePopupSubmit = (newBetSize: string, newNumberOfBalls: string) => {
