@@ -76,8 +76,8 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, onSubmit }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg p-4 w-11/12 max-w-md shadow-lg">
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-20">
+      <div className="bg-gradient-to-r from-emerald-900 to-emerald-900 rounded-lg p-4 w-11/12 max-w-md shadow-lg">
         <div className="grid grid-cols-2 gap-4 text-white">
           <div>
             <h2 className="text-lg font-semibold text-center mb-2 border-b border-white pb-2">
@@ -95,7 +95,7 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, onSubmit }) => {
                 <div
                   key={index}
                   className={`p-2 text-center ${
-                    betSize === option ? "bg-black" : ""
+                    betSize === option ? "bg-black rounded-md" : ""
                   }`}
                   style={{ height: itemHeight }}
                 >
@@ -124,7 +124,7 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, onSubmit }) => {
                 <div
                   key={index}
                   className={`p-2 text-center ${
-                    numberOfBalls === option ? "bg-black" : ""
+                    numberOfBalls === option ? "bg-black rounded-md" : ""
                   }`}
                   style={{ height: itemHeight }}
                 >
@@ -136,16 +136,20 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, onSubmit }) => {
         </div>
         <div className="mt-4 flex justify-center space-x-2">
           <button
-            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
             onClick={onClose}
+            className={`h-11 px-8 py-2.5 bg-red-500 rounded-[999px] flex justify-center items-center gap-2 `}
           >
-            Cancel
+            <div className="text-white text-base font-bold leading-[18.40px]">
+              Cancel
+            </div>
           </button>
           <button
-            className="px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 rounded"
             onClick={() => onSubmit(betSize, numberOfBalls)}
+            className={`h-11 px-8 py-2.5 bg-emerald-600 rounded-[999px] flex justify-center items-center gap-2 `}
           >
-            Submit
+            <div className="text-white text-base font-bold leading-[18.40px]">
+              Submit
+            </div>
           </button>
         </div>
       </div>
