@@ -103,14 +103,20 @@ sequenceDiagram
 
     Note over Player, Blockchain: Plinko Game Interaction Flow
 
-    Player->>+UI: Places bet, selects number of balls
-    UI->>+Blockchain:  Requests the creation of counter_nft (counter_nft::mint), game initialization (plinko::start_game), creates vrf_input.
-    Note over UI: Reads Sui events. gameId, vrfInput, and eventually balls' trace paths
+    Player->>+UI: Places bet, selects number of balls, presses play
+    UI->>Player: Displays game as pending, awaiting outcome
+    UI->>+Blockchain: Sends bet and number of balls
+    UI->>+Blockchain: Calls counter_nft::mint to produce vrf_input, calls plinko::start_game
+    Note over Blockchain: Checks stakes, balances, creates and increments the counter, emits 'NewGame' event
+    Blockchain-->>-UI: Returns gameId, vrfInput
     UI->>+API: POST /game/plinko/end with { gameId, vrfInput, numberOfBalls }
-    API->>+Blockchain: plinko::finish_game Move function
-    Blockchain-->>-API: Returns game outcome (trace paths, winnings)
+    Note over UI: Reads from the 'NewGame' event gameId, vrfInput
+    Note over API: Signs vrfInput with house's private key
+    API->>+Blockchain: Calls plinko::finish_game with signed vrfInput
+    Note over Blockchain: Verifies signature, calculates outcome (payments, balls' trace paths), emits Outcome event
+    Blockchain-->>-API: Returns game outcome event (trace paths, winnings)
     API-->>-UI: Sends game outcome (trace paths, winnings)
-    UI-->>-Player: Displays game result and winnings
+    UI-->>-Player: Displays game result, balls' descend, and winnings
 ```
 
 [Project Diagrams and FlowCharts](/Diagrams-FlowCharts.md)
