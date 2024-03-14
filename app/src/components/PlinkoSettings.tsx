@@ -120,9 +120,13 @@ const PlinkoSettings = () => {
               type="number"
               value={betSize}
               onChange={handleBetSizeChange}
-              onFocus={() => {
-                if (isMobile) setShowPopup(true);
-                else handleInputFocus;
+              onFocus={(event) => {
+                if (isMobile) {
+                  event.preventDefault(); // Prevent default to avoid keyboard popup
+                  setShowPopup(true); // Show the popup
+                } else {
+                  handleInputFocus(event); // Optionally, handle focus for desktop
+                }
               }}
               step="0.1"
               className="bg-transparent text-white text-opacity-50 text-base font-normal leading-[18.40px] w-full outline-none"
@@ -154,9 +158,13 @@ const PlinkoSettings = () => {
               type="number"
               value={numberOfBalls}
               onChange={handleNumberOfBallsChange}
-              onFocus={() => {
-                if (isMobile) setShowPopup(true);
-                else handleInputFocus;
+              onFocus={(event) => {
+                if (isMobile) {
+                  event.preventDefault(); // Prevent default to avoid keyboard popup
+                  setShowPopup(true); // Show the popup
+                } else {
+                  handleInputFocus(event); // Optionally, handle focus for desktop
+                }
               }}
               className="bg-transparent text-white text-opacity-50 text-base font-normal leading-[18.40px] w-full outline-none"
               placeholder="0"
