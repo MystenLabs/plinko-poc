@@ -122,7 +122,7 @@ const PlinkoSettings = () => {
               onChange={handleBetSizeChange}
               onFocus={(event) => {
                 if (isMobile) {
-                  event.preventDefault(); // Prevent default to avoid keyboard popup
+                  event.target.blur();
                   setShowPopup(true); // Show the popup
                 } else {
                   handleInputFocus(event); // Optionally, handle focus for desktop
@@ -160,7 +160,7 @@ const PlinkoSettings = () => {
               onChange={handleNumberOfBallsChange}
               onFocus={(event) => {
                 if (isMobile) {
-                  event.preventDefault(); // Prevent default to avoid keyboard popup
+                  event.target.blur();
                   setShowPopup(true); // Show the popup
                 } else {
                   handleInputFocus(event); // Optionally, handle focus for desktop
