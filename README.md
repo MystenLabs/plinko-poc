@@ -38,11 +38,6 @@ The trace path of each ball is determined by extending the beacon generated from
 - **Immutable Smart Contracts**: The game logic is deployed as immutable smart contracts on the Sui Blockchain, ensuring transparency and tamper-resistance.
 - **Public Verification**: All transactions, including game starts, outcomes, and payouts, are recorded on the blockchain. This allows anyone to verify the fairness and randomness of each game.
 
-The Plinko game consists of 3 Sui Move Modules:
-- **Counter NFT:** A non-transferable NFT that acts as a unique input for each Plinko round, ensuring randomness and fairness.
-- **House Data:** Manages the game's configuration, including stakes, fees, and game restrictions.
-- **Plinko Game Contract:** Orchestrates the gameplay, handling the start and finish of each game round, stake management, and outcome determination.
-
 ### Smart Contract Flow
 - The `counter_nft` module creates a unique Counter NFT for each game round.
 - The `house_data` module sets up the game's parameters and manages the house's treasury.
