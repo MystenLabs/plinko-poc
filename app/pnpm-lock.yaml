@@ -104,6 +104,12 @@ dependencies:
   react-icons:
     specifier: ^5.0.1
     version: 5.0.1(react@18.2.0)
+  react-mobile-picker:
+    specifier: ^1.0.0
+    version: 1.0.0(react-dom@18.2.0)(react@18.2.0)
+  react-mobile-picker-scroll:
+    specifier: ^0.2.14
+    version: 0.2.14(react-dom@18.2.0)(react@18.2.0)
   react-slick:
     specifier: ^0.29.0
     version: 0.29.0(react-dom@18.2.0)(react@18.2.0)
@@ -5445,6 +5451,27 @@ packages:
 
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
+    dev: false
+
+  /react-mobile-picker-scroll@0.2.14(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-sO5nV22dqwiU+XlBYG3Vshka7yjkhDrIwcarQmsOmGxE/pXaMq5WLCLfoN9j+/sM6cWF10DlxK3kWV0ZQfJMAQ==}
+    peerDependencies:
+      react: '>=0.14.0 <17.0.0'
+      react-dom: '>=0.14.0 <17.0.0'
+    dependencies:
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /react-mobile-picker@1.0.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-6xaEBdy4YzgCULRqKcYCa/T34OFRrxXQz8TYrTeRPjq8UEsuH023OpcajnxWbU4X9+kk0nbarorvMFsiaBmXHg==}
+    peerDependencies:
+      react: ^16 || ^17 || ^18
+      react-dom: ^16 || ^17 || ^18
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /react-remove-scroll-bar@2.3.4(@types/react@18.2.14)(react@18.2.0):

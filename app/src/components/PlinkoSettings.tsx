@@ -7,6 +7,8 @@ import { useWaitingToPlayContext } from "@/contexts/IsWaitingToPlay";
 import { number, set } from "zod";
 import { Balance } from "./general/Balance";
 import { useBalance } from "@/contexts/BalanceContext";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import Popup from "./PopUpPicker";
 
 const PlinkoSettings = () => {
   //@ts-ignore
@@ -21,9 +23,18 @@ const PlinkoSettings = () => {
   const { handleCreateCounterObject } = useCreateCounterObject();
   const { resetHistory } = useGameHistory();
   const { balance } = useBalance();
+  const { isMobile } = useIsMobile();
 
   const [numberOfBalls, setNumberOfBalls] = useState(1);
   const [currentBet, setCurrentBet] = useState(0);
+  const [showPopup, setShowPopup] = useState(false);
+
+  // Handle changes from the Popup component
+  const handlePopupSubmit = (newBetSize: string, newNumberOfBalls: string) => {
+    setBetSize(parseFloat(newBetSize));
+    setNumberOfBalls(parseInt(newNumberOfBalls, 10));
+    setShowPopup(false);
+  };
 
   useEffect(() => {
     const bet = parseFloat(betSize.toString()) || 0;
@@ -80,6 +91,13 @@ const PlinkoSettings = () => {
 
   return (
     <div className="w-[950px] max-w-full px-5 pt-5 pb-[25px] bg-emerald-950 rounded-[20px] mx-auto my-4 ">
+      {showPopup && (
+        <Popup
+          isOpen={showPopup}
+          onClose={() => setShowPopup(false)}
+          onSubmit={handlePopupSubmit}
+        />
+      )}
       <div className="flex justify-center items-center gap-5">
         {/* Bid Amount (per ball) */}
         <div className="flex flex-col justify-center  gap-2.5">
@@ -102,7 +120,10 @@ const PlinkoSettings = () => {
               type="number"
               value={betSize}
               onChange={handleBetSizeChange}
-              onFocus={handleInputFocus}
+              onFocus={() => {
+                if (isMobile) setShowPopup(true);
+                else handleInputFocus;
+              }}
               step="0.1"
               className="bg-transparent text-white text-opacity-50 text-base font-normal leading-[18.40px] w-full outline-none"
               placeholder="0"
@@ -133,7 +154,10 @@ const PlinkoSettings = () => {
               type="number"
               value={numberOfBalls}
               onChange={handleNumberOfBallsChange}
-              onFocus={handleInputFocus}
+              onFocus={() => {
+                if (isMobile) setShowPopup(true);
+                else handleInputFocus;
+              }}
               className="bg-transparent text-white text-opacity-50 text-base font-normal leading-[18.40px] w-full outline-none"
               placeholder="0"
             />
