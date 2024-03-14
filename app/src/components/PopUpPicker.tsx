@@ -95,7 +95,9 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, onSubmit }) => {
                 <div
                   key={index}
                   className={`p-2 text-center ${
-                    betSize === option ? "bg-black rounded-md" : ""
+                    betSize === option
+                      ? "bg-black bg-opacity-50 rounded-md border-2 border-white"
+                      : ""
                   }`}
                   style={{ height: itemHeight }}
                 >
@@ -124,7 +126,9 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, onSubmit }) => {
                 <div
                   key={index}
                   className={`p-2 text-center ${
-                    numberOfBalls === option ? "bg-black rounded-md" : ""
+                    numberOfBalls === option
+                      ? "bg-black bg-opacity-50 rounded-md border-2 border-white"
+                      : ""
                   }`}
                   style={{ height: itemHeight }}
                 >
