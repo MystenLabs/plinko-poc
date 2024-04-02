@@ -5,11 +5,8 @@ import { usePlayContext } from "../contexts/PlayContext";
 import { useCreateCounterObject } from "@/hooks/moveTransactionCalls.ts/useCreateCounterObject";
 import { useGameHistory } from "@/contexts/GameHistoryContext";
 import { useWaitingToPlayContext } from "@/contexts/IsWaitingToPlay";
-import { number, set } from "zod";
-import { Balance } from "./general/Balance";
 import { useBalance } from "@/contexts/BalanceContext";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import Popup from "./PopUpPicker";
 import Picker, { PickerValue } from "react-mobile-picker";
 
 const PlinkoSettings = () => {
@@ -30,40 +27,18 @@ const PlinkoSettings = () => {
   const [numberOfBalls, setNumberOfBalls] = useState(1);
   const [currentBet, setCurrentBet] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
+  const [allowShowPopup, setAllowShowPopup] = useState(true);
 
-  // Handle changes from the Popup component
-  const handlePopupSubmit = (newBetSize: string, newNumberOfBalls: string) => {
-    setBetSize(parseFloat(newBetSize));
-    setNumberOfBalls(parseInt(newNumberOfBalls, 10));
-    setShowPopup(false);
-  };
-
-  /////
-  function getDayArray(year: number, month: number) {
-    const dayCount = new Date(year, month, 0).getDate();
-    return Array.from({ length: dayCount }, (_, i) =>
-      String(i + 1).padStart(2, "0")
-    );
-  }
-  const [isOpen, setIsOpen] = useState(true);
   const [pickerValue, setPickerValue] = useState<PickerValue>({
-    bet: "1.0", // Initial bet
+    bet: "0.1", // Initial bet
     balls: "1", // Initial number of balls
   });
 
   const handlePickerChange = useCallback((newValue: PickerValue) => {
     setPickerValue(newValue);
+    setBetSize(parseFloat(newValue.bet));
+    setNumberOfBalls(parseInt(newValue.balls, 10));
   }, []);
-
-  // Close modal without saving changes
-  const handleClose = useCallback(() => setIsOpen(false), []);
-
-  // Handle submit action
-  const handleSubmit = useCallback(() => {
-    console.log("Submitting", pickerValue);
-    setIsOpen(false);
-    // Add any submission logic here
-  }, [pickerValue]);
 
   // Generate arrays for bets and balls
   const getBetsArray = () =>
@@ -125,13 +100,29 @@ const PlinkoSettings = () => {
     }
   };
 
+  const handleSubmit = () => {
+    // your submission logic here
+    setShowPopup(false); // Close the popup
+    setAllowShowPopup(false); // Prevent reopening
+    setTimeout(() => setAllowShowPopup(true), 300); // Re-enable after 300ms
+  };
+
+  // Similarly, for the cancel or close action
+  const handleClose = () => {
+    setShowPopup(false); // Close the popup
+    setAllowShowPopup(false); // Prevent reopening
+    setTimeout(() => setAllowShowPopup(true), 300); // Re-enable after 300ms
+  };
+
   return (
     <div className="w-[950px] max-w-full px-5 pt-5 pb-[25px] bg-emerald-950 rounded-[20px] mx-auto my-4 ">
-      <Transition appear show={isOpen} as={Fragment}>
+      {/* {showPopup && ( */}
+      <Transition appear show={showPopup} as={Fragment}>
         <Dialog
           as="div"
-          className="relative z-10"
-          onClose={() => setIsOpen(false)}
+          className="relative z-10 "
+          onClose={() => setShowPopup(false)}
+          onSubmit={() => setShowPopup(false)}
         >
           <Transition.Child
             as={Fragment}
@@ -146,7 +137,7 @@ const PlinkoSettings = () => {
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <div className="flex min-h-full items-center justify-center p-4 text-center ">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -156,18 +147,16 @@ const PlinkoSettings = () => {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-emerald-900 p-6 text-left align-middle shadow-xl transition-all ">
                   <Dialog.Title
                     as="h3"
                     className="text-lg font-medium leading-6 text-gray-900"
-                  >
-                    Choose your bet and number of balls
-                  </Dialog.Title>
+                  ></Dialog.Title>
                   <div className="mt-2">
                     {/* Titles for Bet and Balls */}
                     <div className="flex justify-between">
-                      <div className="text-center w-1/2">Bet</div>
-                      <div className="text-center w-1/2">Balls</div>
+                      <div className="text-center text-white w-1/2">Bet</div>
+                      <div className="text-center text-white w-1/2">Balls</div>
                     </div>
                     <Picker
                       value={pickerValue}
@@ -181,7 +170,7 @@ const PlinkoSettings = () => {
                               <div
                                 className={
                                   selected
-                                    ? "font-semibold text-neutral-900"
+                                    ? "font-semibold text-white"
                                     : "text-neutral-400"
                                 }
                               >
@@ -198,7 +187,7 @@ const PlinkoSettings = () => {
                               <div
                                 className={
                                   selected
-                                    ? "font-semibold text-neutral-900"
+                                    ? "font-semibold text-white"
                                     : "text-neutral-400"
                                 }
                               >
@@ -210,24 +199,20 @@ const PlinkoSettings = () => {
                       </Picker.Column>
                     </Picker>
                   </div>
-                  <div className="mt-4 flex justify-between">
+                  <div className="mt-4 flex justify-center gap-4">
                     <button
                       type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      onClick={() => setIsOpen(false)}
+                      className="h-11 px-8 py-2.5 bg-gray-200 rounded-[999px] flex justify-center items-center gap-2 text-sm font-bold text-gray-700 hover:bg-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                      onClick={() => handleClose()}
                     >
-                      Cancel
+                      <div className="text-base leading-[18.40px]">Cancel</div>
                     </button>
                     <button
                       type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                      onClick={() =>
-                        alert(
-                          `Bet: ${pickerValue.bet}, Balls: ${pickerValue.balls}`
-                        )
-                      }
+                      className="h-11 px-8 py-2.5 bg-emerald-600 rounded-[999px] flex justify-center items-center gap-2 text-sm font-bold text-white hover:bg-emerald-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                      onClick={() => handleSubmit()}
                     >
-                      Submit
+                      <div className="text-base leading-[18.40px]">Submit</div>
                     </button>
                   </div>
                 </Dialog.Panel>
@@ -236,13 +221,7 @@ const PlinkoSettings = () => {
           </div>
         </Dialog>
       </Transition>
-      {showPopup && (
-        <Popup
-          isOpen={showPopup}
-          onClose={() => setShowPopup(false)}
-          onSubmit={handlePopupSubmit}
-        />
-      )}
+      {/* )} */}
       <div className="flex justify-center items-center gap-5">
         {/* Bid Amount (per ball) */}
         <div className="flex flex-col justify-center  gap-2.5">
@@ -267,8 +246,10 @@ const PlinkoSettings = () => {
               onChange={handleBetSizeChange}
               onFocus={(event) => {
                 if (isMobile) {
-                  event.target.blur();
-                  setShowPopup(true); // Show the popup
+                  event.target.blur(); // Remove focus from the input
+                  if (allowShowPopup) {
+                    setShowPopup(true); // Show the popup only if allowed
+                  }
                 } else {
                   handleInputFocus(event); // Optionally, handle focus for desktop
                 }
@@ -305,8 +286,10 @@ const PlinkoSettings = () => {
               onChange={handleNumberOfBallsChange}
               onFocus={(event) => {
                 if (isMobile) {
-                  event.target.blur();
-                  setShowPopup(true); // Show the popup
+                  event.target.blur(); // Remove focus from the input
+                  if (allowShowPopup) {
+                    setShowPopup(true); // Show the popup only if allowed
+                  }
                 } else {
                   handleInputFocus(event); // Optionally, handle focus for desktop
                 }
