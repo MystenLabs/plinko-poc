@@ -23,7 +23,7 @@ const PopupComponent = () => {
 
   // Check if the player has won or lost
   const hasWon = totalWon - bid * finalPaths.length > 0;
-  const suiExplorerUrl = `https://suiexplorer.com/txblock/${txDigest}?network=testnet`;
+  const suiExplorerUrl = `https://suiscan.xyz/testnet/tx/${txDigest}`;
 
   const handlePlayAgain = () => {
     setPopupIsVisible(false); // This will hide the popup
