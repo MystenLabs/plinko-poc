@@ -7,7 +7,6 @@ module plinko::house_data_tests {
     use sui::test_scenario::{Self, Scenario};
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
-    use sui::transfer;
 
     use plinko::house_data::{Self as hd, HouseData, HouseCap};
 
@@ -25,39 +24,39 @@ module plinko::house_data_tests {
     ];
 
     const INITIAL_HOUSE_BALANCE: u64 = 5_000_000_000; // 1 SUI
-    
+
     const MULTIPLIER_ARRAY: vector<u64> = vector<u64> [900, 820, 650, 380, 100, 60, 40, 60, 100, 380, 650, 820, 900];
     const UPDATED_MULTIPLIER_ARRAY: vector<u64> = vector<u64> [90, 82, 65, 38, 10, 6, 4, 6, 10, 38, 65, 82, 90];
 
     // Initialize the house data
     public fun init_house(scenario: &mut Scenario, house: address ) {
-        test_scenario::next_tx(scenario, house);
+        scenario.next_tx(house);
         {
-            let ctx = test_scenario::ctx(scenario);
+            let ctx = scenario.ctx();
             hd::init_for_testing(ctx);
         };
-        test_scenario::next_tx(scenario, house);
+        scenario.next_tx(house);
         {
-            let house_cap = test_scenario::take_from_sender<HouseCap>(scenario);
-            let house_coins = test_scenario::take_from_sender<Coin<SUI>>(scenario);
-            let ctx = test_scenario::ctx(scenario);
+            let house_cap = scenario.take_from_sender<HouseCap>();
+            let house_coins = scenario.take_from_sender<Coin<SUI>>();
+            let ctx = scenario.ctx();
 
-            hd::initialize_house_data(house_cap, house_coins, PK, MULTIPLIER_ARRAY, ctx);
+            house_cap.initialize_house_data(house_coins, PK, MULTIPLIER_ARRAY, ctx);
 
         };
     }
 
      /// Used to initialize the user and house balances.
     public fun fund_house_address(scenario: &mut Scenario, house: address, house_funds: u64) {
-        let ctx = test_scenario::ctx(scenario);
+        let ctx = scenario.ctx();
         let coinA = coin::mint_for_testing<SUI>(house_funds, ctx);
         transfer::public_transfer(coinA, house);
     }
 
     #[test]
     fun test_update_multiplier_vector(){
-   
-        let scenario_val = test_scenario::begin(HOUSE);
+
+        let mut scenario_val = test_scenario::begin(HOUSE);
         let scenario = &mut scenario_val;
         {
             fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
@@ -67,10 +66,10 @@ module plinko::house_data_tests {
         init_house(scenario, HOUSE);
 
         // House updates multiplier vector
-        test_scenario::next_tx(scenario, HOUSE);
+        scenario.next_tx(HOUSE);
         {
-           let house_data = test_scenario::take_shared<HouseData>(scenario);
-           hd::update_multiplier_vector(&mut house_data, UPDATED_MULTIPLIER_ARRAY);
+           let mut house_data = scenario.take_shared<HouseData>();
+           house_data.update_multiplier_vector(UPDATED_MULTIPLIER_ARRAY, scenario.ctx());
            print(&house_data);
            test_scenario::return_shared(house_data);
         };
@@ -82,7 +81,7 @@ module plinko::house_data_tests {
     #[test]
     fun test_top_up (){
 
-        let scenario_val = test_scenario::begin(HOUSE);
+        let mut scenario_val = test_scenario::begin(HOUSE);
         let scenario = &mut scenario_val;
         {
             fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
@@ -93,21 +92,21 @@ module plinko::house_data_tests {
         init_house(scenario, HOUSE);
 
         // House tops up the contract
-        test_scenario::next_tx(scenario, HOUSE);
+        scenario.next_tx(HOUSE);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
             let coin_top_up = coin::mint_for_testing<SUI>(5000000000, ctx);
-                hd::top_up(&mut house_data, coin_top_up, ctx);
+                house_data.top_up(coin_top_up, ctx);
                 print(&house_data);
                 test_scenario::return_shared(house_data);
             };
-        test_scenario::end(scenario_val);    
+        test_scenario::end(scenario_val);
     }
-    
+
     #[test]
     fun test_withdraw(){
-        let scenario_val = test_scenario::begin(HOUSE);
+        let mut scenario_val = test_scenario::begin(HOUSE);
         let scenario = &mut scenario_val;
         {
             fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
@@ -118,11 +117,11 @@ module plinko::house_data_tests {
         init_house(scenario, HOUSE);
 
         // House withdraws from the contract
-        test_scenario::next_tx(scenario, HOUSE);
+        scenario.next_tx(HOUSE);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
-                hd::withdraw(&mut house_data, ctx);
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
+                house_data.withdraw(ctx);
                 print(&house_data);
                 test_scenario::return_shared(house_data);
             };
@@ -132,7 +131,7 @@ module plinko::house_data_tests {
     #[test]
     #[expected_failure(abort_code = hd::ECallerNotHouse)]
     fun test_invalid_withdraw(){
-        let scenario_val = test_scenario::begin(HOUSE);
+        let mut scenario_val = test_scenario::begin(HOUSE);
         let scenario = &mut scenario_val;
         {
             fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
@@ -143,11 +142,11 @@ module plinko::house_data_tests {
         init_house(scenario, HOUSE);
 
         // A player tries to withdraw from the contract
-        test_scenario::next_tx(scenario, PLAYER);
+        scenario.next_tx(PLAYER);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
-                hd::withdraw(&mut house_data, ctx);
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
+                house_data.withdraw(ctx);
                 print(&house_data);
                 test_scenario::return_shared(house_data);
             };
@@ -156,7 +155,7 @@ module plinko::house_data_tests {
 
     #[test]
     fun test_claim_fees(){
-        let scenario_val = test_scenario::begin(HOUSE);
+        let mut scenario_val = test_scenario::begin(HOUSE);
         let scenario = &mut scenario_val;
         {
             fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
@@ -167,11 +166,11 @@ module plinko::house_data_tests {
         init_house(scenario, HOUSE);
 
         // House claims fees from the contract
-        test_scenario::next_tx(scenario, HOUSE);
+        scenario.next_tx(HOUSE);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
-                hd::claim_fees(&mut house_data, ctx);
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
+                house_data.claim_fees(ctx);
                 print(&house_data);
                 test_scenario::return_shared(house_data);
             };
@@ -181,7 +180,7 @@ module plinko::house_data_tests {
     #[test]
     #[expected_failure(abort_code = hd::ECallerNotHouse)]
     fun test_invalid_claim_fees(){
-        let scenario_val = test_scenario::begin(HOUSE);
+        let mut scenario_val = test_scenario::begin(HOUSE);
         let scenario = &mut scenario_val;
         {
             fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
@@ -192,11 +191,11 @@ module plinko::house_data_tests {
         init_house(scenario, HOUSE);
 
         // House claims fees from the contract
-        test_scenario::next_tx(scenario, PLAYER);
+        scenario.next_tx(PLAYER);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
-                hd::claim_fees(&mut house_data, ctx);
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
+                house_data.claim_fees(ctx);
                 print(&house_data);
                 test_scenario::return_shared(house_data);
             };
@@ -205,7 +204,7 @@ module plinko::house_data_tests {
 
     #[test]
     fun test_update_min_stake(){
-        let scenario_val = test_scenario::begin(HOUSE);
+        let mut scenario_val = test_scenario::begin(HOUSE);
         let scenario = &mut scenario_val;
         {
             fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
@@ -216,11 +215,11 @@ module plinko::house_data_tests {
         init_house(scenario, HOUSE);
 
         // House updates the minimum stake
-        test_scenario::next_tx(scenario, HOUSE);
+        scenario.next_tx(HOUSE);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
-                hd::update_min_stake(&mut house_data, 5000000000, ctx);
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
+                house_data.update_min_stake(5000000000, ctx);
                 print(&house_data);
                 test_scenario::return_shared(house_data);
             };
@@ -229,7 +228,7 @@ module plinko::house_data_tests {
 
     #[test]
     fun test_update_max_stake(){
-        let scenario_val = test_scenario::begin(HOUSE);
+        let mut scenario_val = test_scenario::begin(HOUSE);
         let scenario = &mut scenario_val;
         {
             fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
@@ -240,11 +239,11 @@ module plinko::house_data_tests {
         init_house(scenario, HOUSE);
 
         // House updates the minimum stake
-        test_scenario::next_tx(scenario, HOUSE);
+        scenario.next_tx(HOUSE);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
-            let ctx = test_scenario::ctx(scenario);
-                hd::update_max_stake(&mut house_data, 60000000000, ctx);
+            let mut house_data = scenario.take_shared<HouseData>();
+            let ctx = scenario.ctx();
+                house_data.update_max_stake(60000000000, ctx);
                 print(&house_data);
                 test_scenario::return_shared(house_data);
             };

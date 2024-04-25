@@ -17,75 +17,75 @@ module plinko::counter_nft_tests {
     #[test]
     fun test_create_counter() {
 
-        let scenario_val = test_scenario::begin(PLAYER);
-        let scenario = &mut scenario_val;   
+        let mut scenario_val = test_scenario::begin(PLAYER);
+        let scenario = &mut scenario_val;
 
         {
-            let ctx = test_scenario::ctx(scenario);
+            let ctx = scenario.ctx();
             let counter = counter_nft::mint(ctx);
-            counter_nft::transfer_to_sender(counter, ctx);
+            counter.transfer_to_sender(ctx);
         };
 
         // Check the counter initial value
-        test_scenario::next_tx(scenario, PLAYER);
+        scenario.next_tx(PLAYER);
         {
-            let counter_nft = test_scenario::take_from_sender<Counter>(scenario);
-            assert!(counter_nft::count(&counter_nft) == 0, EInvalidCounterInitialValue);
-            test_scenario::return_to_sender(scenario, counter_nft);
+            let counter_nft = scenario.take_from_sender<Counter>();
+            assert!(counter_nft.count() == 0, EInvalidCounterInitialValue);
+            scenario.return_to_sender(counter_nft);
         };
 
-         test_scenario::end(scenario_val);
+         scenario_val.end();
     }
 
     #[test]
     fun test_increase_counter() {
 
-        let scenario_val = test_scenario::begin(PLAYER);
-        let scenario = &mut scenario_val;   
+        let mut scenario_val = test_scenario::begin(PLAYER);
+        let scenario = &mut scenario_val;
 
         {
-            let ctx = test_scenario::ctx(scenario);
+            let ctx = scenario.ctx();
             let counter = counter_nft::mint(ctx);
-            counter_nft::transfer_to_sender(counter, ctx);
+            counter.transfer_to_sender(ctx);
         };
 
 
         {
-            let ctx = test_scenario::ctx(scenario);
+            let ctx = scenario.ctx();
             let counter = counter_nft::mint(ctx);
-            counter_nft::transfer_to_sender(counter, ctx);
+            counter.transfer_to_sender(ctx);
         };
 
         // Increase the counter
-        test_scenario::next_tx(scenario, PLAYER);
+        scenario.next_tx(PLAYER);
         {
-            let counter_nft = test_scenario::take_from_sender<Counter>(scenario);
-            counter_nft::get_vrf_input_and_increment(&mut counter_nft, 1);
-            assert!(counter_nft::count(&counter_nft) == 1, EInvalidCounterWhenIncreased);
-            test_scenario::return_to_sender(scenario, counter_nft);
+            let mut counter_nft = scenario.take_from_sender<Counter>();
+            counter_nft.get_vrf_input_and_increment(1);
+            assert!(counter_nft.count() == 1, EInvalidCounterWhenIncreased);
+            scenario.return_to_sender(counter_nft);
         };
 
-         test_scenario::end(scenario_val);
+         scenario_val.end();
     }
 
     #[test]
         fun test_burn_counter() {
-            let scenario_val = test_scenario::begin(PLAYER);
-            let scenario = &mut scenario_val;   
+            let mut scenario_val = test_scenario::begin(PLAYER);
+            let scenario = &mut scenario_val;
 
             {
-                let ctx = test_scenario::ctx(scenario);
+                let ctx = scenario.ctx();
                 let counter = counter_nft::mint(ctx);
-                counter_nft::transfer_to_sender(counter, ctx);
+                counter.transfer_to_sender(ctx);
             };
 
             // Burn the counter
-            test_scenario::next_tx(scenario, PLAYER);
+            scenario.next_tx(PLAYER);
             {
-                let counter_nft = test_scenario::take_from_sender<Counter>(scenario);
-                counter_nft::burn_for_testing(counter_nft);
+                let counter_nft = scenario.take_from_sender<Counter>();
+                counter_nft.burn_for_testing();
             };
 
-            test_scenario::end(scenario_val);
+            scenario_val.end();
     }
 }
