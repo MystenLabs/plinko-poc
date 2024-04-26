@@ -56,14 +56,13 @@ module plinko::house_data_tests {
     #[test]
     fun test_update_multiplier_vector(){
 
-        let mut scenario_val = test_scenario::begin(HOUSE);
-        let scenario = &mut scenario_val;
+        let mut scenario = test_scenario::begin(HOUSE);
         {
-            fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
+            fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
         };
         // Call init function, transfer HouseCap to the house.
         // House initializes the contract with PK.
-        init_house(scenario, HOUSE);
+        init_house(&mut scenario, HOUSE);
 
         // House updates multiplier vector
         scenario.next_tx(HOUSE);
@@ -74,22 +73,21 @@ module plinko::house_data_tests {
            test_scenario::return_shared(house_data);
         };
 
-        test_scenario::end(scenario_val);
+        scenario.end();
 
     }
 
     #[test]
     fun test_top_up (){
 
-        let mut scenario_val = test_scenario::begin(HOUSE);
-        let scenario = &mut scenario_val;
+        let mut scenario = test_scenario::begin(HOUSE);
         {
-            fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
+            fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
         };
 
         // Call init function, transfer HouseCap to the house.
         // House initializes the contract with PK.
-        init_house(scenario, HOUSE);
+        init_house(&mut scenario, HOUSE);
 
         // House tops up the contract
         scenario.next_tx(HOUSE);
@@ -101,20 +99,19 @@ module plinko::house_data_tests {
                 print(&house_data);
                 test_scenario::return_shared(house_data);
             };
-        test_scenario::end(scenario_val);
+        scenario.end();
     }
 
     #[test]
     fun test_withdraw(){
-        let mut scenario_val = test_scenario::begin(HOUSE);
-        let scenario = &mut scenario_val;
+        let mut scenario = test_scenario::begin(HOUSE);
         {
-            fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
+            fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
         };
 
         // Call init function, transfer HouseCap to the house.
         // House initializes the contract with PK.
-        init_house(scenario, HOUSE);
+        init_house(&mut scenario, HOUSE);
 
         // House withdraws from the contract
         scenario.next_tx(HOUSE);
@@ -125,21 +122,20 @@ module plinko::house_data_tests {
                 print(&house_data);
                 test_scenario::return_shared(house_data);
             };
-        test_scenario::end(scenario_val);
+        scenario.end();
     }
 
     #[test]
     #[expected_failure(abort_code = hd::ECallerNotHouse)]
     fun test_invalid_withdraw(){
-        let mut scenario_val = test_scenario::begin(HOUSE);
-        let scenario = &mut scenario_val;
+        let mut scenario = test_scenario::begin(HOUSE);
         {
-            fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
+            fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
         };
 
         // Call init function, transfer HouseCap to the house.
         // House initializes the contract with PK.
-        init_house(scenario, HOUSE);
+        init_house(&mut scenario, HOUSE);
 
         // A player tries to withdraw from the contract
         scenario.next_tx(PLAYER);
@@ -150,20 +146,19 @@ module plinko::house_data_tests {
                 print(&house_data);
                 test_scenario::return_shared(house_data);
             };
-        test_scenario::end(scenario_val);
+        scenario.end();
     }
 
     #[test]
     fun test_claim_fees(){
-        let mut scenario_val = test_scenario::begin(HOUSE);
-        let scenario = &mut scenario_val;
+        let mut scenario = test_scenario::begin(HOUSE);
         {
-            fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
+            fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
         };
 
         // Call init function, transfer HouseCap to the house.
         // House initializes the contract with PK.
-        init_house(scenario, HOUSE);
+        init_house(&mut scenario, HOUSE);
 
         // House claims fees from the contract
         scenario.next_tx(HOUSE);
@@ -174,21 +169,20 @@ module plinko::house_data_tests {
                 print(&house_data);
                 test_scenario::return_shared(house_data);
             };
-        test_scenario::end(scenario_val);
+        scenario.end();
     }
 
     #[test]
     #[expected_failure(abort_code = hd::ECallerNotHouse)]
     fun test_invalid_claim_fees(){
-        let mut scenario_val = test_scenario::begin(HOUSE);
-        let scenario = &mut scenario_val;
+        let mut scenario = test_scenario::begin(HOUSE);
         {
-            fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
+            fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
         };
 
         // Call init function, transfer HouseCap to the house.
         // House initializes the contract with PK.
-        init_house(scenario, HOUSE);
+        init_house(&mut scenario, HOUSE);
 
         // House claims fees from the contract
         scenario.next_tx(PLAYER);
@@ -199,20 +193,19 @@ module plinko::house_data_tests {
                 print(&house_data);
                 test_scenario::return_shared(house_data);
             };
-        test_scenario::end(scenario_val);
+        scenario.end();
     }
 
     #[test]
     fun test_update_min_stake(){
-        let mut scenario_val = test_scenario::begin(HOUSE);
-        let scenario = &mut scenario_val;
+        let mut scenario = test_scenario::begin(HOUSE);
         {
-            fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
+            fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
         };
 
         // Call init function, transfer HouseCap to the house.
         // House initializes the contract with PK.
-        init_house(scenario, HOUSE);
+        init_house(&mut scenario, HOUSE);
 
         // House updates the minimum stake
         scenario.next_tx(HOUSE);
@@ -223,20 +216,19 @@ module plinko::house_data_tests {
                 print(&house_data);
                 test_scenario::return_shared(house_data);
             };
-        test_scenario::end(scenario_val);
+        scenario.end();
     }
 
     #[test]
     fun test_update_max_stake(){
-        let mut scenario_val = test_scenario::begin(HOUSE);
-        let scenario = &mut scenario_val;
+        let mut scenario = test_scenario::begin(HOUSE);
         {
-            fund_house_address(scenario, HOUSE, INITIAL_HOUSE_BALANCE);
+            fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
         };
 
         // Call init function, transfer HouseCap to the house.
         // House initializes the contract with PK.
-        init_house(scenario, HOUSE);
+        init_house(&mut scenario, HOUSE);
 
         // House updates the minimum stake
         scenario.next_tx(HOUSE);
@@ -247,6 +239,6 @@ module plinko::house_data_tests {
                 print(&house_data);
                 test_scenario::return_shared(house_data);
             };
-        test_scenario::end(scenario_val);
+        scenario.end();
     }
 }

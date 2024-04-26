@@ -17,8 +17,7 @@ module plinko::counter_nft_tests {
     #[test]
     fun test_create_counter() {
 
-        let mut scenario_val = test_scenario::begin(PLAYER);
-        let scenario = &mut scenario_val;
+        let mut scenario = test_scenario::begin(PLAYER);
 
         {
             let ctx = scenario.ctx();
@@ -34,14 +33,13 @@ module plinko::counter_nft_tests {
             scenario.return_to_sender(counter_nft);
         };
 
-         scenario_val.end();
+         scenario.end();
     }
 
     #[test]
     fun test_increase_counter() {
 
-        let mut scenario_val = test_scenario::begin(PLAYER);
-        let scenario = &mut scenario_val;
+        let mut scenario = test_scenario::begin(PLAYER);
 
         {
             let ctx = scenario.ctx();
@@ -65,13 +63,12 @@ module plinko::counter_nft_tests {
             scenario.return_to_sender(counter_nft);
         };
 
-         scenario_val.end();
+         scenario.end();
     }
 
     #[test]
         fun test_burn_counter() {
-            let mut scenario_val = test_scenario::begin(PLAYER);
-            let scenario = &mut scenario_val;
+            let mut scenario = test_scenario::begin(PLAYER);
 
             {
                 let ctx = scenario.ctx();
@@ -86,6 +83,6 @@ module plinko::counter_nft_tests {
                 counter_nft.burn_for_testing();
             };
 
-            scenario_val.end();
+            scenario.end();
     }
 }
