@@ -26,7 +26,7 @@ module plinko::plinko {
 
     // === Structs ===
 
-    /// Represents a game and holds the acrued stake.
+    /// Represents a game and holds the accrued stake.
     public struct Game has key, store {
         id: UID,
         game_start_epoch: u64,
