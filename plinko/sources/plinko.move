@@ -3,23 +3,19 @@
 
 module plinko::plinko {
     // === Imports ===
-    use std::vector;
     use sui::coin::{Self, Coin};
-    use sui::balance::{Self, Balance};
+    use sui::balance::Balance;
     use sui::sui::SUI;
     use sui::bls12381::bls12381_min_pk_verify;
-    use sui::object::{Self, UID, ID};
-    use sui::tx_context::{Self, TxContext};
-    use sui::transfer;
     use sui::event::emit;
     use sui::hash::{blake2b256};
     use sui::dynamic_object_field::{Self as dof};
 
     // Import Counter NFT module
-    use plinko::counter_nft::{Self, Counter};
+    use plinko::counter_nft::Counter;
 
     // Import HouseData module
-    use plinko::house_data::{Self as hd, HouseData};
+    use plinko::house_data::HouseData;
 
     // === Errors ===
     const EStakeTooLow: u64 = 0;
@@ -30,8 +26,8 @@ module plinko::plinko {
 
     // === Structs ===
 
-    /// Represents a game and holds the acrued stake.
-    struct Game has key, store {
+    /// Represents a game and holds the accrued stake.
+    public struct Game has key, store {
         id: UID,
         game_start_epoch: u64,
         stake: Balance<SUI>,
@@ -44,7 +40,7 @@ module plinko::plinko {
     // === Events ===
 
     /// Emitted when a new game has started.
-    struct NewGame has copy, drop {
+    public struct NewGame has copy, drop {
         game_id: ID,
         player: address,
         vrf_input: vector<u8>,
@@ -53,21 +49,21 @@ module plinko::plinko {
     }
 
     /// Emitted when a game has finished.
-    struct Outcome has copy, drop {
+    public struct Outcome has copy, drop {
         game_id: ID,
         result: u64,
         player: address,
         // The trace path of the extended beacon
-        trace: vector<u8> 
+        trace: vector<u8>
     }
 
     // === Public Functions ===
 
     /// Function used to create a new game. The player must provide a Counter NFT and the number of balls.
     public fun start_game(counter: &mut Counter, num_balls: u64, coin: Coin<SUI>, house_data: &mut HouseData, ctx: &mut TxContext): ID {
-        let fee_bp = hd::base_fee_in_bp(house_data);
+        let fee_bp = house_data.base_fee_in_bp();
         let (id, new_game) = internal_start_game(counter, num_balls, coin, house_data, fee_bp, ctx);
-        dof::add(hd::borrow_mut(house_data), id, new_game);
+        dof::add(house_data.borrow_mut(), id, new_game);
         id
     }
 
@@ -86,50 +82,50 @@ module plinko::plinko {
             player,
             vrf_input,
             fee_bp: _
-        } = dof::remove<ID, Game>(hd::borrow_mut(house_data), game_id);
+        } = dof::remove<ID, Game>(house_data.borrow_mut(), game_id);
 
         object::delete(id);
 
         // Validates the BLS signature against the VRF input.
-        let is_sig_valid = bls12381_min_pk_verify(&bls_sig, &hd::public_key(house_data), &vrf_input);
+        let is_sig_valid = bls12381_min_pk_verify(&bls_sig, &house_data.public_key(), &vrf_input);
         assert!(is_sig_valid, EInvalidBlsSig);
 
         // Initialize the extended beacon vector and a counter for hashing.
-        let extended_beacon = vector::empty<u8>();
-        let counter: u8 = 0;
+        let mut extended_beacon = vector[];
+        let mut counter: u8 = 0;
 
         // Extends the beacon until it has enough data for all ball outcomes.
-        while (vector::length(&extended_beacon) < (num_balls * 12)) {
+        while (extended_beacon.length() < (num_balls * 12)) {
             // Create a new vector combining the original BLS signature with the current counter value.
-            let hash_input = vector::empty<u8>();
-            vector::append(&mut hash_input, bls_sig);
-            vector::append(&mut hash_input, vector::singleton(counter));
+            let mut hash_input = vector[];
+            hash_input.append(bls_sig);
+            hash_input.push_back(counter);
             // Generate a new hash block from the unique hash input.
             let block = blake2b256(&hash_input);
             // Append the generated hash block to the extended beacon.
-            vector::append(&mut extended_beacon, block);
+            extended_beacon.append(block);
             // Increment the counter for the next iteration to ensure a new unique hash input.
             counter = counter + 1;
         };
 
         // Initializes variables for calculating game outcome.
-        let trace = vector::empty<u8>();
+        let mut trace = vector[];
         // Calculate the stake amount per ball
-        let stake_per_ball = balance::value<SUI>(&stake) / num_balls;
-        let total_funds_amount: u64 = 0;
+        let stake_per_ball = stake.value<SUI>() / num_balls;
+        let mut total_funds_amount: u64 = 0;
 
         // Calculates outcome for each ball based on the extended beacon.
-        let ball_index = 0;
+        let mut ball_index = 0;
         while (ball_index < num_balls) {
-            let state: u64 = 0;
-            let i = 0;
+            let mut state: u64 = 0;
+            let mut i = 0;
             while (i < 12) {
                 // Calculate the byte index for the current ball and iteration.
                 let byte_index = (ball_index * 12) + i;
                 // Retrieve the byte from the extended beacon.
-                let byte = *vector::borrow(&extended_beacon, byte_index);
+                let byte = extended_beacon[byte_index];
                 // Add the byte to the trace vector
-                vector::push_back<u8>(&mut trace, byte);
+                trace.push_back<u8>(byte);
                 // Count the number of even bytes
                 // If even, add 1 to the state
                 // Odd byte -> 0, Even byte -> 1
@@ -139,23 +135,23 @@ module plinko::plinko {
             };
 
         // Calculate multiplier index based on state
-        let multiplier_index = state % vector::length(&hd::multiplier(house_data));
+        let multiplier_index = state % house_data.multiplier().length();
         // Retrieve the multiplier from the house data
-        let result = *vector::borrow(&hd::multiplier(house_data), multiplier_index);
-        
+        let result = house_data.multiplier()[multiplier_index];
+
         // Calculate funds amount for this particular ball
         // Divide by 100 to adjust for multiplier scale and SUI units
-        let funds_amount_per_ball = (result * stake_per_ball)/100; 
+        let funds_amount_per_ball = (result * stake_per_ball)/100;
         // Add the funds amount to the total funds amount
         total_funds_amount = total_funds_amount + funds_amount_per_ball;
         ball_index = ball_index + 1;
     };
 
     // Processes the payout to the player and returns the game outcome.
-    let payout_balance_mut = hd::borrow_balance_mut(house_data);
-    let payout_coin = coin::take(payout_balance_mut, total_funds_amount, ctx);
+    let payout_balance_mut = house_data.borrow_balance_mut();
+    let payout_coin: Coin<SUI> = coin::take(payout_balance_mut, total_funds_amount, ctx);
 
-    balance::join(payout_balance_mut, stake);
+    payout_balance_mut.join(stake);
 
     // transfer the payout coins to the player
     transfer::public_transfer(payout_coin, player);
@@ -180,7 +176,7 @@ module plinko::plinko {
 
     /// Returns the total stake.
     public fun stake(game: &Game): u64 {
-        balance::value(&game.stake)
+        game.stake.value()
     }
 
     /// Returns the player's address.
@@ -202,32 +198,32 @@ module plinko::plinko {
 
     /// Helper function to check if a game exists.
     public fun game_exists(house_data: &HouseData, game_id: ID): bool {
-        dof::exists_(hd::borrow(house_data), game_id)
+        dof::exists_(house_data.borrow(), game_id)
     }
 
     /// Helper function to check that a game exists and return a reference to the game Object.
     /// Can be used in combination with any accessor to retrieve the desired game field.
     public fun borrow_game(game_id: ID, house_data: &HouseData): &Game {
         assert!(game_exists(house_data, game_id), EGameDoesNotExist);
-        dof::borrow(hd::borrow(house_data), game_id)
+        dof::borrow(house_data.borrow(), game_id)
     }
 
     // === Private Functions ===
 
-    /// Internal helper function used to create a new game. 
+    /// Internal helper function used to create a new game.
     /// The player must provide a guess and a Counter NFT.
-    /// Stake is taken from the player's coin and added to the game's stake. 
+    /// Stake is taken from the player's coin and added to the game's stake.
     fun internal_start_game(counter: &mut Counter, num_balls: u64, coin: Coin<SUI>, house_data: &HouseData, fee_bp: u16, ctx: &mut TxContext): (ID, Game) {
-        let user_stake = coin::value(&coin);
+        let user_stake = coin.value();
         // Ensure that the stake is not higher than the max stake.
-        assert!(user_stake <= hd::max_stake(house_data), EStakeTooHigh);
+        assert!(user_stake <= house_data.max_stake(), EStakeTooHigh);
         // Ensure that the stake is not lower than the min stake.
-        assert!(user_stake >= hd::min_stake(house_data), EStakeTooLow);
+        assert!(user_stake >= house_data.min_stake(), EStakeTooLow);
         // Ensure that the house has enough balance to play for this game.
-        assert!(hd::balance(house_data) >= (user_stake*(*vector::borrow(&hd::multiplier(house_data), 0)))/100, EInsufficientHouseBalance);
+        assert!(house_data.balance() >= (user_stake*(house_data.multiplier()[0]))/100, EInsufficientHouseBalance);
 
         // Get the VRF input and increment the counter
-        let vrf_input = counter_nft::get_vrf_input_and_increment(counter, num_balls);
+        let vrf_input = counter.get_vrf_input_and_increment(num_balls);
 
         let id = object::new(ctx);
         let game_id = object::uid_to_inner(&id);
@@ -235,16 +231,16 @@ module plinko::plinko {
         // Create a new game object and emit a NewGame event.
         let new_game = Game {
             id,
-            game_start_epoch: tx_context::epoch(ctx),
-            stake: coin::into_balance<SUI>(coin),
-            player: tx_context::sender(ctx),
+            game_start_epoch: ctx.epoch(),
+            stake: coin.into_balance<SUI>(),
+            player: ctx.sender(),
             vrf_input,
             fee_bp
         };
         // Emit a NewGame event
         emit(NewGame {
             game_id,
-            player: tx_context::sender(ctx),
+            player: ctx.sender(),
             vrf_input,
             user_stake,
             fee_bp

@@ -4,9 +4,7 @@ module plinko::plinko_tests {
 
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
-    use sui::transfer;
     use std::debug::print;
-    use sui::object::ID;
     use sui::bls12381::bls12381_min_pk_verify;
     use sui::test_scenario::{Self, Scenario};
     use plinko::house_data::{Self as hd,  HouseCap, HouseData};
@@ -16,9 +14,9 @@ module plinko::plinko_tests {
     const HOUSE: address = @0x21ba535ffa74e261a6281a205398ac9400bbbac41b49bfa967882abdf86b1486;
     const PLAYER: address = @0x4670405fc30d04de9946ad2d6ad822a2859af40a12a0a6ea4516a526884359cf;
     const INITIAL_HOUSE_BALANCE: u64 = 50000000000; // 50 SUI
-    const LOW_HOUSE_BALANCE: u64 = 10000000000; // 10 SUI   
+    const LOW_HOUSE_BALANCE: u64 = 10000000000; // 10 SUI
     const INITIAL_PLAYER_BALANCE: u64 = 20_000_000_000; // 20 SUI
-   
+
 
     // House's public key.
     const PK: vector<u8> = vector<u8> [
@@ -114,7 +112,7 @@ module plinko::plinko_tests {
 
     fun start_game(player_stake: u64, num_balls: u64, low_house_balance: bool, valid_bls_sig: bool, valid_game_id: bool){
 
-        let scenario_val = test_scenario::begin(HOUSE);
+        let mut scenario_val = test_scenario::begin(HOUSE);
         let scenario = &mut scenario_val;
         let init_house_balance : u64;
         let game_id : ID;
@@ -134,8 +132,8 @@ module plinko::plinko_tests {
             game_id = create_counter_nft_and_start_game(scenario, PLAYER, player_stake, num_balls);
             print(&game_id);
         } else {
-            let ctx = test_scenario::ctx(scenario);
-            let temp_game_uid = sui::object::new(ctx); 
+            let ctx = scenario.ctx();
+            let temp_game_uid = sui::object::new(ctx);
             game_id = sui::object::uid_to_inner(&temp_game_uid);
             sui::object::delete(temp_game_uid);
         };
@@ -143,30 +141,30 @@ module plinko::plinko_tests {
 
         end_game(scenario, game_id, HOUSE, num_balls, valid_bls_sig);
 
-        test_scenario::end(scenario_val);
+        scenario_val.end();
     }
 
     /// Deployment & house object initialization.
     /// Variable valid_coin is used to test expected failures.
     public fun init_house(scenario: &mut Scenario, house: address, valid_coin: bool) {
-        test_scenario::next_tx(scenario, house);
+        scenario.next_tx(house);
         {
-            let ctx = test_scenario::ctx(scenario);
+            let ctx = scenario.ctx();
             hd::init_for_testing(ctx);
         };
 
         // House initializes the contract with PK.
-        test_scenario::next_tx(scenario, HOUSE);
+        scenario.next_tx(HOUSE);
         {
-            let house_cap = test_scenario::take_from_sender<HouseCap>(scenario);
+            let house_cap = scenario.take_from_sender<HouseCap>();
             if (valid_coin) {
-                let house_coin = test_scenario::take_from_sender<Coin<SUI>>(scenario);
-                let ctx = test_scenario::ctx(scenario);
-                hd::initialize_house_data(house_cap, house_coin, PK, MULTIPLIER_ARRAY, ctx);
+                let house_coin = scenario.take_from_sender<Coin<SUI>>();
+                let ctx = scenario.ctx();
+                house_cap.initialize_house_data(house_coin, PK, MULTIPLIER_ARRAY, ctx);
             } else {
-                let ctx = test_scenario::ctx(scenario);
+                let ctx = scenario.ctx();
                 let zero_coin = coin::zero<SUI>(ctx);
-                hd::initialize_house_data(house_cap, zero_coin, PK, MULTIPLIER_ARRAY, ctx);
+                house_cap.initialize_house_data(zero_coin, PK, MULTIPLIER_ARRAY, ctx);
             };
         };
     }
@@ -177,44 +175,44 @@ module plinko::plinko_tests {
         // Player creates Counter NFT
         create_counter_nft(scenario, player);
 
-        test_scenario::next_tx(scenario, player);
-        let player_coin = test_scenario::take_from_sender<Coin<SUI>>(scenario);
-        let player_counter = test_scenario::take_from_sender<Counter>(scenario);
-        let house_data = test_scenario::take_shared<HouseData>(scenario);
-        let ctx = test_scenario::ctx(scenario);
-        let stake_coin = coin::split(&mut player_coin, stake, ctx);
+        scenario.next_tx(player);
+        let mut player_coin = scenario.take_from_sender<Coin<SUI>>();
+        let mut player_counter = scenario.take_from_sender<Counter>();
+        let mut house_data = scenario.take_shared<HouseData>();
+        let ctx = scenario.ctx();
+        let stake_coin = player_coin.split(stake, ctx);
         let game_id = plk::start_game(&mut player_counter, num_balls, stake_coin, &mut house_data, ctx);
         let game = plk::borrow_game(game_id, &house_data);
-        let game_start_epoch: u64 = plk::game_start_epoch(game);
-        let game_stake: u64 = plk::stake(game);
-        let game_player: address = plk::player(game);
-        let game_vrf_input: vector<u8> = plk::vrf_input(game);
-        let game_gee_in_bp: u16 = plk::fee_in_bp(game);
+        let game_start_epoch: u64 = game.game_start_epoch();
+        let game_stake: u64 = game.stake();
+        let game_player: address = game.player();
+        let game_vrf_input: vector<u8> = game.vrf_input();
+        let game_gee_in_bp: u16 = game.fee_in_bp();
         print(&game_start_epoch);
         print(&game_stake);
         print(&game_player);
         print(&game_vrf_input);
         print(&game_gee_in_bp);
         test_scenario::return_shared(house_data);
-        test_scenario::return_to_sender(scenario, player_counter);
-        test_scenario::return_to_sender(scenario, player_coin);
+        scenario.return_to_sender(player_counter);
+        scenario.return_to_sender(player_coin);
         game_id
     }
 
     /// Create a Counter NFT for the player.
     fun create_counter_nft(scenario: &mut Scenario, player: address) {
-        test_scenario::next_tx(scenario, player);
+        scenario.next_tx(player);
         {
-            let ctx = test_scenario::ctx(scenario);
+            let ctx = scenario.ctx();
             let counter = counter_nft::mint(ctx);
             // print(&counter);
-            counter_nft::transfer_to_sender(counter, ctx);
+            counter.transfer_to_sender(ctx);
         };
     }
 
     /// Used to initialize the user and house balances.
     public fun fund_addresses(scenario: &mut Scenario, house: address, player: address, house_funds: u64, player_funds: u64) {
-        let ctx = test_scenario::ctx(scenario);
+        let ctx = scenario.ctx();
         // Send coins to players.
         let coinA = coin::mint_for_testing<SUI>(house_funds, ctx);
         let coinB = coin::mint_for_testing<SUI>(player_funds, ctx);
@@ -229,19 +227,19 @@ module plinko::plinko_tests {
     /// House ends the game.
     /// Variable valid_sig is used to test expected failures.
     public fun end_game(scenario: &mut Scenario, game_id: ID, house: address, num_balls: u64, valid_bls_sig: bool) {
-        test_scenario::next_tx(scenario, house);
+        scenario.next_tx(house);
         {
-            let house_data = test_scenario::take_shared<HouseData>(scenario);
+            let mut house_data = scenario.take_shared<HouseData>();
             // print(&house_data);
-            let ctx = test_scenario::ctx(scenario);
+            let ctx = scenario.ctx();
             let sig: vector<u8>;
             if (valid_bls_sig) {
-                 sig = BLS_SIG; 
+                 sig = BLS_SIG;
             } else {
-                 sig = INVALID_BLS_SIG; 
+                 sig = INVALID_BLS_SIG;
             };
             plk::finish_game(game_id, sig, &mut house_data, num_balls, ctx);
-            
+
             test_scenario::return_shared(house_data);
         };
     }
