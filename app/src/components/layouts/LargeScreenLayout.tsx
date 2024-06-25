@@ -2,6 +2,7 @@
 
 import { ChildrenProps } from "@/types/ChildrenProps";
 import React from "react";
+import { InfoIcon } from "./InfoIcon";
 import { TopNavbar } from "./navbars/TopNavbar";
 import { useZkLogin } from "@mysten/enoki/react";
 
@@ -12,14 +13,15 @@ export const LargeScreenLayout = ({ children }: ChildrenProps) => {
 
   return (
     <div
-      className={`relative w-full h-full ${
+      className={`relative w-full h-screen flex-col ${
         address ? "role-admin" : "role-anonymous"
-      } flex-col `}
+      }`}
     >
-      <TopNavbar />
+      <TopNavbar/>
       {/* <div className="flex-1 p-4 bg-grey-100"> */}
       <div>{children}</div>
       {/* </div> */}
+      <InfoIcon/>
     </div>
   );
 };

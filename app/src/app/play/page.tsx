@@ -68,9 +68,9 @@ export default function Page() {
           <IsWaitingToPlayProvider>
             <EndGameCard />
             <InsufficientCoinBalance />
-            <div className="relative flex flex-col space-y-[10px] items-center  ">
+            <div className="relative flex flex-col items-center">
               <TotalWon />
-              <div className="flex justify-center  w-full">
+              <div className="flex justify-center w-full">
                 <div ref={containerRef} className="relative max-w-full">
                   {/* Existing content */}
                   <div
@@ -104,7 +104,7 @@ export default function Page() {
                 </div>
               </div>
             </div>
-            <div className="flex justify-center w-full 2xl:mt-32">
+            <div className="flex justify-center w-full">
               <PlinkoSettings />
             </div>
           </IsWaitingToPlayProvider>
