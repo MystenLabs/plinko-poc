@@ -55,7 +55,7 @@ const MatterSim: React.FC = () => {
   // Array to store positions for the multiplier text
   const multiplierPositions: any = [];
   const multipliersNumbers = [
-    9.0, 8.2, 6.5, 3.8, 1.0, 0.6, 0.4, 0.6, 1.0, 3.8, 6.5, 8.2, 9.0,
+    10.0, 8.0, 4.3, 2.1, 1.0, 0.6, 0.4, 0.6, 1.0, 2.1, 4.3, 8.0, 10.0,
   ];
   // Define the multipliers for each spot
   const multipliers = generateMultiplierText(multipliersNumbers);
