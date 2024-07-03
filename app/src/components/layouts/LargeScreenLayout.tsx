@@ -12,16 +12,16 @@ export const LargeScreenLayout = ({ children }: ChildrenProps) => {
   const { address } = useZkLogin();
 
   return (
-    <div
-      className={`relative w-full h-screen flex-col ${
-        address ? "role-admin" : "role-anonymous"
-      }`}
-    >
-      <TopNavbar/>
-      {/* <div className="flex-1 p-4 bg-grey-100"> */}
-      <div>{children}</div>
-      {/* </div> */}
-      <InfoIcon/>
-    </div>
+    <>
+      <div
+        className={`static w-full h-full flex-col items-center justify-center ${
+          address ? "role-admin" : "role-anonymous"
+        }`}
+      >
+        <TopNavbar/>
+        <div>{children}</div>
+        <div className="absolute bottom-0 left-0 p-8"><InfoIcon/></div>
+      </div>
+    </>
   );
 };

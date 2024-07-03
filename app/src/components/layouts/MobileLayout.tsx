@@ -11,15 +11,13 @@ export const MobileLayout = ({ children }: ChildrenProps) => {
 
   return (
     <div
-      className={`flex flex-col w-full min-h-screen relative ${
+      className={`static flex-col w-full h-full ${
         address ? "role-admin" : "role-anonymous"
       }`}
     >
-      <div className="flex-1 flex flex-col space-y-2">
-        <TopNavbar />
-        <div className="p-2">{children}</div>
-        <InfoIcon/>
-      </div>
+      <TopNavbar/>
+      {children}
+      <div className="px-4"><InfoIcon/></div>
     </div>
   );
 };
