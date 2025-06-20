@@ -27,7 +27,7 @@ const PopupComponent = () => {
 
   const handlePlayAgain = () => {
     setPopupIsVisible(false); // This will hide the popup
-    setFinalPaths([[15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]]); // Reset the final paths
+    setFinalPaths([[1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]]); // Reset the final paths
     resetHistory(); // Reset the history
     handleRefreshBalance(); // Refresh the balance
   };

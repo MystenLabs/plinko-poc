@@ -24,7 +24,7 @@ const PlinkoSettings = () => {
   const { balance } = useBalance();
   const { isMobile } = useIsMobile();
 
-  const [numberOfBalls, setNumberOfBalls] = useState(1);
+  // const [numberOfBalls, setNumberOfBalls] = useState(1); // Commented out multiple balls
   const [currentBet, setCurrentBet] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
   const [allowShowPopup, setAllowShowPopup] = useState(true);
@@ -36,25 +36,26 @@ const PlinkoSettings = () => {
 
   const handlePickerChange = useCallback((newValue: PickerValue) => {
     setPickerValue(newValue);
-    setBetSize(parseFloat(newValue.bet));
-    setNumberOfBalls(parseInt(newValue.balls, 10));
+    setBetSize(Number(newValue.bet));
+    // setNumberOfBalls(parseInt(newValue.balls, 10)); // Commented out multiple balls
   }, []);
 
   // Generate arrays for bets and balls
   const getBetsArray = () =>
     Array.from({ length: 100 }, (_, i) => (0.1 * (i + 1)).toFixed(1));
-  const getBallsArray = () =>
-    Array.from({ length: 100 }, (_, i) => String(i + 1));
+  // const getBallsArray = () =>
+  //   Array.from({ length: 100 }, (_, i) => String(i + 1)); // Commented out multiple balls
   //
 
   useEffect(() => {
     const bet = parseFloat(betSize.toString()) || 0;
-    const balls = parseInt(numberOfBalls.toString(), 10) || 0;
+    // const balls = parseInt(numberOfBalls.toString(), 10) || 0; // Commented out multiple balls
+    const balls = 1; // Fixed to always be 1 ball
     // i want to keep only 2 decimal places and if the last was 9, i want to round it up
     let totalBet = bet * balls;
     totalBet = Math.round(totalBet * 100) / 100;
     setCurrentBet(totalBet);
-  }, [betSize, numberOfBalls]);
+  }, [betSize]); // Removed numberOfBalls dependency
 
   const handlePlayClick = async () => {
     if (isPlaying) return;
@@ -67,10 +68,10 @@ const PlinkoSettings = () => {
     setWaitingToPlay(true);
     let currentBetSize = currentBet;
     //@ts-ignore
-    let result_create_obj = await handleCreateCounterObject(
-      currentBetSize,
-      numberOfBalls
-    );
+    // let result_create_obj = await handleCreateCounterObject(
+    //   currentBetSize,
+    //   numberOfBalls
+    // ); // Commented out multiple balls
     setWaitingToPlay(false);
     setPlaying(true);
   };
@@ -91,14 +92,14 @@ const PlinkoSettings = () => {
     }
   };
 
-  const handleNumberOfBallsChange = (e: any) => {
-    const value = e.target.value;
-    //Regular expression to match integers only from 1 to 100
-    const isValidInput = /^(?:[1-9][0-9]?|100)$/.test(value);
-    if (isValidInput || value === "") {
-      setNumberOfBalls(value);
-    }
-  };
+  // const handleNumberOfBallsChange = (e: any) => {
+  //   const value = e.target.value;
+  //   //Regular expression to match integers only from 1 to 100
+  //   const isValidInput = /^(?:[1-9][0-9]?|100)$/.test(value);
+  //   if (isValidInput || value === "") {
+  //     setNumberOfBalls(value);
+  //   }
+  // }; // Commented out multiple balls
 
   const handleSubmit = () => {
     // your submission logic here
@@ -156,7 +157,8 @@ const PlinkoSettings = () => {
                     {/* Titles for Bet and Balls */}
                     <div className="flex justify-between">
                       <div className="text-center text-white w-1/2">Bet</div>
-                      <div className="text-center text-white w-1/2">Balls</div>
+                      {/* <div className="text-center text-white w-1/2">Balls</div> */}{" "}
+                      {/* Commented out multiple balls */}
                     </div>
                     <Picker
                       value={pickerValue}
@@ -180,7 +182,7 @@ const PlinkoSettings = () => {
                           </Picker.Item>
                         ))}
                       </Picker.Column>
-                      <Picker.Column name="balls">
+                      {/* <Picker.Column name="balls">
                         {getBallsArray().map((balls) => (
                           <Picker.Item key={balls} value={balls}>
                             {({ selected }) => (
@@ -196,7 +198,8 @@ const PlinkoSettings = () => {
                             )}
                           </Picker.Item>
                         ))}
-                      </Picker.Column>
+                      </Picker.Column> */}{" "}
+                      {/* Commented out multiple balls */}
                     </Picker>
                   </div>
                   <div className="mt-4 flex justify-center gap-4">
@@ -231,7 +234,7 @@ const PlinkoSettings = () => {
               {" "}
               <br />{" "}
             </span>{" "}
-            (Per Ball)
+            {/* (Per Ball) */}
           </div>
           <div
             className={`flex items-center h-11 p-5 bg-emerald-950 rounded-[40px] ${
@@ -264,7 +267,7 @@ const PlinkoSettings = () => {
           </div>
         </div>
         {/* Number of Balls */}
-        <div className="flex flex-col justify-center gap-2.5">
+        {/* <div className="flex flex-col justify-center gap-2.5">
           <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px] ml-4">
             Number{" "}
             <span className="md:hidden">
@@ -298,7 +301,8 @@ const PlinkoSettings = () => {
               placeholder="0"
             />
           </div>
-        </div>
+        </div> */}{" "}
+        {/* Commented out multiple balls */}
         {/* Total Bid & Play Button */}
         <div className="flex flex-col justify-center  gap-2.5">
           <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px] ml-4">

@@ -79,6 +79,14 @@ const MatterSim: React.FC = () => {
   const pinRestitution = 0.8;
 
   useEffect(() => {
+    // Always create the table (pins and buckets), but only create balls when we have valid game paths
+    console.log(
+      "Setting up physics simulation - isPlaying:",
+      isPlaying,
+      "paths length:",
+      predefinedPaths.length
+    );
+
     //Restart the container
     const container = document.getElementById("matter-canvas-container");
     container!.innerHTML = "";
@@ -120,13 +128,6 @@ const MatterSim: React.FC = () => {
 
     //between each ball spawn i want to wait 750ms
     const asyncCompositeBallAdd = async (balls: Matter.Body[]) => {
-      if (
-        JSON.stringify(predefinedPaths) ===
-        JSON.stringify([[15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]])
-      ) {
-        setPlaying(false);
-        return;
-      }
       while (balls.length > ballsSpawned) {
         if (document.visibilityState === "visible" && isPlaying) {
           await new Promise((resolve) => setTimeout(resolve, 750));
@@ -144,6 +145,7 @@ const MatterSim: React.FC = () => {
           });
 
           Composite.add(engine.world, [balls[ballsSpawned]]);
+          console.log("Spawned ball", ballsSpawned + 1, "of", balls.length);
           ballsSpawned++;
         } else {
           await new Promise((resolve) => setTimeout(resolve, 1200));
@@ -151,30 +153,38 @@ const MatterSim: React.FC = () => {
       }
     };
 
-    for (let i = 0; i < predefinedPaths.length; i++) {
-      let dropBallPosision = 0;
-      if (predefinedPaths[i][0] === 1) {
-        dropBallPosision = worldWidth / 2.095 + 17;
-      } else {
-        dropBallPosision = worldWidth / 2.095 - 20;
+    // Create balls only when we have valid game paths and are playing
+    console.log("Debug - isPlaying:", isPlaying, "paths:", predefinedPaths);
+
+    if (isPlaying) {
+      console.log("Creating", predefinedPaths.length, "balls for the game");
+      for (let i = 0; i < predefinedPaths.length; i++) {
+        let dropBallPosision = 0;
+        if (predefinedPaths[i][0] === 1) {
+          dropBallPosision = worldWidth / 2.095 + 17;
+        } else {
+          dropBallPosision = worldWidth / 2.095 - 20;
+        }
+        const centerPinX = dropBallPosision;
+        const ballStartY = 50; // Starting Y position of the ball
+        const ball = Bodies.circle(centerPinX, ballStartY, ballSize, {
+          restitution: ballElasticity,
+          friction: ballFriction,
+          density: 0.4,
+          render: {
+            fillStyle: "#FF6B6B",
+            strokeStyle: "#FF0000",
+            lineWidth: 2, // Adding line width for the stroke
+          },
+        });
+
+        balls.push(ball);
+        forceTrackers.push({ x: 0, y: 0 });
       }
-      const centerPinX = dropBallPosision;
-      const ballStartY = 50; // Starting Y position of the ball
-      const ball = Bodies.circle(centerPinX, ballStartY, ballSize, {
-        restitution: ballElasticity,
-        friction: ballFriction,
-        density: 0.4,
-        render: {
-          fillStyle: "#77DD77",
-        },
-      });
-
-      // Add balls with a delay of 1000ms
-
-      balls.push(ball);
-      forceTrackers.push({ x: 0, y: 0 });
+      asyncCompositeBallAdd(balls);
+    } else {
+      console.log("Skipping ball creation - not playing");
     }
-    asyncCompositeBallAdd(balls);
 
     // Set gravity for the simulation
     engine.gravity = { x: 0, y: 0.06, scale: 0.0018 };
@@ -278,80 +288,83 @@ const MatterSim: React.FC = () => {
 
     Composite.add(engine.world, pins);
 
-    // Path following logic
+    // Path following logic - only when we have balls
     let followingPredefinedPath = Array(predefinedPaths.length).fill(false);
     let currentSteps = Array(predefinedPaths.length).fill(0);
 
     // Event: Start following the path on the first collision
     Events.on(engine, "collisionStart", (event) => {
       event.pairs.forEach((pair) => {
-        for (let i = 0; i < predefinedPaths.length; i++) {
-          if (
-            (pair.bodyA === balls[i] || pair.bodyB === balls[i]) &&
-            !followingPredefinedPath[i]
-          ) {
-            followingPredefinedPath[i] = true;
-            currentSteps[i] = 0;
+        // Only process ball collisions if we have balls
+        if (balls.length > 0) {
+          for (let i = 0; i < predefinedPaths.length && i < balls.length; i++) {
+            if (
+              (pair.bodyA === balls[i] || pair.bodyB === balls[i]) &&
+              !followingPredefinedPath[i]
+            ) {
+              followingPredefinedPath[i] = true;
+              currentSteps[i] = 0;
+            }
           }
-        }
 
-        // Check if the collision involves a ball and a pin
-        let ball = null;
-        let pin: Matter.Body | null = null;
+          // Check if the collision involves a ball and a pin
+          let ball = null;
+          let pin: Matter.Body | null = null;
 
-        if (balls.includes(pair.bodyA)) {
-          ball = pair.bodyA;
-          pin = pair.bodyB;
-        } else if (balls.includes(pair.bodyB)) {
-          ball = pair.bodyB;
-          pin = pair.bodyA;
-        }
-
-        if (ball && pin) {
-          // Calculate the approximate collision point
-          const collisionPointY = (ball.position.y + pin.position.y) / 2;
-
-          // Define the top region of the pin (adjust as needed)
-          const topOfPin = pin.position.y - pin.circleRadius! / 2;
-
-          // Check if the collision is near the top of the pin and if the pin is not a sensor
-          if (collisionPointY <= topOfPin && !pin.isSensor) {
-            // Change pin color to red
-            pin.render.fillStyle = "#6CA4Bf";
-
-            // Reset pin color after 1 second
-            setTimeout(() => {
-              if (pin && !pin.isSensor) {
-                // Check again to ensure it's not a sensor
-                pin.render.fillStyle = "#87CEEB"; // Original color
-              }
-            }, 100);
+          if (balls.includes(pair.bodyA)) {
+            ball = pair.bodyA;
+            pin = pair.bodyB;
+          } else if (balls.includes(pair.bodyB)) {
+            ball = pair.bodyB;
+            pin = pair.bodyA;
           }
-        }
-        // Check if the collision involves a ball and a bottomArea
-        balls.forEach((ball) => {
-          if (
-            (pair.bodyA === ball && pair.bodyB.isSensor) ||
-            (pair.bodyB === ball && pair.bodyA.isSensor)
-          ) {
-            // Identify the bottomArea in the collision
-            const bottomArea = pair.bodyA.isSensor ? pair.bodyA : pair.bodyB;
 
-            // Get the color of the bottomArea and add it to the history
-            const color = bottomArea.render.fillStyle;
-            addColor(color);
+          if (ball && pin) {
+            // Calculate the approximate collision point
+            const collisionPointY = (ball.position.y + pin.position.y) / 2;
 
-            // Temporarily increase the size of the bottomArea
-            Body.scale(bottomArea, 1.1, 1.1); // Increase by 10%
+            // Define the top region of the pin (adjust as needed)
+            const topOfPin = pin.position.y - pin.circleRadius! / 2;
 
-            // Restore the original size after 1 second
-            setTimeout(() => {
-              Body.scale(bottomArea, 1 / 1.1, 1 / 1.1); // Scale back to original size
-            }, 625);
-            // Increase the finishedBalls count
-            setFinishedBalls((prev) => prev + 1);
+            // Check if the collision is near the top of the pin and if the pin is not a sensor
+            if (collisionPointY <= topOfPin && !pin.isSensor) {
+              // Change pin color to red
+              pin.render.fillStyle = "#6CA4Bf";
+
+              // Reset pin color after 1 second
+              setTimeout(() => {
+                if (pin && !pin.isSensor) {
+                  // Check again to ensure it's not a sensor
+                  pin.render.fillStyle = "#87CEEB"; // Original color
+                }
+              }, 100);
+            }
           }
-        });
+          // Check if the collision involves a ball and a bottomArea
+          balls.forEach((ball) => {
+            if (
+              (pair.bodyA === ball && pair.bodyB.isSensor) ||
+              (pair.bodyB === ball && pair.bodyA.isSensor)
+            ) {
+              // Identify the bottomArea in the collision
+              const bottomArea = pair.bodyA.isSensor ? pair.bodyA : pair.bodyB;
+
+              // Get the color of the bottomArea and add it to the history
+              const color = bottomArea.render.fillStyle;
+              addColor(color);
+
+              // Temporarily increase the size of the bottomArea
+              Body.scale(bottomArea, 1.1, 1.1); // Increase by 10%
+
+              // Restore the original size after 1 second
+              setTimeout(() => {
+                Body.scale(bottomArea, 1 / 1.1, 1 / 1.1); // Scale back to original size
+              }, 625);
+              // Increase the finishedBalls count
+              setFinishedBalls((prev) => prev + 1);
+            }
+          });
+        }
       });
     });
 
@@ -361,51 +374,58 @@ const MatterSim: React.FC = () => {
 
     // Event: Apply force based on the predefined path
     Events.on(engine, "beforeUpdate", () => {
-      for (let i = 0; i < predefinedPaths.length; i++) {
-        if (
-          followingPredefinedPath[i] &&
-          currentRows[i] < predefinedPaths[i].length - 1
-        ) {
-          const newRow = Math.floor((balls[i].position.y - 100) / pinGap);
+      // Only apply forces if we have balls
+      if (balls.length > 0) {
+        for (let i = 0; i < predefinedPaths.length && i < balls.length; i++) {
+          if (
+            followingPredefinedPath[i] &&
+            currentRows[i] < predefinedPaths[i].length - 1
+          ) {
+            const newRow = Math.floor((balls[i].position.y - 100) / pinGap);
 
-          if (newRow > currentRows[i]) {
-            currentRows[i] = newRow;
-            lastRowYPositions[i] = 100 + currentRows[i] * pinGap;
+            if (newRow > currentRows[i]) {
+              currentRows[i] = newRow;
+              lastRowYPositions[i] = 100 + currentRows[i] * pinGap;
+            }
+
+            const distanceFromLastRow =
+              balls[i].position.y - lastRowYPositions[i];
+            const normalizedDistance = Math.min(
+              distanceFromLastRow / (pinGap / 2),
+              1
+            );
+
+            // Quadratic decrease in force magnitude
+            const baseForceMagnitude = 0.006;
+            const forceMagnitude =
+              baseForceMagnitude * (1 - normalizedDistance ** 2);
+
+            // Adjust the angle of the force
+            const angle = (Math.PI / 2) * normalizedDistance - 0.4; // From 0 (horizontal) to PI/2 (vertical)
+            const direction =
+              predefinedPaths[i][currentRows[i] + 1] === 0 ? -1 : 1;
+            const forceX =
+              Math.cos(angle - 6) * direction * forceMagnitude * 2.3;
+
+            const forceY = Math.sin(angle + 1) * forceMagnitude * 1.2;
+
+            const force = Vector.create(forceX, forceY);
+            Body.applyForce(balls[i], balls[i].position, force);
+            forceTrackers[i] = force;
           }
-
-          const distanceFromLastRow =
-            balls[i].position.y - lastRowYPositions[i];
-          const normalizedDistance = Math.min(
-            distanceFromLastRow / (pinGap / 2),
-            1
-          );
-
-          // Quadratic decrease in force magnitude
-          const baseForceMagnitude = 0.006;
-          const forceMagnitude =
-            baseForceMagnitude * (1 - normalizedDistance ** 2);
-
-          // Adjust the angle of the force
-          const angle = (Math.PI / 2) * normalizedDistance - 0.4; // From 0 (horizontal) to PI/2 (vertical)
-          const direction =
-            predefinedPaths[i][currentRows[i] + 1] === 0 ? -1 : 1;
-          const forceX = Math.cos(angle - 6) * direction * forceMagnitude * 2.3;
-
-          const forceY = Math.sin(angle + 1) * forceMagnitude * 1.2;
-
-          const force = Vector.create(forceX, forceY);
-          Body.applyForce(balls[i], balls[i].position, force);
-          forceTrackers[i] = force;
         }
       }
     });
 
     Events.on(engine, "collisionEnd", (event) => {
       event.pairs.forEach((pair) => {
-        for (let i = 0; i < predefinedPaths.length; i++) {
-          if (pair.bodyA === balls[i] || pair.bodyB === balls[i]) {
-            if (currentSteps[i] < predefinedPaths[i].length - 2) {
-              currentSteps[i]++; // Move to the next step in the path after each collision
+        // Only process if we have balls
+        if (balls.length > 0) {
+          for (let i = 0; i < predefinedPaths.length && i < balls.length; i++) {
+            if (pair.bodyA === balls[i] || pair.bodyB === balls[i]) {
+              if (currentSteps[i] < predefinedPaths[i].length - 2) {
+                currentSteps[i]++; // Move to the next step in the path after each collision
+              }
             }
           }
         }
@@ -421,27 +441,31 @@ const MatterSim: React.FC = () => {
       multiplierPositions.forEach((pos: any) => {
         context.fillText(pos.value, pos.x - 35, pos.y - 50);
       });
-      for (let i = 0; i < predefinedPaths.length; i++) {
-        const startPoint = balls[i].position;
-        const endPoint = {
-          x: startPoint.x + forceTrackers[i].x * 5000, // Scale factor for visualization
-          y: startPoint.y + forceTrackers[i].y * 5000, // Scale factor for visualization
-        };
-        //Buckets positions
 
-        const context = render.context;
-        context.font = "14px Arial";
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-        context.fillStyle = "black"; // Use a contrasting color for better visibility
+      // Only draw force vectors if we have balls
+      if (balls.length > 0) {
+        for (let i = 0; i < predefinedPaths.length && i < balls.length; i++) {
+          const startPoint = balls[i].position;
+          const endPoint = {
+            x: startPoint.x + forceTrackers[i].x * 5000, // Scale factor for visualization
+            y: startPoint.y + forceTrackers[i].y * 5000, // Scale factor for visualization
+          };
+          //Buckets positions
 
-        multiplierPositions.forEach((pos: any) => {
-          // Get the current position of the bottomArea body
-          const bodyPosition = pos.body.position;
+          const context = render.context;
+          context.font = "14px Arial";
+          context.textAlign = "center";
+          context.textBaseline = "middle";
+          context.fillStyle = "black"; // Use a contrasting color for better visibility
 
-          // Render the text at the body's position
-          context.fillText(pos.value, bodyPosition.x, bodyPosition.y);
-        });
+          multiplierPositions.forEach((pos: any) => {
+            // Get the current position of the bottomArea body
+            const bodyPosition = pos.body.position;
+
+            // Render the text at the body's position
+            context.fillText(pos.value, bodyPosition.x, bodyPosition.y);
+          });
+        }
       }
     });
 
@@ -457,7 +481,7 @@ const MatterSim: React.FC = () => {
       Runner.stop(runner);
       Render.stop(render);
     };
-  }, [isPlaying]);
+  }, [isPlaying, predefinedPaths]);
 
   useEffect(() => {
     //Find the history of multipliers that balls have landed on

@@ -34,7 +34,7 @@ export const PlayProvider: React.FC<{ children: ReactNode }> = ({
   const [isWaitingToPlay, setWaitingToPlay] = useState<boolean>(false);
   const [betSize, setBetSize] = useState<number>(0.1);
   const [finalPaths, setFinalPaths] = useState<number[][]>([
-    [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15],
+    [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
   ]);
   const [popupIsVisible, setPopupIsVisible] = useState<boolean>(false);
   const [txDigest, setTxDigest] = useState<string>("");
