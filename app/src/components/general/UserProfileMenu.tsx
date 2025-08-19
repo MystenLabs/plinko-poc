@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { jwtDecode } from "jwt-decode";
 import { CopyIcon } from "@radix-ui/react-icons";
-import { formatAddress } from "@mysten/sui.js/utils";
+import { formatAddress } from "@mysten/sui/utils";
 import toast from "react-hot-toast";
 import {
   useEnokiFlow,

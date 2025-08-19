@@ -1,5 +1,5 @@
-import { SuiClient } from "@mysten/sui.js/client";
-import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { SuiClient } from "@mysten/sui/client";
+import { Transaction } from "@mysten/sui/transactions";
 import { useState } from "react";
 import { usePlayContext } from "../../contexts/PlayContext";
 import { splitIntoPathsAndNormalize } from "@/helpers/traceFromTheEventToPathsForBalls";
@@ -30,10 +30,10 @@ export const useCreateCounterObject = () => {
     setIsLoading(true);
     const keypair = await enokiFlow.getKeypair();
     let player = keypair.getPublicKey().toSuiAddress();
-    const tx = new TransactionBlock();
+    const tx = new Transaction();
 
     const betAmountCoin = tx.splitCoins(tx.gas, [
-      tx.pure(total_bet_amount * 1000000000),
+      tx.pure.u64(total_bet_amount * 1000000000),
     ]);
 
     const counterNFT = tx.moveCall({
@@ -45,7 +45,7 @@ export const useCreateCounterObject = () => {
       target: `${process.env.NEXT_PUBLIC_PACKAGE_ADDRESS}::plinko::start_game`,
       arguments: [
         counterNFT,
-        tx.pure(numberofBalls),
+        tx.pure.u64(numberofBalls),
         betAmountCoin,
         tx.object(`${process.env.NEXT_PUBLIC_HOUSE_DATA_ID}`),
       ],
@@ -56,8 +56,8 @@ export const useCreateCounterObject = () => {
       arguments: [counterNFT],
     });
 
-    let res = await client.signAndExecuteTransactionBlock({
-      transactionBlock: tx,
+    let res = await client.signAndExecuteTransaction({
+      transaction: tx,
       requestType: "WaitForLocalExecution",
       //@ts-ignore
       signer: keypair,
