@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePlayContext } from "../../contexts/PlayContext";
 import { splitIntoPathsAndNormalize } from "@/helpers/traceFromTheEventToPathsForBalls";
 import { useEnokiFlow } from "@mysten/enoki/react";
+import { MIST_PER_SUI } from "@mysten/sui/utils";
 
 const client = new SuiClient({
   url: process.env.NEXT_PUBLIC_SUI_NETWORK!,
@@ -33,7 +34,7 @@ export const useCreateCounterObject = () => {
     const tx = new Transaction();
 
     const betAmountCoin = tx.splitCoins(tx.gas, [
-      tx.pure.u64(total_bet_amount * 1000000000),
+      tx.pure.u64(total_bet_amount * Number(MIST_PER_SUI)),
     ]);
 
     const counterNFT = tx.moveCall({
