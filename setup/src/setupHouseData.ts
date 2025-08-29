@@ -22,7 +22,9 @@ import * as bls from "@noble/bls12-381";
 import fs from "fs";
 
 // The multipliers for the plinko game
-let multiplierArray = [900, 820, 650, 380, 100, 60, 40, 60, 100, 380, 650, 820, 900];
+let multiplierArray = [
+  900, 820, 650, 380, 100, 60, 40, 60, 100, 380, 650, 820, 900,
+];
 let privateKeyArray = Uint8Array.from(Array.from(fromB64(HOUSE_PRIVATE_KEY!)));
 
 const keypairAdmin = Ed25519Keypair.fromSecretKey(privateKeyArray.slice(1));
@@ -52,15 +54,15 @@ initializeContract();
 function initializeContract() {
   const houseCoin = tx.splitCoins(tx.gas, [tx.pure(initHouseBalance)]);
   // The BLS public key of the house
-  let blsKeyAsMoveParameter = getBLS_KeyAsMoveParameter();
-  console.log("PK = ", blsKeyAsMoveParameter);
+  // let blsKeyAsMoveParameter = getBLS_KeyAsMoveParameter();
+  // console.log("PK = ", blsKeyAsMoveParameter);
 
   tx.moveCall({
     target: `${PACKAGE_ADDRESS}::house_data::initialize_house_data`,
     arguments: [
       tx.object(HOUSE_CAP),
       houseCoin,
-      tx.pure(Array.from(blsKeyAsMoveParameter)),
+      // tx.pure(Array.from(blsKeyAsMoveParameter)),
       tx.pure(multiplierArray),
     ],
   });
@@ -125,18 +127,18 @@ if (SUI_NETWORK.includes("mainnet")) {
 /// Helper Functions
 //---------------------------------------------------------
 
-function getBLS_KeyAsMoveParameter() {
-  const derived_bls_key = deriveBLS_SK(HOUSE_PRIVATE_KEY!);
-  return bls.getPublicKey(derived_bls_key);
-}
+// function getBLS_KeyAsMoveParameter() {
+//   const derived_bls_key = deriveBLS_SK(HOUSE_PRIVATE_KEY!);
+//   return bls.getPublicKey(derived_bls_key);
+// }
 
-function deriveBLS_SK(private_key: string): Uint8Array {
-  // initial key material
-  const ikm = private_key;
-  const length = 32;
-  const salt = "plinko";
-  const info = "bls-signature";
-  const hash = "SHA-256";
-  const derived_sk = hkdf(ikm, length, { salt, info, hash });
-  return Uint8Array.from(derived_sk);
-}
+// function deriveBLS_SK(private_key: string): Uint8Array {
+//   // initial key material
+//   const ikm = private_key;
+//   const length = 32;
+//   const salt = "plinko";
+//   const info = "bls-signature";
+//   const hash = "SHA-256";
+//   const derived_sk = hkdf(ikm, length, { salt, info, hash });
+//   return Uint8Array.from(derived_sk);
+// }

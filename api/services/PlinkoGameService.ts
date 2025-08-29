@@ -3,8 +3,6 @@
 
 import { SuiService } from "./SuiService";
 import { Transaction } from "@mysten/sui/transactions";
-import { sponsorAndSignTransaction } from "../utils/sponsorAndSignTransaction";
-import * as plinko from "../generated/plinko/plinko";
 
 class PlinkoGameService {
   private suiService: SuiService;
@@ -21,33 +19,36 @@ class PlinkoGameService {
   ): Promise<{ trace: string; transactionDigest: string }> {
     return new Promise(async (resolve, reject) => {
       const tx = new Transaction();
-      tx.add(
-        plinko.finishGame({
-          package: process.env.PACKAGE_ADDRESS!,
-          arguments: {
-            gameId,
-            random: tx.object("0x8"),
-            houseData: String(process.env.HOUSE_DATA_ID!),
-            numBalls: numberofBalls,
-          } as any, // codegen type
-        })
-      );
+      tx.moveCall({
+        target: `${process.env.PACKAGE_ADDRESS}::plinko::finish_game`,
+        arguments: [
+          tx.pure.string(gameId),
+          tx.object("0x8"),
+          tx.object(String(process.env.HOUSE_DATA_ID!)),
+          tx.pure.u64(numberofBalls),
+        ],
+      });
+      // TODO: Re-evalute code-gen integration -> probably need to change to ESM
+      // tx.add(
+      //   plinko.finishGame({
+      //     package: process.env.PACKAGE_ADDRESS!,
+      //     arguments: {
+      //       gameId,
+      //       random: tx.object("0x8"),
+      //       houseData: String(process.env.HOUSE_DATA_ID!),
+      //       numBalls: numberofBalls,
+      //     },
+      //   })
+      // );
 
       //TODO: Change this to Enoki Sponsorship
-      const { signedTransaction, sponsoredTransaction } =
-        await sponsorAndSignTransaction({
-          tx,
-          suiClient: this.suiService.getClient(),
-        });
+      // need to wait for local execution
+
       this.suiService
         .getClient()
-        .executeTransactionBlock({
-          transactionBlock: signedTransaction.bytes,
-          signature: [
-            signedTransaction.signature,
-            sponsoredTransaction.signature,
-          ],
-          requestType: "WaitForLocalExecution",
+        .signAndExecuteTransaction({
+          transaction: tx,
+          signer: this.suiService.getSigner(),
           options: {
             showObjectChanges: true,
             showEffects: true,

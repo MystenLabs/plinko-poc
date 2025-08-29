@@ -39,24 +39,12 @@ export const useCreateCounterObject = () => {
       tx.pure.u64(total_bet_amount * Number(MIST_PER_SUI)),
     ]);
 
-    const counterNFT = tx.moveCall({
-      target: `${process.env.NEXT_PUBLIC_PACKAGE_ADDRESS}::counter_nft::mint`,
-      arguments: [],
-    });
-
     const gameId = tx.moveCall({
       target: `${process.env.NEXT_PUBLIC_PACKAGE_ADDRESS}::plinko::start_game`,
       arguments: [
-        counterNFT,
-        tx.pure.u64(numberofBalls),
         betAmountCoin,
         tx.object(`${process.env.NEXT_PUBLIC_HOUSE_DATA_ID}`),
       ],
-    });
-
-    tx.moveCall({
-      target: `${process.env.NEXT_PUBLIC_PACKAGE_ADDRESS}::counter_nft::transfer_to_sender`,
-      arguments: [counterNFT],
     });
 
     let res = await client.signAndExecuteTransaction({
@@ -106,8 +94,8 @@ export const useCreateCounterObject = () => {
     // Fetch API call for the game/plinko/end endpoint
     try {
       const response = await fetch(
-        "https://plinko-poc-api.vercel.app/game/plinko/end",
-        // "http://localhost:8080/game/plinko/end",
+        // "https://plinko-poc-api.vercel.app/game/plinko/end",
+        "http://localhost:8080/game/plinko/end",
         {
           method: "POST",
           headers: {

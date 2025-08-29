@@ -16,7 +16,6 @@
     "@mysten/codegen": "^0.4.4",
     "@mysten/enoki": "^0.11.9",
     "@mysten/sui": "^1.37.5",
-    "@mysten/sui.js": "^0.41.2",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.5",

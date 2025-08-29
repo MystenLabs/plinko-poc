@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "set-up-dev-env": "node ../scripts/_old_deprecated/dev/setEnv.js",
     "dev": "env-cmd -f .env.local nodemon index.ts",
+    "codegen": "sui-ts-codegen generate",
     "prod": "ts-node index.ts",
     "debug": "nodemon index.ts --inspect "
   },
@@ -19,19 +20,17 @@
     "env-cmd": "^10.1.0",
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.3"
+    "typescript": "^5.1.6"
   },
   "dependencies": {
     "@mysten/codegen": "^0.4.4",
     "@mysten/sui": "^1.37.5",
-    "@mysten/sui.js": "^0.41.2",
     "@noble/bls12-381": "^1.4.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "futoin-hkdf": "^1.5.1",
     "sha3": "^2.1.4",
-    "shinami": "^0.7.0",
     "suioop": "^2.3.2"
   }
 }

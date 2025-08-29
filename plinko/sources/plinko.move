@@ -13,7 +13,6 @@ use sui::sui::SUI;
 // === Errors ===
 const EStakeTooLow: u64 = 0;
 const EStakeTooHigh: u64 = 1;
-const EInvalidBlsSig: u64 = 2;
 const EInsufficientHouseBalance: u64 = 5;
 const EGameDoesNotExist: u64 = 6;
 
@@ -51,13 +50,12 @@ public struct Outcome has copy, drop {
 
 /// Function used to create a new game. The player must provide a Counter NFT and the number of balls.
 public fun start_game(
-    num_balls: u64,
     coin: Coin<SUI>,
     house_data: &mut HouseData,
     ctx: &mut TxContext,
 ): ID {
     let fee_bp = house_data.base_fee_in_bp();
-    let (id, new_game) = internal_start_game(num_balls, coin, house_data, fee_bp, ctx);
+    let (id, new_game) = internal_start_game( coin, house_data, fee_bp, ctx);
     dof::add(house_data.borrow_mut(), id, new_game);
     id
 }
@@ -188,7 +186,6 @@ public fun borrow_game(game_id: ID, house_data: &HouseData): &Game {
 /// The player must provide a guess and a Counter NFT.
 /// Stake is taken from the player's coin and added to the game's stake.
 fun internal_start_game(
-    num_balls: u64,
     coin: Coin<SUI>,
     house_data: &HouseData,
     fee_bp: u16,

@@ -27,14 +27,12 @@ export const Outcome = new MoveStruct({ name: `${$moduleName}::Outcome`, fields:
         trace: bcs.vector(bcs.u8())
     } });
 export interface StartGameArguments {
-    numBalls: RawTransactionArgument<number | bigint>;
     coin: RawTransactionArgument<string>;
     houseData: RawTransactionArgument<string>;
 }
 export interface StartGameOptions {
     package?: string;
     arguments: StartGameArguments | [
-        numBalls: RawTransactionArgument<number | bigint>,
         coin: RawTransactionArgument<string>,
         houseData: RawTransactionArgument<string>
     ];
@@ -46,11 +44,10 @@ export interface StartGameOptions {
 export function startGame(options: StartGameOptions) {
     const packageAddress = options.package ?? '@local-pkg/plinko';
     const argumentsTypes = [
-        'u64',
         '0x0000000000000000000000000000000000000000000000000000000000000002::coin::Coin<0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI>',
         `${packageAddress}::house_data::HouseData`
     ] satisfies string[];
-    const parameterNames = ["numBalls", "coin", "houseData"];
+    const parameterNames = ["coin", "houseData"];
     return (tx: Transaction) => tx.moveCall({
         package: packageAddress,
         module: 'plinko',
@@ -73,9 +70,8 @@ export interface FinishGameOptions {
 }
 /**
  * finish_game Completes the game by calculating the outcome and transferring the
- * funds to the player. The player must provide a BLS signature of the VRF input
- * and the number of balls to calculate the outcome. It emits an Outcome event with
- * the game result and the trace path of the extended beacon.
+ * funds to the player. It emits an Outcome event with the game result and the
+ * trace path of the extended beacon.
  */
 export function finishGame(options: FinishGameOptions) {
     const packageAddress = options.package ?? '@local-pkg/plinko';
