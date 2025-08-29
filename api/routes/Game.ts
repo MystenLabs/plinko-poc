@@ -16,16 +16,10 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     console.log("POST /game/plinko/end with body:", req.body);
     try {
-      const vrfInputArray = req.body.vrfInput;
-      let {
-        trace,
-        transactionDigest,
-      } = 
-        await GameService.finishGame(
-          req.body.gameId,
-          vrfInputArray,
-          req.body.numberofBalls
-        );
+      let { trace, transactionDigest } = await GameService.finishGame(
+        req.body.gameId,
+        req.body.numberofBalls
+      );
       res.status(200).json({
         trace,
         transactionDigest,

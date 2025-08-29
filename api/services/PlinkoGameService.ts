@@ -16,7 +16,6 @@ class PlinkoGameService {
 
   public finishGame(
     gameId: string,
-    vrfInputArray: Uint8Array,
     numberofBalls: number
   ): Promise<{ trace: string; transactionDigest: string }> {
     return new Promise(async (resolve, reject) => {

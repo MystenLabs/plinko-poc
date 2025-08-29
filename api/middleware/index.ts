@@ -21,7 +21,11 @@ function errorHandler(
 ) {
   res
     .status(res.statusCode || 500)
-    .send({ message: err.message || err, stack: err.stack || "N/A", originalError: err});
+    .send({
+      message: err.message || err,
+      stack: err.stack || "N/A",
+      originalError: err,
+    });
   console.error("Error Handler:", err);
 }
 
@@ -29,7 +33,6 @@ function errorHandler(
 function checkSinglePlayerEnd(req: Request, res: Response, next: NextFunction) {
   try {
     if (!req?.body?.gameId) throw new Error('Parameter "gameId" is required');
-    if (!req?.body?.vrfInput) throw new Error('Parameter "blsSig" is required');
   } catch (error) {
     res.status(errorCode);
     next(error);
@@ -37,8 +40,4 @@ function checkSinglePlayerEnd(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
-export {
-  notFound,
-  errorHandler,
-  checkSinglePlayerEnd,
-};
+export { notFound, errorHandler, checkSinglePlayerEnd };
