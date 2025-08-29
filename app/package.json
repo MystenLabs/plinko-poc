@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "codegen": "sui-ts-codegen generate",
     "start": "next start",
     "lint": "next lint"
   },
