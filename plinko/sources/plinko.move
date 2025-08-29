@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 module plinko::plinko;
-
 use plinko::house_data::HouseData;
 use sui::balance::Balance;
 use sui::coin::{Self, Coin};
@@ -64,9 +63,9 @@ public fun start_game(
 }
 
 /// finish_game Completes the game by calculating the outcome and transferring the funds to the player.
-/// The player must provide a BLS signature of the VRF input and the number of balls to calculate the outcome.
 /// It emits an Outcome event with the game result and the trace path of the extended beacon.
-entry fun finish_game(
+#[allow(lint(public_random))]
+public fun finish_game(
     game_id: ID,
     random: &Random,
     house_data: &mut HouseData,
@@ -121,7 +120,7 @@ entry fun finish_game(
 
         // Calculate funds amount for this particular ball
         // Divide by 100 to adjust for multiplier scale and SUI units
-        let funds_amount_per_ball = (result * stake_per_ball)/100;
+        let funds_amount_per_ball = (result * stake_per_ball) / 100;
         // Add the funds amount to the total funds amount
         total_funds_amount = total_funds_amount + funds_amount_per_ball;
         ball_index = ball_index + 1;
@@ -202,7 +201,7 @@ fun internal_start_game(
     assert!(user_stake >= house_data.min_stake(), EStakeTooLow);
     // Ensure that the house has enough balance to play for this game.
     assert!(
-        house_data.balance() >= (user_stake*(house_data.multiplier()[0]))/100,
+        house_data.balance() >= (user_stake * (house_data.multiplier()[0])) / 100,
         EInsufficientHouseBalance,
     );
 
