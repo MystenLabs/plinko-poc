@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SuiService } from "./SuiService";
-import { TransactionBlock } from "@mysten/sui.js/transactions";
+import { Transaction } from "@mysten/sui/transactions";
 import * as bls from "@noble/bls12-381";
 import { getBLSSecretKey } from "../helpers/getBLSSecretKey";
 import { sponsorAndSignTransaction } from "../utils/sponsorAndSignTransaction";
@@ -10,12 +10,12 @@ import { sponsorAndSignTransaction } from "../utils/sponsorAndSignTransaction";
 class PlinkoGameService {
   private suiService: SuiService;
 
-  private tx = new TransactionBlock();
+  private tx = new Transaction();
 
   constructor() {
     this.suiService = new SuiService();
   }
-  
+
   public finishGame(
     gameId: string,
     vrfInputArray: Uint8Array,
@@ -31,18 +31,19 @@ class PlinkoGameService {
       console.log("numberofBalls: ", numberofBalls);
       console.log("HOUSE DATA ID: ", String(process.env.HOUSE_DATA_ID!));
       console.log("PACKAGE_ADDRESS: ", process.env.PACKAGE_ADDRESS);
-      
-      const tx = new TransactionBlock();
+
+      const tx = new Transaction();
       tx.moveCall({
         target: `${process.env.PACKAGE_ADDRESS}::plinko::finish_game`,
         arguments: [
-          tx.pure(gameId),
-          tx.pure(Array.from(blsHouseSignedInput), "vector<u8>"),
+          tx.pure.string(gameId),
+          tx.pure.vector("u8", Array.from(blsHouseSignedInput)),
           tx.object(String(process.env.HOUSE_DATA_ID!)),
-          tx.pure(numberofBalls, "u64"),
+          tx.pure.u64(numberofBalls),
         ],
       });
 
+      //TODO: Change this to Enoki Sponsorship
       const { signedTransaction, sponsoredTransaction } =
         await sponsorAndSignTransaction({
           tx,

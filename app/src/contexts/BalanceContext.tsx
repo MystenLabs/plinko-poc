@@ -7,7 +7,7 @@ import {
 } from "react";
 import { ChildrenProps } from "@/types/ChildrenProps";
 import BigNumber from "bignumber.js";
-import { MIST_PER_SUI } from "@mysten/sui.js/utils";
+import { MIST_PER_SUI } from "@mysten/sui/utils";
 import { useSui } from "@/hooks/useSui";
 import { useZkLogin } from "@mysten/enoki/react";
 
