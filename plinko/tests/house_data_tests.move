@@ -41,7 +41,7 @@ module plinko::house_data_tests {
             let house_coins = scenario.take_from_sender<Coin<SUI>>();
             let ctx = scenario.ctx();
 
-            house_cap.initialize_house_data(house_coins, PK, MULTIPLIER_ARRAY, ctx);
+            house_cap.initialize_house_data(house_coins, MULTIPLIER_ARRAY, ctx);
 
         };
     }

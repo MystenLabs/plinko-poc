@@ -8,9 +8,8 @@ module plinko::plinko_tests {
     use sui::bls12381::bls12381_min_pk_verify;
     use sui::test_scenario::{Self, Scenario};
     use plinko::house_data::{Self as hd,  HouseCap, HouseData};
-    use plinko::counter_nft::{Self, Counter};
     use plinko::plinko::{Self as plk};
-
+    use sui::random::Random;
     const HOUSE: address = @0x21ba535ffa74e261a6281a205398ac9400bbbac41b49bfa967882abdf86b1486;
     const PLAYER: address = @0x4670405fc30d04de9946ad2d6ad822a2859af40a12a0a6ea4516a526884359cf;
     const INITIAL_HOUSE_BALANCE: u64 = 50000000000; // 50 SUI
@@ -129,7 +128,6 @@ module plinko::plinko_tests {
         init_house(scenario, HOUSE, true);
 
         if (valid_game_id){
-            game_id = create_counter_nft_and_start_game(scenario, PLAYER, player_stake, num_balls);
             print(&game_id);
         } else {
             let ctx = scenario.ctx();
@@ -160,55 +158,16 @@ module plinko::plinko_tests {
             if (valid_coin) {
                 let house_coin = scenario.take_from_sender<Coin<SUI>>();
                 let ctx = scenario.ctx();
-                house_cap.initialize_house_data(house_coin, PK, MULTIPLIER_ARRAY, ctx);
+                house_cap.initialize_house_data(house_coin, MULTIPLIER_ARRAY, ctx);
             } else {
                 let ctx = scenario.ctx();
                 let zero_coin = coin::zero<SUI>(ctx);
-                house_cap.initialize_house_data(zero_coin, PK, MULTIPLIER_ARRAY, ctx);
+                house_cap.initialize_house_data(zero_coin, MULTIPLIER_ARRAY, ctx);
             };
         };
     }
 
-    /// Used to create a counter nft and a game for the player.
-    /// Variables house_wins and valid_guess are used to test different outcomes and expected failures.
-    public fun create_counter_nft_and_start_game(scenario: &mut Scenario, player: address, stake: u64, num_balls: u64): ID {
-        // Player creates Counter NFT
-        create_counter_nft(scenario, player);
 
-        scenario.next_tx(player);
-        let mut player_coin = scenario.take_from_sender<Coin<SUI>>();
-        let mut player_counter = scenario.take_from_sender<Counter>();
-        let mut house_data = scenario.take_shared<HouseData>();
-        let ctx = scenario.ctx();
-        let stake_coin = player_coin.split(stake, ctx);
-        let game_id = plk::start_game(&mut player_counter, num_balls, stake_coin, &mut house_data, ctx);
-        let game = plk::borrow_game(game_id, &house_data);
-        let game_start_epoch: u64 = game.game_start_epoch();
-        let game_stake: u64 = game.stake();
-        let game_player: address = game.player();
-        let game_vrf_input: vector<u8> = game.vrf_input();
-        let game_gee_in_bp: u16 = game.fee_in_bp();
-        print(&game_start_epoch);
-        print(&game_stake);
-        print(&game_player);
-        print(&game_vrf_input);
-        print(&game_gee_in_bp);
-        test_scenario::return_shared(house_data);
-        scenario.return_to_sender(player_counter);
-        scenario.return_to_sender(player_coin);
-        game_id
-    }
-
-    /// Create a Counter NFT for the player.
-    fun create_counter_nft(scenario: &mut Scenario, player: address) {
-        scenario.next_tx(player);
-        {
-            let ctx = scenario.ctx();
-            let counter = counter_nft::mint(ctx);
-            // print(&counter);
-            counter.transfer_to_sender(ctx);
-        };
-    }
 
     /// Used to initialize the user and house balances.
     public fun fund_addresses(scenario: &mut Scenario, house: address, player: address, house_funds: u64, player_funds: u64) {
@@ -238,8 +197,10 @@ module plinko::plinko_tests {
             } else {
                  sig = INVALID_BLS_SIG;
             };
-            plk::finish_game(game_id, sig, &mut house_data, num_balls, ctx);
+            let random = scenario.take_shared<Random>();
+            plk::finish_game(game_id, &random,&mut house_data, num_balls, ctx);
 
+            test_scenario::return_shared(random);
             test_scenario::return_shared(house_data);
         };
     }
