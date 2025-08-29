@@ -3,8 +3,6 @@
 
 import { SuiService } from "./SuiService";
 import { Transaction } from "@mysten/sui/transactions";
-import * as bls from "@noble/bls12-381";
-import { getBLSSecretKey } from "../helpers/getBLSSecretKey";
 import { sponsorAndSignTransaction } from "../utils/sponsorAndSignTransaction";
 
 class PlinkoGameService {
@@ -22,22 +20,12 @@ class PlinkoGameService {
     numberofBalls: number
   ): Promise<{ trace: string; transactionDigest: string }> {
     return new Promise(async (resolve, reject) => {
-      let blsHouseSignedInput = await bls.sign(
-        new Uint8Array(vrfInputArray),
-        getBLSSecretKey(process.env.PLINKO_HOUSE_PRIVATE_KEY!)
-      );
-      console.log("houseSignedInput=", blsHouseSignedInput);
-      console.log("GameID: ", gameId);
-      console.log("numberofBalls: ", numberofBalls);
-      console.log("HOUSE DATA ID: ", String(process.env.HOUSE_DATA_ID!));
-      console.log("PACKAGE_ADDRESS: ", process.env.PACKAGE_ADDRESS);
-
       const tx = new Transaction();
       tx.moveCall({
         target: `${process.env.PACKAGE_ADDRESS}::plinko::finish_game`,
         arguments: [
           tx.pure.string(gameId),
-          tx.pure.vector("u8", Array.from(blsHouseSignedInput)),
+          tx.object("0x8"),
           tx.object(String(process.env.HOUSE_DATA_ID!)),
           tx.pure.u64(numberofBalls),
         ],
