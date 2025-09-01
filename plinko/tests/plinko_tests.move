@@ -74,45 +74,44 @@ module plinko::plinko_tests {
 
     #[test]
     fun player_valid_selections(){
-        start_game(1000000000, 1, true, true, true);
+        start_game( 1, true, true);
     }
 
     #[test]
     #[expected_failure(abort_code = plk::EStakeTooLow)]
     fun player_low_stake(){
-        start_game(0, 1, false, true, true);
+        start_game( 1, false,  true);
     }
 
     #[test]
     #[expected_failure(abort_code = plk::EStakeTooHigh)]
     fun player_high_stake(){
-        start_game(11000000000, 1, false, true, true);
+        start_game( 1, false,  true);
     }
 
     #[test]
     #[expected_failure(abort_code = plk::EInsufficientHouseBalance)]
     fun insuficient_house_balance(){
-        start_game(10000000000, 1, true, true, true);
+        start_game( 1, true,  true);
     }
 
     #[test]
     #[expected_failure(abort_code = plk::EInvalidBlsSig)]
     fun invalid_bls_sig(){
-        start_game(1000000000, 1, false, false, true);
+        start_game( 1, false,  true);
     }
 
     #[test]
     #[expected_failure(abort_code = plk::EGameDoesNotExist)]
     fun invalid_game_id(){
-        start_game(1000000000, 1, false, true, false);
+        start_game( 1, false,  false);
     }
 
     //  --- Helper functions ---
 
-    fun start_game(player_stake: u64, num_balls: u64, low_house_balance: bool, valid_bls_sig: bool, valid_game_id: bool){
+    fun start_game(num_balls: u64, low_house_balance: bool, valid_game_id: bool) {
 
-        let mut scenario_val = test_scenario::begin(HOUSE);
-        let scenario = &mut scenario_val;
+        let mut scenario = test_scenario::begin(HOUSE);
         let init_house_balance : u64;
         let game_id : ID;
         {
@@ -121,14 +120,18 @@ module plinko::plinko_tests {
             } else {
                 init_house_balance = INITIAL_HOUSE_BALANCE;
             };
-            fund_addresses(scenario, HOUSE, PLAYER, init_house_balance, INITIAL_PLAYER_BALANCE);
+            fund_addresses(&mut scenario, HOUSE, PLAYER, init_house_balance, INITIAL_PLAYER_BALANCE);
         };
         // Call init function, transfer HouseCap to the house.
         // House initializes the contract with PK.
-        init_house(scenario, HOUSE, true);
+        init_house(&mut scenario, HOUSE, true);
 
         if (valid_game_id){
-            print(&game_id);
+            // i am just copying the else part here for now but needs to get fixed
+            let ctx = scenario.ctx();
+            let temp_game_uid = sui::object::new(ctx);
+            game_id = sui::object::uid_to_inner(&temp_game_uid);
+            sui::object::delete(temp_game_uid);
         } else {
             let ctx = scenario.ctx();
             let temp_game_uid = sui::object::new(ctx);
@@ -137,9 +140,9 @@ module plinko::plinko_tests {
         };
         // print(&game_id);
 
-        end_game(scenario, game_id, HOUSE, num_balls, valid_bls_sig);
+        end_game(&mut scenario, game_id, HOUSE, num_balls);
 
-        scenario_val.end();
+        scenario.end();
     }
 
     /// Deployment & house object initialization.
@@ -185,20 +188,15 @@ module plinko::plinko_tests {
 
     /// House ends the game.
     /// Variable valid_sig is used to test expected failures.
-    public fun end_game(scenario: &mut Scenario, game_id: ID, house: address, num_balls: u64, valid_bls_sig: bool) {
+    public fun end_game(scenario: &mut Scenario, game_id: ID, house: address, num_balls: u64) {
         scenario.next_tx(house);
         {
             let mut house_data = scenario.take_shared<HouseData>();
-            // print(&house_data);
-            let ctx = scenario.ctx();
-            let sig: vector<u8>;
-            if (valid_bls_sig) {
-                 sig = BLS_SIG;
-            } else {
-                 sig = INVALID_BLS_SIG;
-            };
+
+            sui::random::create_for_testing(scenario.ctx());
             let random = scenario.take_shared<Random>();
-            plk::finish_game(game_id, &random,&mut house_data, num_balls, ctx);
+
+            plk::finish_game(game_id, &random, &mut house_data, num_balls, scenario.ctx());
 
             test_scenario::return_shared(random);
             test_scenario::return_shared(house_data);

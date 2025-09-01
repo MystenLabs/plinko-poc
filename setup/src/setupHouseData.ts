@@ -2,10 +2,10 @@ import * as dotenv from "dotenv";
 
 dotenv.config({ path: "../.env.local" });
 
-import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
-import { TransactionBlock } from "@mysten/sui.js/transactions";
-import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
-import { fromB64 } from "@mysten/sui.js/utils";
+import { SuiClient } from "@mysten/sui/client";
+import { Transaction } from "@mysten/sui/transactions";
+import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
+import { fromB64 } from "@mysten/sui/utils";
 
 import {
   PACKAGE_ADDRESS,
@@ -16,9 +16,6 @@ import {
 } from "./config";
 
 import { toB64 } from "@mysten/bcs";
-import hkdf from "futoin-hkdf";
-import * as bls from "@noble/bls12-381";
-
 import fs from "fs";
 
 // The multipliers for the plinko game
@@ -43,7 +40,7 @@ console.log("House Cap  = " + HOUSE_CAP);
 // The initial balance of the house
 const initHouseBalance = 50000000000;
 
-const tx = new TransactionBlock();
+const tx = new Transaction();
 
 initializeContract();
 
@@ -52,18 +49,13 @@ initializeContract();
 //---------------------------------------------------------
 
 function initializeContract() {
-  const houseCoin = tx.splitCoins(tx.gas, [tx.pure(initHouseBalance)]);
-  // The BLS public key of the house
-  // let blsKeyAsMoveParameter = getBLS_KeyAsMoveParameter();
-  // console.log("PK = ", blsKeyAsMoveParameter);
-
+  const houseCoin = tx.splitCoins(tx.gas, [tx.pure("u64", initHouseBalance)]);
   tx.moveCall({
     target: `${PACKAGE_ADDRESS}::house_data::initialize_house_data`,
     arguments: [
       tx.object(HOUSE_CAP),
       houseCoin,
-      // tx.pure(Array.from(blsKeyAsMoveParameter)),
-      tx.pure(multiplierArray),
+      tx.pure.vector("u64", multiplierArray),
     ],
   });
 }
@@ -84,10 +76,9 @@ if (SUI_NETWORK.includes("mainnet")) {
   });
 } else {
   provider
-    .signAndExecuteTransactionBlock({
-      transactionBlock: tx,
+    .signAndExecuteTransaction({
+      transaction: tx,
       signer: keypairAdmin,
-      requestType: "WaitForLocalExecution",
       options: {
         showObjectChanges: true,
         showEffects: true,

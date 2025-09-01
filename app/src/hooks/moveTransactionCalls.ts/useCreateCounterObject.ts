@@ -16,7 +16,6 @@ export const useCreateCounterObject = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [counterNftId, setCounterNftId] = useState("");
   const [gameId, setGameId] = useState("");
-  const [vrfInput, setVrfInput] = useState("");
 
   const {
     //@ts-ignore
@@ -49,7 +48,6 @@ export const useCreateCounterObject = () => {
 
     let res = await client.signAndExecuteTransaction({
       transaction: tx,
-      requestType: "WaitForLocalExecution",
       //@ts-ignore
       signer: keypair,
       options: {
@@ -83,19 +81,18 @@ export const useCreateCounterObject = () => {
     //@ts-ignore
     let game__id = events?.parsedJson?.game_id;
     //@ts-ignore
-    let vrf__input = events?.parsedJson?.vrf_input;
     setGameId(game__id);
-    setVrfInput(vrf__input);
 
-    if (typeof game__id === "undefined" || typeof vrf__input === "undefined") {
+    if (typeof game__id === "undefined") {
       setPopupInsufficientCoinBalanceIsVisible(true);
     }
 
     // Fetch API call for the game/plinko/end endpoint
     try {
+      //TOOD: Make this dynamic depending on the host
       const response = await fetch(
-        // "https://plinko-poc-api.vercel.app/game/plinko/end",
-        "http://localhost:8080/game/plinko/end",
+        "https://plinko-poc-api.vercel.app/game/plinko/end",
+        // "http://localhost:8080/game/plinko/end",
         {
           method: "POST",
           headers: {
@@ -103,7 +100,6 @@ export const useCreateCounterObject = () => {
           },
           body: JSON.stringify({
             gameId: game__id,
-            vrfInput: vrf__input,
             numberofBalls: numberofBalls,
           }),
         }
@@ -125,7 +121,7 @@ export const useCreateCounterObject = () => {
       console.error("Error in calling /game/plinko/end:", error);
     }
 
-    return [game__id, vrf__input, final_paths];
+    return [game__id, final_paths];
   };
 
   return {
