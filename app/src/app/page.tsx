@@ -4,11 +4,12 @@ import { Paper } from "@/components/general/Paper";
 import { LoginForm } from "@/components/forms/LoginForm";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useZkLogin } from "@mysten/enoki/react";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 export default function Home() {
   const router = useRouter();
-  const { address } = useZkLogin();
+  const currentAccount = useCurrentAccount();
+  const address = currentAccount?.address!;
 
   useEffect(() => {
     if (address) {

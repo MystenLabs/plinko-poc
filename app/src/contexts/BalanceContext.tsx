@@ -9,7 +9,7 @@ import { ChildrenProps } from "@/types/ChildrenProps";
 import BigNumber from "bignumber.js";
 import { MIST_PER_SUI } from "@mysten/sui/utils";
 import { useSui } from "@/hooks/useSui";
-import { useZkLogin } from "@mysten/enoki/react";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 export const useBalance = () => {
   const context = useContext(BalanceContext);
@@ -32,7 +32,8 @@ export const BalanceProvider = ({ children }: ChildrenProps) => {
   const [balance, setBalance] = useState(BigNumber(0));
   const [isLoading, setIsLoading] = useState(false);
   const { suiClient } = useSui();
-  const { address } = useZkLogin();
+  const currentAccount = useCurrentAccount();
+  const address = currentAccount?.address!;
 
   useEffect(() => {
     if (address) handleRefreshBalance();

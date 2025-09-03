@@ -56,6 +56,9 @@ importers:
       '@radix-ui/react-slot':
         specifier: ^1.0.2
         version: 1.0.2(@types/react@18.2.14)(react@18.2.0)
+      '@tanstack/react-query':
+        specifier: ^5.85.6
+        version: 5.85.6(react@18.2.0)
       '@types/node':
         specifier: 20.4.1
         version: 20.4.1

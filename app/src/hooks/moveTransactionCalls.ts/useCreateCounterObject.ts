@@ -6,6 +6,7 @@ import { splitIntoPathsAndNormalize } from "@/helpers/traceFromTheEventToPathsFo
 import { MIST_PER_SUI } from "@mysten/sui/utils";
 //TODO: Refactor deprecated EnokiFlow
 import { useEnokiFlow } from "@mysten/enoki/react";
+import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 
 const client = new SuiClient({
   url: process.env.NEXT_PUBLIC_SUI_NETWORK!,
@@ -16,6 +17,8 @@ export const useCreateCounterObject = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [counterNftId, setCounterNftId] = useState("");
   const [gameId, setGameId] = useState("");
+  const { mutateAsync: signAndExecuteTransaction } =
+    useSignAndExecuteTransaction();
 
   const {
     //@ts-ignore
@@ -46,46 +49,63 @@ export const useCreateCounterObject = () => {
       ],
     });
 
-    let res = await client.signAndExecuteTransaction({
-      transaction: tx,
-      //@ts-ignore
-      signer: keypair,
-      options: {
-        showEffects: true,
-        showObjectChanges: true,
-        showEvents: true,
-      },
-    });
-
-    if (res?.effects?.status.status === "success") {
-      res?.objectChanges?.find((obj) => {
-        if (
-          obj.type === "created" &&
-          obj.objectType.endsWith("counter_nft::Counter")
-        ) {
-          setCounterNftId(obj.objectId);
-        }
-      });
-    }
-    if (res?.effects?.status.status === "failure") {
-      console.log("Error = ", res?.effects);
-    }
-
-    let events = res?.events?.find((obj) => {
-      //@ts-ignore
-      if (obj.parsedJson?.game_id) {
-        //@ts-ignore
-        return obj.parsedJson?.game_id;
+    let res = await signAndExecuteTransaction(
+      { transaction: tx },
+      {
+        onSuccess: (result) => {
+          console.log("executed transaction", result);
+        },
+        onError: (error) => {
+          console.error("Error executing transaction:", error);
+          throw new Error(
+            error instanceof Error
+              ? error.message
+              : "Failed to execute transaction"
+          );
+        },
       }
-    });
-    //@ts-ignore
-    let game__id = events?.parsedJson?.game_id;
-    //@ts-ignore
-    setGameId(game__id);
+    );
+    console.log(res, "Response");
+    // let res = await client.signAndExecuteTransaction({
+    //   transaction: tx,
+    //   //@ts-ignore
+    //   signer: keypair,
+    //   options: {
+    //     showEffects: true,
+    //     showObjectChanges: true,
+    //     showEvents: true,
+    //   },
+    // });
 
-    if (typeof game__id === "undefined") {
-      setPopupInsufficientCoinBalanceIsVisible(true);
-    }
+    // if (res?.effects?.status.status === "success") {
+    //   res?.objectChanges?.find((obj) => {
+    //     if (
+    //       obj.type === "created" &&
+    //       obj.objectType.endsWith("counter_nft::Counter")
+    //     ) {
+    //       setCounterNftId(obj.objectId);
+    //     }
+    //   });
+    // }
+    // if (res?.effects?.status.status === "failure") {
+    //   console.log("Error = ", res?.effects);
+    // }
+
+    // let events = res?.events?.find((obj) => {
+    //   //@ts-ignore
+    //   if (obj.parsedJson?.game_id) {
+    //     //@ts-ignore
+    //     return obj.parsedJson?.game_id;
+    //   }
+    // });
+    // //@ts-ignore
+    // let game__id = events?.parsedJson?.game_id;
+    //@ts-ignore
+    // setGameId(game__id);
+
+    // if (typeof game__id === "undefined") {
+    //   setPopupInsufficientCoinBalanceIsVisible(true);
+    // }
 
     // Fetch API call for the game/plinko/end endpoint
     try {
@@ -99,7 +119,7 @@ export const useCreateCounterObject = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            gameId: game__id,
+            gameId: 1, //TODO: Change
             numberofBalls: numberofBalls,
           }),
         }
@@ -121,7 +141,7 @@ export const useCreateCounterObject = () => {
       console.error("Error in calling /game/plinko/end:", error);
     }
 
-    return [game__id, final_paths];
+    return [1, final_paths]; //TODO: Change
   };
 
   return {

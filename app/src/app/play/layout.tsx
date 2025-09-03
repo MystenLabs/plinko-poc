@@ -1,13 +1,14 @@
 "use client";
 
 import { ChildrenProps } from "@/types/ChildrenProps";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 import { useRouter } from "next/navigation";
-import { useZkLogin } from "@mysten/enoki/react";
 import { useEffect } from "react";
 
 export default function AdminRootLayout({ children }: ChildrenProps) {
   const router = useRouter();
-  const { address } = useZkLogin();
+  const currentAccount = useCurrentAccount();
+  const address = currentAccount?.address!;
 
   useEffect(() => {
     if (!address) {

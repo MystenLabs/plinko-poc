@@ -12,25 +12,23 @@ import { jwtDecode } from "jwt-decode";
 import { CopyIcon } from "@radix-ui/react-icons";
 import { formatAddress } from "@mysten/sui/utils";
 import toast from "react-hot-toast";
-import {
-  useEnokiFlow,
-  useZkLogin,
-  useZkLoginSession,
-} from "@mysten/enoki/react";
+import { useEnokiFlow, useZkLoginSession } from "@mysten/enoki/react";
 import { useMemo } from "react";
 import { formatString } from "@/helpers/formatString";
 import Image from "next/image";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 export const UserProfileMenu = () => {
-  const { address } = useZkLogin();
-  const enokiFlow = useEnokiFlow();
-  const zkLoginSession = useZkLoginSession();
+  const currentAccount = useCurrentAccount();
+  const address = currentAccount?.address!;
+  // const enokiFlow = useEnokiFlow();
+  // const zkLoginSession = useZkLoginSession();
 
-  const decodedJWT = useMemo(() => {
-    if (!zkLoginSession?.jwt) return null;
-    const decoded: any = jwtDecode(zkLoginSession?.jwt!);
-    return decoded;
-  }, [zkLoginSession?.jwt]);
+  // const decodedJWT = useMemo(() => {
+  //   if (!zkLoginSession?.jwt) return null;
+  //   const decoded: any = jwtDecode(zkLoginSession?.jwt!);
+  //   return decoded;
+  // }, [zkLoginSession?.jwt]);
 
   const handleCopyAddress = () => {
     navigator.clipboard.writeText(address!);
@@ -39,7 +37,7 @@ export const UserProfileMenu = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      {/* <DropdownMenuTrigger asChild>
         {!!decodedJWT?.picture && (
           <button>
             <Image
@@ -51,16 +49,16 @@ export const UserProfileMenu = () => {
             />
           </button>
         )}
-      </DropdownMenuTrigger>
+      </DropdownMenuTrigger> */}
       <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>
+        {/* <DropdownMenuLabel>
           <div>
             {decodedJWT?.given_name} {decodedJWT?.family_name}
           </div>
           <div className="text-black text-opacity-60 text-xs">
             {decodedJWT?.email ? formatString(decodedJWT?.email, 25) : ""}
           </div>
-        </DropdownMenuLabel>
+        </DropdownMenuLabel> */}
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem className="flex items-center justify-between w-full">
@@ -70,13 +68,13 @@ export const UserProfileMenu = () => {
             </button>
           </DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuItem
+        {/* <DropdownMenuItem
           onClick={() => enokiFlow.logout()}
           className="flex items-center justify-between w-full"
         >
           <div>Log out</div>
           <LogOut className="h-4 w-4" />
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
   );

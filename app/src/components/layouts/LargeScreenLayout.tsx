@@ -4,12 +4,13 @@ import { ChildrenProps } from "@/types/ChildrenProps";
 import React from "react";
 import { InfoIcon } from "./InfoIcon";
 import { TopNavbar } from "./navbars/TopNavbar";
-import { useZkLogin } from "@mysten/enoki/react";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 const NAVBAR_WIDTH = 350;
 
 export const LargeScreenLayout = ({ children }: ChildrenProps) => {
-  const { address } = useZkLogin();
+  const currentAccount = useCurrentAccount();
+  const address = currentAccount?.address!;
 
   return (
     <>
@@ -18,9 +19,11 @@ export const LargeScreenLayout = ({ children }: ChildrenProps) => {
           address ? "role-admin" : "role-anonymous"
         }`}
       >
-        <TopNavbar/>
+        <TopNavbar />
         <div>{children}</div>
-        <div className="absolute bottom-0 left-0 p-8"><InfoIcon/></div>
+        <div className="absolute bottom-0 left-0 p-8">
+          <InfoIcon />
+        </div>
       </div>
     </>
   );
