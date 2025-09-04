@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { usePlayContext } from "../contexts/PlayContext";
-import { useCreateCounterObject } from "@/hooks/moveTransactionCalls.ts/useCreateCounterObject";
+import { useCreateGame } from "@/hooks/moveTransactionCalls.ts/useCreateGame";
 import { useGameHistory } from "@/contexts/GameHistoryContext";
 import { useWaitingToPlayContext } from "@/contexts/IsWaitingToPlay";
 import { useBalance } from "@/contexts/BalanceContext";
@@ -9,7 +9,6 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 import Popup from "@/components/PopUpPicker";
 
 const PlinkoSettings = () => {
-  //@ts-ignore
   const {
     isPlaying,
     setPlaying,
@@ -18,7 +17,7 @@ const PlinkoSettings = () => {
     setPopupInsufficientCoinBalanceIsVisible,
   } = usePlayContext();
   const { isWaitingToPlay, setWaitingToPlay } = useWaitingToPlayContext();
-  const { handleCreateCounterObject } = useCreateCounterObject();
+  const { handleCreateGame } = useCreateGame();
   const { resetHistory } = useGameHistory();
   const { balance } = useBalance();
   const { isMobile } = useIsMobile();
@@ -41,16 +40,15 @@ const PlinkoSettings = () => {
 
   const handlePlayClick = async () => {
     if (isPlaying) return;
-    //@ts-ignore
-    if (currentBet >= balance.c[0] + 0.9) {
+    if (currentBet >= balance.c![0] + 0.9) {
       setPopupInsufficientCoinBalanceIsVisible(true);
       return;
     }
     resetHistory();
     setWaitingToPlay(true);
     let currentBetSize = currentBet;
-    //@ts-ignore
-    let result_create_obj = await handleCreateCounterObject(
+
+    let result_create_obj = await handleCreateGame(
       currentBetSize,
       numberOfBalls
     );

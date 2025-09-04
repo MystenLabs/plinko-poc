@@ -1,16 +1,30 @@
 "use client";
 import React, { createContext, useContext, useState } from "react";
-import { never, set } from "zod";
+
+type HistoryItem = {
+  bet: string;
+  multiplier: string;
+  earnings: string;
+  earningsValue: number;
+  isLost: boolean;
+};
 
 interface GameHistoryContextType {
-  colors: string[]; // Only storing colors now
+  colors: string[];
   totalWon: number;
   addTotalWon: (amount: number, lastColorIndex: number) => void;
   addColor: (color: string | undefined) => void;
-  currentGameHistory: any;
-  setCurrentGameHistory: any;
-  historyFromPreviousGames: any;
-  setHistoryFromPreviousGames: any;
+
+  // One game's history (list of entries for the current game)
+  currentGameHistory: HistoryItem[];
+  setCurrentGameHistory: React.Dispatch<React.SetStateAction<HistoryItem[]>>;
+
+  // All previous games' histories (array of games; each game is an array of HistoryItem)
+  historyFromPreviousGames: HistoryItem[][];
+  setHistoryFromPreviousGames: React.Dispatch<
+    React.SetStateAction<HistoryItem[][]>
+  >;
+
   resetHistory: () => void;
 }
 
@@ -34,21 +48,20 @@ export const GameHistoryProvider: React.FC<{ children: React.ReactNode }> = ({
   const [colors, setColors] = useState<string[]>([]);
   const [totalWon, setTotalWon] = useState<number>(0);
   const [lastColorIndexHistory, setLastColorIndexHistory] = useState<number>(0);
-  const [currentGameHistory, setCurrentGameHistory] = useState([]);
-  //@ts-ignore
-  const [historyFromPreviousGames, setHistoryFromPreviousGames] = useState<[]>([
-    {
-      bet: "",
-      multiplier: "",
-      earnings: "",
-      earningsValue: 0,
-      isLost: true,
-    },
-  ]);
+
+  // Current game's entries:
+  const [currentGameHistory, setCurrentGameHistory] = useState<HistoryItem[]>(
+    []
+  );
+
+  // List of past games (each past game is an array of HistoryItem):
+  const [historyFromPreviousGames, setHistoryFromPreviousGames] = useState<
+    HistoryItem[][]
+  >([]);
 
   const addColor = (color: string | undefined) => {
     if (color !== undefined) {
-      setColors((prevColors) => [...prevColors, color!]);
+      setColors((prev) => [...prev, color]);
     }
   };
 
@@ -60,22 +73,21 @@ export const GameHistoryProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const resetHistory = () => {
-    // I want to add the current game history to the historyFromPreviousGames
-    //@ts-ignore
-    if (currentGameHistory === [[]]) {
+    // Add the current game's history to the previous games list (if it has entries)
+    if (currentGameHistory.length === 0) {
       console.log("No history to add to historyFromPreviousGames");
     } else {
-      //@ts-ignore
-      setHistoryFromPreviousGames((prevHistory: any) => [
-        ...prevHistory,
-        currentGameHistory as any,
-      ]);
+      setHistoryFromPreviousGames((prev) => [...prev, [...currentGameHistory]]);
     }
 
+    // Debug (note: state updates are async; this logs the old value in the same tick)
     console.log(
       "!!!!!!!!!!!historyFromPreviousGames!!!!!!!!!!!",
       historyFromPreviousGames
     );
+
+    // Clear current game/UI tracking
+    setCurrentGameHistory([]);
     setLastColorIndexHistory(0);
     setColors([]);
     setTotalWon(0);

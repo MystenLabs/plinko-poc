@@ -66,17 +66,28 @@ class PlinkoGameService {
         const status = effects?.status?.status;
 
         // Extract your trace (defensively)
-        //@ts-ignore
-        const trace = //@ts-ignore
-          events?.find((e) => e?.parsedJson && "trace" in e.parsedJson) //@ts-ignore
-            ?.parsedJson?.trace ?? events?.[0]?.parsedJson?.trace;
+
+        // Extract your trace (defensively, no ts-ignore)
+        type Evt = { parsedJson?: unknown };
+
+        const traceEvt = (events as Evt[] | undefined)?.find(
+          (e) =>
+            typeof e?.parsedJson === "object" &&
+            e.parsedJson !== null &&
+            "trace" in (e.parsedJson as Record<string, unknown>)
+        ) as { parsedJson: { trace: string } } | undefined;
+
+        const trace =
+          traceEvt?.parsedJson.trace ??
+          (typeof events?.[0]?.parsedJson === "object" &&
+          events?.[0]?.parsedJson !== null &&
+          "trace" in (events![0].parsedJson as Record<string, unknown>)
+            ? (events![0].parsedJson as { trace: string }).trace
+            : undefined);
 
         if (status === "success") {
-          // OPTIONAL: only if you truly need to wait again (usually not necessary):
-          // await this.suiService.getClient().waitForTransaction({ digest });
-
           return resolve({
-            trace,
+            trace: trace!,
             transactionDigest: digest!,
           });
         } else {

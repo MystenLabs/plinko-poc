@@ -55,8 +55,8 @@ const ScoreTable = () => {
           isLost,
         };
       });
-      //@ts-ignore
-      data = (prevData) => {
+
+      data = (prevData: any) => {
         // Reverse the array to maintain the newest entry at the top if needed
         return [...newEntries.reverse(), ...prevData];
       };
@@ -89,27 +89,20 @@ const ScoreTable = () => {
         } flex-1 w-full`}
       >
         <div className="flex flex-col gap-5 mr-5">
-          {
-            //@ts-ignore
-            currentGameHistory.map((data, index) => (
-              <div
-                key={index}
-                className="text-white text-base font-normal leading-[18.40px]"
-              >
-                {
-                  //@ts-ignore
-                  data.bet
-                }
-              </div>
-            ))
-          }
+          {currentGameHistory.map((data: any, index: any) => (
+            <div
+              key={index}
+              className="text-white text-base font-normal leading-[18.40px]"
+            >
+              {data.bet}
+            </div>
+          ))}
           {historyFromPreviousGames.length > 1 &&
             [...historyFromPreviousGames] // Create a shallow copy to avoid mutating the original array
               .slice(1)
               .reverse() // Reverse the copied array(
               .map((data, index) =>
-                // @ts-ignore
-                data.map((data2, index2) => (
+                data.map((data2: any, index2: any) => (
                   <div
                     key={index2 + 1}
                     className="text-white text-opacity-40 text-base font-normal leading-[18.40px]"
@@ -122,32 +115,24 @@ const ScoreTable = () => {
         <div className="flex flex-col gap-5 mr-10">
           {" "}
           {/* Adjust the right margin here */}
-          {
-            //@ts-ignore
-            currentGameHistory.map((data, index) => (
-              <div
-                key={index}
-                className={`text-white ${
-                  //@ts-ignore
-                  data.multiplier === "-"
-                    ? "text-opacity-40"
-                    : "text-base font-semibold"
-                } leading-[18.40px]`}
-              >
-                {
-                  //@ts-ignore
-                  data.multiplier
-                }
-              </div>
-            ))
-          }
+          {currentGameHistory.map((data: any, index: any) => (
+            <div
+              key={index}
+              className={`text-white ${
+                data.multiplier === "-"
+                  ? "text-opacity-40"
+                  : "text-base font-semibold"
+              } leading-[18.40px]`}
+            >
+              {data.multiplier}
+            </div>
+          ))}
           {historyFromPreviousGames.length > 1 &&
             [...historyFromPreviousGames] // Create a shallow copy to avoid mutating the original array
               .slice(1)
               .reverse() // Reverse the copied array(
               .map((data, index) =>
-                // @ts-ignore
-                data.map((data2, index) => (
+                data.map((data2: any, index2: any) => (
                   <div
                     key={index + 1}
                     className="text-white text-opacity-40 text-base font-normal leading-[18.40px]"
@@ -158,45 +143,34 @@ const ScoreTable = () => {
               )}
         </div>
         <div className="flex flex-col gap-5 ml-4">
-          {
-            //@ts-ignore
-            currentGameHistory.map((data, index) => {
-              // Round earningsValue to two decimal places
-              data.earningsValue = (
-                Math.round(data.earningsValue * 100) / 100
-              ).toFixed(2);
-              return (
-                <div
-                  key={index}
-                  className={`${
-                    //@ts-ignore
-                    data.earnings.startsWith("-")
-                      ? "text-orange-600"
-                      : //@ts-ignore
-                      data.earnings === "-"
-                      ? "text-opacity-40"
-                      : "text-emerald-400"
-                  } text-base font-semibold leading-[18.40px] ${
-                    //@ts-ignore
-                    data.isLost ? "text-red-500" : "text-green-500"
-                  }`}
-                >
-                  {
-                    //@ts-ignore
-                    (Math.round(data.earningsValue * 100) / 100).toFixed(2)
-                  }{" "}
-                  SUI
-                </div>
-              );
-            })
-          }
+          {currentGameHistory.map((data: any, index: any) => {
+            // Round earningsValue to two decimal places
+            data.earningsValue = (
+              Math.round(data.earningsValue * 100) / 100
+            ).toFixed(2);
+            return (
+              <div
+                key={index}
+                className={`${
+                  data.earnings.startsWith("-")
+                    ? "text-orange-600"
+                    : data.earnings === "-"
+                    ? "text-opacity-40"
+                    : "text-emerald-400"
+                } text-base font-semibold leading-[18.40px] ${
+                  data.isLost ? "text-red-500" : "text-green-500"
+                }`}
+              >
+                {(Math.round(data.earningsValue * 100) / 100).toFixed(2)} SUI
+              </div>
+            );
+          })}
           {historyFromPreviousGames.length > 1 &&
             [...historyFromPreviousGames] // Create a shallow copy to avoid mutating the original array
               .slice(1)
               .reverse() // Reverse the copied array(
               .map((data, index) =>
-                // @ts-ignore
-                data.map((data2, index) => (
+                data.map((data2: any, index: any) => (
                   <div
                     key={index + 1}
                     className="text-white text-opacity-40 text-base font-normal leading-[18.40px]"

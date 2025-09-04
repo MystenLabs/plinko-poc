@@ -23,7 +23,6 @@ import {
 import { useWaitingToPlayContext } from "@/contexts/IsWaitingToPlay";
 
 const MatterSim: React.FC = () => {
-  //@ts-ignore
   const {
     isPlaying,
     setPlaying,
@@ -95,8 +94,7 @@ const MatterSim: React.FC = () => {
     // Setup the rendering context
     // const container = document.getElementById("matter-canvas-container");
     const render = Render.create({
-      // @ts-ignore
-      element: container,
+      element: container!,
       engine: engine,
       options: {
         width: worldWidth,
@@ -104,9 +102,6 @@ const MatterSim: React.FC = () => {
         // background: "#36454F",
         background: "transparent",
         showVelocity: true,
-        showAngleIndicator: true,
-        // showPerformance: true, // Show FPS (only for testing) TODO : remove it
-        //@ts-ignore
         showAngleIndicator: false,
       },
     });
@@ -480,7 +475,6 @@ const MatterSim: React.FC = () => {
       );
       console.log(
         "*Check if all balls goes to the correct bucket",
-        //@ts-ignore
         areEqual,
         "With expected multipliers:",
         expectedMultipliers,
