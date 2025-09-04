@@ -19,10 +19,10 @@ class PlinkoGameService {
   ): Promise<{ trace: string; transactionDigest: string }> {
     return new Promise(async (resolve, reject) => {
       const tx = new Transaction();
-      tx.moveCall({
+      const res = tx.moveCall({
         target: `${process.env.PACKAGE_ADDRESS}::plinko::finish_game`,
         arguments: [
-          tx.pure.string(gameId),
+          tx.pure.address(gameId),
           tx.object("0x8"),
           tx.object(String(process.env.HOUSE_DATA_ID!)),
           tx.pure.u64(numberofBalls),
@@ -44,43 +44,53 @@ class PlinkoGameService {
       //TODO: Change this to Enoki Sponsorship
       // need to wait for local execution
 
-      this.suiService
-        .getClient()
-        .signAndExecuteTransaction({
-          transaction: tx,
-          signer: this.suiService.getSigner(),
-          options: {
-            showObjectChanges: true,
-            showEffects: true,
-            showEvents: true,
-          },
-        })
-        .then(async (res: any) => {
-          const { effects, events } = res;
-          const trace = events[0].parsedJson.trace;
-          console.log("trace", trace);
-          console.log(effects);
-          const status = effects?.status?.status;
-          const transactionDigest = effects?.transactionDigest!;
-
-          if (status === "success") {
-            resolve({
-              trace,
-              transactionDigest,
-            });
-          } else {
-            reject({
-              status: "failure",
-              effects,
-            });
-          }
-        })
-        .catch((e: { message: any }) => {
-          reject({
-            status: "failure",
-            message: e.message || "Transaction failed",
+      // inside your service method
+      try {
+        const res = await this.suiService
+          .getClient()
+          .signAndExecuteTransaction({
+            transaction: tx,
+            signer: this.suiService.getSigner(),
+            options: {
+              showObjectChanges: true,
+              showEffects: true,
+              showEvents: true,
+            },
+            // requestType: 'WaitForEffectsCert', // optional; default behavior fits this since you're asking for effects/events
           });
+
+        const { effects, events } = res;
+
+        // Prefer res.digest when available; effects.transactionDigest also works.
+        const digest = res.digest ?? effects?.transactionDigest;
+        const status = effects?.status?.status;
+
+        // Extract your trace (defensively)
+        //@ts-ignore
+        const trace = //@ts-ignore
+          events?.find((e) => e?.parsedJson && "trace" in e.parsedJson) //@ts-ignore
+            ?.parsedJson?.trace ?? events?.[0]?.parsedJson?.trace;
+
+        if (status === "success") {
+          // OPTIONAL: only if you truly need to wait again (usually not necessary):
+          // await this.suiService.getClient().waitForTransaction({ digest });
+
+          return resolve({
+            trace,
+            transactionDigest: digest!,
+          });
+        } else {
+          return reject({
+            status: "failure",
+            effects,
+          });
+        }
+      } catch (e: any) {
+        return reject({
+          status: "failure",
+          message: e?.message ?? "Transaction failed",
         });
+      }
     });
   }
 }

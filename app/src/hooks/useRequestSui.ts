@@ -22,7 +22,7 @@ export const useRequestSui = () => {
         .get("https://pocs-faucet.vercel.app/api/faucet", {
           headers: {
             "Enoki-api-key": process.env.NEXT_PUBLIC_ENOKI_API_KEY!,
-            // Authorization: `Bearer ${zkLoginSession?.jwt}`,
+            // Authorization: `Bearer ${zkLoginSession?.jwt}`, //TODO: check this
           },
         })
         .then(async (resp) => {

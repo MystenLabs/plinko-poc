@@ -1,11 +1,11 @@
-import { SuiClient } from "@mysten/sui/client";
+import { SuiClient, SuiTransactionBlockResponse } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import { useState } from "react";
 import { usePlayContext } from "../../contexts/PlayContext";
 import { splitIntoPathsAndNormalize } from "@/helpers/traceFromTheEventToPathsForBalls";
 import { MIST_PER_SUI } from "@mysten/sui/utils";
 //TODO: Refactor deprecated EnokiFlow
-import { useEnokiFlow } from "@mysten/enoki/react";
+// import { useEnokiFlow } from "@mysten/enoki/react";
 import { useSignAndExecuteTransaction } from "@mysten/dapp-kit";
 
 const client = new SuiClient({
@@ -13,12 +13,28 @@ const client = new SuiClient({
 });
 
 export const useCreateCounterObject = () => {
-  const enokiFlow = useEnokiFlow();
+  // const enokiFlow = useEnokiFlow();
   const [isLoading, setIsLoading] = useState(false);
   const [counterNftId, setCounterNftId] = useState("");
   const [gameId, setGameId] = useState("");
   const { mutateAsync: signAndExecuteTransaction } =
-    useSignAndExecuteTransaction();
+    useSignAndExecuteTransaction<SuiTransactionBlockResponse>({
+      // This runs AFTER the wallet signs; you decide how to execute it on the node:
+      execute: async ({ bytes, signature }) => {
+        return client.executeTransactionBlock({
+          transactionBlock: bytes,
+          signature,
+          options: {
+            showRawEffects: true,
+            showEvents: true,
+            showEffects: true,
+            showObjectChanges: false,
+          },
+          // requestType is optional; defaults are fine for most cases
+          // requestType: 'WaitForEffectsCert',
+        });
+      },
+    });
 
   const {
     //@ts-ignore
@@ -33,8 +49,8 @@ export const useCreateCounterObject = () => {
   ) => {
     setIsLoading(true);
 
-    const keypair = await enokiFlow.getKeypair();
-    let player = keypair.getPublicKey().toSuiAddress();
+    // const keypair = await enokiFlow.getKeypair();
+    // let player = keypair.getPublicKey().toSuiAddress();
     const tx = new Transaction();
 
     const betAmountCoin = tx.splitCoins(tx.gas, [
@@ -49,22 +65,23 @@ export const useCreateCounterObject = () => {
       ],
     });
 
-    let res = await signAndExecuteTransaction(
-      { transaction: tx },
-      {
-        onSuccess: (result) => {
-          console.log("executed transaction", result);
-        },
-        onError: (error) => {
-          console.error("Error executing transaction:", error);
-          throw new Error(
-            error instanceof Error
-              ? error.message
-              : "Failed to execute transaction"
-          );
-        },
-      }
+    const res = await signAndExecuteTransaction({ transaction: tx });
+    if (res.effects?.status.status === "failure") {
+      console.error("TX failed:", res.effects?.status);
+      // onInsufficientBalance?.();
+      return;
+    }
+    // Extract game_id from events
+    const evt = res.events?.find(
+      (e: any) => e?.parsedJson && "game_id" in e.parsedJson
+      // or match by type:
+      // (e: any) => e.type?.endsWith('::plinko::GameStarted')
     );
+    //@ts-ignore
+    const game_id: string | undefined = evt?.parsedJson?.game_id;
+
+    if (game_id) setGameId?.(game_id);
+    // else onInsufficientBalance?.();
     console.log(res, "Response");
     // let res = await client.signAndExecuteTransaction({
     //   transaction: tx,
@@ -103,23 +120,23 @@ export const useCreateCounterObject = () => {
     //@ts-ignore
     // setGameId(game__id);
 
-    // if (typeof game__id === "undefined") {
-    //   setPopupInsufficientCoinBalanceIsVisible(true);
-    // }
+    if (typeof game__id === "undefined") {
+      setPopupInsufficientCoinBalanceIsVisible(true);
+    }
 
     // Fetch API call for the game/plinko/end endpoint
     try {
       //TOOD: Make this dynamic depending on the host
       const response = await fetch(
-        "https://plinko-poc-api.vercel.app/game/plinko/end",
-        // "http://localhost:8080/game/plinko/end",
+        // "https://plinko-poc-api.vercel.app/game/plinko/end",
+        "http://localhost:8080/game/plinko/end",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            gameId: 1, //TODO: Change
+            gameId: game_id,
             numberofBalls: numberofBalls,
           }),
         }
@@ -141,7 +158,7 @@ export const useCreateCounterObject = () => {
       console.error("Error in calling /game/plinko/end:", error);
     }
 
-    return [1, final_paths]; //TODO: Change
+    return [game_id, final_paths];
   };
 
   return {

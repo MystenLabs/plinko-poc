@@ -13,7 +13,6 @@ import {
 } from "@/contexts/IsWaitingToPlay";
 import { PlayProvider } from "@/contexts/PlayContext";
 import { useIsMobile } from "@/hooks/useIsMobile";
-import { is } from "@mysten/sui.js";
 import React, { useEffect, useRef, useState } from "react";
 
 export default function Page() {
