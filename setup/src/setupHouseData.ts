@@ -1,3 +1,5 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 import * as dotenv from "dotenv";
 
 dotenv.config({ path: "../.env.local" });

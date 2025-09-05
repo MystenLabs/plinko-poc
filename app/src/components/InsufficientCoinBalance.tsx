@@ -1,3 +1,5 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 "use client";
 import { usePlayContext } from "@/contexts/PlayContext";
 import React from "react";

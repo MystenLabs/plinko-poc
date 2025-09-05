@@ -1,3 +1,5 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 "use client";
 import EndGameCard from "@/components/EndGameCard";
 import InsufficientCoinBalance from "@/components/InsufficientCoinBalance";

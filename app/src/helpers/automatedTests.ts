@@ -1,3 +1,5 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 //i will take a list of strings and a list of numbers and i  want to take also a string
 // then i will check when the string finds on the list of strings for the first time
 //and i will return the number from the list of numbers that has the same index as the string on the list of strings

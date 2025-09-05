@@ -1,3 +1,5 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 import "../styles/globals.css";
 import { Inter } from "next/font/google";
 import { ChildrenProps } from "@/types/ChildrenProps";

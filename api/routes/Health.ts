@@ -1,3 +1,5 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 import express, { Request, Response, Router } from "express";
 
 const router: Router = express.Router();
