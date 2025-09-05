@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Matter, {
   Engine,
@@ -336,6 +336,14 @@ const MatterSim: React.FC = () => {
             const color = bottomArea.render.fillStyle;
             addColor(color);
 
+            const position = bucketColors.indexOf(color as string);
+            if (position !== -1) {
+              const multiplier = multipliersNumbers[position];
+              const lastBallWon = multiplier * betSize;
+              // colors.length is the previous count; the just-landed ball is the next index
+              const nextIndex = colors.length + 1;
+              addTotalWon(lastBallWon, nextIndex);
+            }
             // Temporarily increase the size of the bottomArea
             Body.scale(bottomArea, 1.1, 1.1); // Increase by 10%
 
@@ -492,25 +500,11 @@ const MatterSim: React.FC = () => {
         {colors.map((color, index) => {
           const isLastColor = index === colors.length - 1;
           const size = isLastColor ? "70px" : "50px";
-          // What position got this color at the bucketColors array
-          const position = bucketColors.indexOf(color);
-          const multiplier = multipliersNumbers[position];
-          let lastBallWon = 0; // Initialize last ball won variable
-
-          if (isLastColor) {
-            lastBallWon = multiplier * betSize;
-            addTotalWon(lastBallWon, colors.length);
-          }
-
           return (
             <div
               key={index}
-              className={`${
-                isLastColor ? "w-24" : "w-[size]"
-              } h-[size] bg-[color] text-white flex items-center justify-center text-[fontSize] font-[fontWeight] border-1 border-black rounded-[4px]`}
-              style={{
-                backgroundColor: color,
-              }}
+              className={`${isLastColor ? "w-24" : "w-[size]"} h-[size] ...`}
+              style={{ backgroundColor: color }}
             ></div>
           );
         })}
