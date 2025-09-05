@@ -59,7 +59,6 @@ export const useCreateGame = () => {
       });
 
       const res = await signAndExecuteTransaction({ transaction: tx });
-      console.log("Response", res);
 
       // Real failure path => show popup and stop
       if (res.effects?.status.status === "failure") {

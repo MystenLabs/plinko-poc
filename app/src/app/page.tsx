@@ -13,12 +13,9 @@ export default function Home() {
 
   useEffect(() => {
     if (address) {
-      console.log(address);
       router.push("/play");
     }
   }, [address]);
-
-  console.log("page.tsx is on server:", !!process.env.IS_SERVER_SIDE);
 
   return (
     <Paper className="max-w-[600px] mx-auto">{!address && <LoginForm />}</Paper>

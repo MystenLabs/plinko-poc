@@ -41,7 +41,6 @@ export const BalanceProvider = ({ children }: ChildrenProps) => {
 
   const handleRefreshBalance = useCallback(async () => {
     if (!address) return;
-    console.log(`Refreshing balance for ${address}...`);
     setIsLoading(true);
     await suiClient
       .getBalance({

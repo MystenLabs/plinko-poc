@@ -80,12 +80,6 @@ export const GameHistoryProvider: React.FC<{ children: React.ReactNode }> = ({
       setHistoryFromPreviousGames((prev) => [...prev, [...currentGameHistory]]);
     }
 
-    // Debug (note: state updates are async; this logs the old value in the same tick)
-    console.log(
-      "!!!!!!!!!!!historyFromPreviousGames!!!!!!!!!!!",
-      historyFromPreviousGames
-    );
-
     // Clear current game/UI tracking
     setCurrentGameHistory([]);
     setLastColorIndexHistory(0);

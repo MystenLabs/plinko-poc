@@ -12,7 +12,6 @@ export default function AdminRootLayout({ children }: ChildrenProps) {
 
   useEffect(() => {
     if (!address) {
-      console.log("No address found, taking you back to '/'");
       router.push("/");
     }
   }, [address]);

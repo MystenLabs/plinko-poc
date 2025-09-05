@@ -473,14 +473,6 @@ const MatterSim: React.FC = () => {
       let areEqual = multipliersHistroty.every(
         (value, index) => value === expectedMultipliers[index]
       );
-      console.log(
-        "*Check if all balls goes to the correct bucket",
-        areEqual,
-        "With expected multipliers:",
-        expectedMultipliers,
-        "and history of multipliers:",
-        multipliersHistroty
-      );
     }
   }, [multipliersHistroty]);
 

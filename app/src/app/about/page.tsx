@@ -1,4 +1,4 @@
-import 'server-only';
+import "server-only";
 
 import { Paper } from "@/components/general/Paper";
 import { Metadata } from "next";
@@ -9,8 +9,6 @@ export const metadata: Metadata = {
 };
 
 export default function About() {
-  console.log("about.tsx is on server:", !!process.env.IS_SERVER_SIDE);
-
   return (
     <Paper>
       <div className="flex flex-col space-y-3">

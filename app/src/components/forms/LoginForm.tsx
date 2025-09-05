@@ -21,7 +21,6 @@ export function LoginForm() {
   );
 
   const googleWallet = walletsByProvider.get("google");
-  console.log(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID, "google client id");
   if (currentAccount) {
     return (
       <div className="flex flex-col items-center space-y-2">

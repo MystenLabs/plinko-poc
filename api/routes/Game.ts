@@ -14,7 +14,6 @@ router.post(
   "/plinko/end",
   checkSinglePlayerEnd,
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log("POST /game/plinko/end with body:", req.body);
     try {
       let { trace, transactionDigest } = await GameService.finishGame(
         req.body.gameId,

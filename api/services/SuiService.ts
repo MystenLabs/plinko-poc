@@ -15,11 +15,6 @@ class SuiService {
   private _keypair: Ed25519Keypair;
 
   constructor() {
-    console.log(
-      "Generating Sui Service. Target Sui Node URL: ",
-      process.env.SUI_NETWORK
-    );
-
     this._client = new SuiClient({
       url: process.env.SUI_NETWORK!,
     });
