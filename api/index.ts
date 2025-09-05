@@ -9,6 +9,8 @@ dotenv.config();
 
 import healthRoutes from "./routes/Health";
 import gameRoutes from "./routes/Game";
+import sponsorRoutes from "./routes/Sponsor";
+import executeRoutes from "./routes/Execute";
 
 // Initializing port and express instance
 const app: Express = express();
@@ -38,6 +40,12 @@ app.use("/health", healthRoutes);
 
 // --------- Routes "/game" ---------
 app.use("/game", gameRoutes);
+
+// --------- Routes "/sponsor" ---------
+app.use("/sponsor", sponsorRoutes);
+
+// --------- Routes "/execute" ---------
+app.use("/execute", executeRoutes);
 
 // --------- Error handling middleware ---------
 app.use(notFound);

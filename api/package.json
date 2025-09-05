@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@mysten/codegen": "^0.4.4",
+    "@mysten/enoki": "^0.11.10",
     "@mysten/sui": "^1.37.5",
     "@noble/bls12-381": "^1.4.0",
     "cors": "^2.8.5",
