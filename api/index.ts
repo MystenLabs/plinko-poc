@@ -4,54 +4,46 @@
 import express, { Express } from "express";
 import cors from "cors";
 import { notFound, errorHandler } from "./middleware";
-import * as dotenv from "dotenv";
-dotenv.config();
 
 import healthRoutes from "./routes/Health";
 import gameRoutes from "./routes/Game";
 import sponsorRoutes from "./routes/Sponsor";
 import executeRoutes from "./routes/Execute";
 
-// Initializing port and express instance
 const app: Express = express();
-const port = process.env.PORT;
+const port = Number(process.env.PORT) || 8080;
 
-// Initializing CORS
-const trustedOrigins = JSON.parse(String(process.env.TRUSTED_ORIGINS));
+// Parse TRUSTED_ORIGINS robustly
+let trustedOrigins: string[] = [];
+try {
+  trustedOrigins = JSON.parse(String(process.env.TRUSTED_ORIGINS || "[]"));
+} catch {
+  console.warn("TRUSTED_ORIGINS is not valid JSON; defaulting to []");
+  trustedOrigins = [];
+}
 
+// CORS
 app.use(
   cors({
-    origin: trustedOrigins,
+    origin: trustedOrigins.length ? trustedOrigins : undefined, // allow all if empty
   })
 );
 
-// For accepting body in JSON format
+// Body parsing
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Accepted body of requests in x-www-form-urlencoded
-app.use(
-  express.urlencoded({
-    extended: true,
-  })
-);
-
-// --------- Routes "/health" ---------
+// Routes
 app.use("/health", healthRoutes);
-
-// --------- Routes "/game" ---------
 app.use("/game", gameRoutes);
+app.use("/sponsor", sponsorRoutes); // final: POST /sponsor
+app.use("/execute", executeRoutes); // final: POST /execute
 
-// --------- Routes "/sponsor" ---------
-app.use("/sponsor", sponsorRoutes);
-
-// --------- Routes "/execute" ---------
-app.use("/execute", executeRoutes);
-
-// --------- Error handling middleware ---------
+// Errors
 app.use(notFound);
 app.use(errorHandler);
 
-// --------- Starts the API ---------
+// Start
 app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
+  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });

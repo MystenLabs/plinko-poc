@@ -5,15 +5,11 @@ import { enokiClient } from "../utils/EnokiClient";
 
 const router: Router = express.Router();
 
-router.post("/sponsor", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   try {
     const { transactionKindBytes, sender } = req.body;
-
     const sponsored = await enokiClient.createSponsoredTransaction({
-      network: process.env.NEXT_PUBLIC_SUI_NETWORK_NAME as
-        | "mainnet"
-        | "testnet"
-        | "devnet",
+      network: process.env.SUI_NETWORK_NAME as "mainnet" | "testnet" | "devnet",
       transactionKindBytes,
       sender,
       allowedAddresses: [sender],

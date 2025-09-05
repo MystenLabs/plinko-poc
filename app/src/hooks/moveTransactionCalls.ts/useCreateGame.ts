@@ -112,13 +112,11 @@ export const useCreateGame = () => {
         setFinalPaths(final_paths_t);
       } catch (err) {
         console.error("Error calling /game/plinko/end:", err);
-        // optional: surface an error toast here
       }
 
       return [game_id, finalPaths];
     } catch (err) {
       console.error("Unexpected error in handleCreateGame:", err);
-      // optional: surface an error toast here
       setPopupInsufficientCoinBalanceIsVisible(true); // safe fallback
     } finally {
       setIsLoading(false);

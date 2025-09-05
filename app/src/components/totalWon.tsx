@@ -26,7 +26,6 @@ export const TotalWon = () => {
       {!isWaitingToPlay && (
         <div className="flex items-baseline text-black text-lg font-bold font-['Inter'] leading-tight relative">
           {" "}
-          {/* Add relative here */}
           {totalWon !== -1 ? (
             <>
               {parseFloat(totalWon.toString()).toFixed(2)}
@@ -34,7 +33,7 @@ export const TotalWon = () => {
                 <span
                   className={`text-sm font-normal ${
                     isLost ? "text-red-500" : "text-green-900"
-                  } absolute -bottom-3 left-0`} // Positioning adjustment here
+                  } absolute -bottom-3 left-0`}
                 >
                   +{firstEarningsValue}
                 </span>

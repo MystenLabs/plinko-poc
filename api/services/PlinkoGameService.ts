@@ -3,106 +3,137 @@
 
 import { SuiService } from "./SuiService";
 import { Transaction } from "@mysten/sui/transactions";
+import { fromB64, toB64 } from "@mysten/sui/utils";
+
+type EventWithParsedJson = { parsedJson?: unknown; type?: string };
+
+function extractTrace(events?: EventWithParsedJson[]): string | undefined {
+  if (!events?.length) return undefined;
+
+  // Prefer the first event that *actually* has a "trace" field in parsedJson
+  const hit = events.find(
+    (e) =>
+      typeof e?.parsedJson === "object" &&
+      e.parsedJson !== null &&
+      "trace" in (e.parsedJson as Record<string, unknown>)
+  ) as { parsedJson: { trace?: string } } | undefined;
+
+  if (hit?.parsedJson?.trace) return hit.parsedJson.trace;
+
+  // Fallback: check first event defensively
+  const pj = events[0]?.parsedJson;
+  if (typeof pj === "object" && pj !== null) {
+    const maybe = (pj as Record<string, unknown>).trace;
+    if (typeof maybe === "string") return maybe;
+  }
+  return undefined;
+}
 
 class PlinkoGameService {
   private suiService: SuiService;
 
-  private tx = new Transaction();
-
   constructor() {
     this.suiService = new SuiService();
   }
+  API_BASE = process.env.API_BASE_URL ?? "http://localhost:8080";
 
-  public finishGame(
+  public async finishGame(
     gameId: string,
     numberofBalls: number
   ): Promise<{ trace: string; transactionDigest: string }> {
-    return new Promise(async (resolve, reject) => {
-      const tx = new Transaction();
-      const res = tx.moveCall({
-        target: `${process.env.PACKAGE_ADDRESS}::plinko::finish_game`,
-        arguments: [
-          tx.pure.address(gameId),
-          tx.object("0x8"),
-          tx.object(String(process.env.HOUSE_DATA_ID!)),
-          tx.pure.u64(numberofBalls),
-        ],
-      });
-      // TODO: Re-evalute code-gen integration -> probably need to change to ESM
-      // tx.add(
-      //   plinko.finishGame({
-      //     package: process.env.PACKAGE_ADDRESS!,
-      //     arguments: {
-      //       gameId,
-      //       random: tx.object("0x8"),
-      //       houseData: String(process.env.HOUSE_DATA_ID!),
-      //       numBalls: numberofBalls,
-      //     },
-      //   })
-      // );
-
-      //TODO: Change this to Enoki Sponsorship
-      // need to wait for local execution
-
-      // inside your service method
-      try {
-        const res = await this.suiService
-          .getClient()
-          .signAndExecuteTransaction({
-            transaction: tx,
-            signer: this.suiService.getSigner(),
-            options: {
-              showObjectChanges: true,
-              showEffects: true,
-              showEvents: true,
-            },
-            // requestType: 'WaitForEffectsCert', // optional; default behavior fits this since you're asking for effects/events
-          });
-
-        const { effects, events } = res;
-
-        // Prefer res.digest when available; effects.transactionDigest also works.
-        const digest = res.digest ?? effects?.transactionDigest;
-        const status = effects?.status?.status;
-
-        // Extract your trace (defensively)
-
-        // Extract your trace (defensively, no ts-ignore)
-        type Evt = { parsedJson?: unknown };
-
-        const traceEvt = (events as Evt[] | undefined)?.find(
-          (e) =>
-            typeof e?.parsedJson === "object" &&
-            e.parsedJson !== null &&
-            "trace" in (e.parsedJson as Record<string, unknown>)
-        ) as { parsedJson: { trace: string } } | undefined;
-
-        const trace =
-          traceEvt?.parsedJson.trace ??
-          (typeof events?.[0]?.parsedJson === "object" &&
-          events?.[0]?.parsedJson !== null &&
-          "trace" in (events![0].parsedJson as Record<string, unknown>)
-            ? (events![0].parsedJson as { trace: string }).trace
-            : undefined);
-
-        if (status === "success") {
-          return resolve({
-            trace: trace!,
-            transactionDigest: digest!,
-          });
-        } else {
-          return reject({
-            status: "failure",
-            effects,
-          });
-        }
-      } catch (e: any) {
-        return reject({
-          status: "failure",
-          message: e?.message ?? "Transaction failed",
-        });
-      }
+    // 1) Create the tx and get TransactionKind bytes
+    const tx = new Transaction();
+    tx.moveCall({
+      target: `${process.env.PACKAGE_ADDRESS}::plinko::finish_game`,
+      arguments: [
+        tx.pure.address(gameId),
+        tx.object("0x8"),
+        tx.object(String(process.env.HOUSE_DATA_ID!)),
+        tx.pure.u64(numberofBalls),
+      ],
     });
+
+    const txBytes = await tx.build({
+      client: this.suiService.getClient(),
+      onlyTransactionKind: true,
+    });
+
+    // 2) Sponsor (POST /sponsor). Expect { bytes, digest }
+    const sponsorResp = await fetch(`${this.API_BASE}/sponsor`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        transactionKindBytes: toB64(txBytes),
+        sender: this.suiService.getSigner().getPublicKey().toSuiAddress(),
+      }),
+    });
+
+    if (!sponsorResp.ok) {
+      throw new Error(`Failed to sponsor transaction: ${sponsorResp.status}`);
+    }
+
+    const { bytes: sponsoredBytes, digest: sponsoredDigest } =
+      (await sponsorResp.json()) as {
+        bytes: string;
+        digest: string;
+      };
+
+    // 3) Sign sponsored TxBytes
+    const signer = await this.suiService.getSigner();
+    const { signature } = await signer.signTransaction(fromB64(sponsoredBytes));
+
+    // 4) Execute (POST /execute) with digest + signature. Expect { digest }
+    const execResp = await fetch(`${this.API_BASE}/execute`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ digest: sponsoredDigest, signature }),
+    });
+
+    if (!execResp.ok) {
+      throw new Error(`Failed to execute transaction: ${execResp.status}`);
+    }
+
+    const { digest: executedDigest } = (await execResp.json()) as {
+      digest: string;
+    };
+
+    // 5) Wait for finality
+    await this.suiService.getClient().waitForTransaction({
+      digest: executedDigest,
+      timeout: 10_000,
+    });
+
+    // 6) Query the executed tx to read effects/events (this replaces signAndExecuteTransaction options)
+    const txResult = await this.suiService.getClient().getTransactionBlock({
+      digest: executedDigest,
+      options: {
+        showEffects: true,
+        showEvents: true,
+        showObjectChanges: false,
+      },
+    });
+
+    const status = txResult.effects?.status?.status;
+    if (status !== "success") {
+      throw new Error(
+        `Transaction failed: ${
+          txResult.effects?.status?.error ?? "unknown error"
+        }`
+      );
+    }
+
+    const trace = extractTrace(
+      txResult.events as EventWithParsedJson[] | undefined
+    );
+    if (!trace) {
+      throw new Error("Trace not found in transaction events");
+    }
+
+    return {
+      trace,
+      transactionDigest: executedDigest,
+    };
   }
 }
+
 export default PlinkoGameService;

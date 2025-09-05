@@ -5,7 +5,7 @@ import { enokiClient } from "../utils/EnokiClient";
 
 const router: Router = express.Router();
 
-router.post("/execute", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
   try {
     const { digest, signature } = req.body;
 

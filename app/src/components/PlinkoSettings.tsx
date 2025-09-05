@@ -133,7 +133,7 @@ const PlinkoSettings = () => {
                     setShowPopup(true); // Show the popup only if allowed
                   }
                 } else {
-                  handleInputFocus(event); // Optionally, handle focus for desktop
+                  handleInputFocus(event);
                 }
               }}
               step="0.1"
@@ -173,7 +173,7 @@ const PlinkoSettings = () => {
                     setShowPopup(true); // Show the popup only if allowed
                   }
                 } else {
-                  handleInputFocus(event); // Optionally, handle focus for desktop
+                  handleInputFocus(event);
                 }
               }}
               className="bg-transparent text-white text-opacity-50 text-base font-normal leading-[18.40px] w-full outline-none"
