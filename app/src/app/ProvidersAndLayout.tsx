@@ -39,7 +39,7 @@ export const ProvidersAndLayout = ({ children }: ChildrenProps) => {
         <WalletProvider autoConnect slushWallet={{ name: "Plinko PoC" }}>
           <BalanceProvider>
             <main
-              className={`min-h-screen w-screen bg-black`}
+              className={`min-h-screen w-full overflow-hidden bg-black`}
               style={{
                 backgroundImage: `url(${backgroundImage.src})`,
                 backgroundPosition: "center",
