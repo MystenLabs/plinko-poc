@@ -6,7 +6,7 @@ import { Transaction } from "@mysten/sui/transactions";
 import { useState } from "react";
 import { usePlayContext } from "../../contexts/PlayContext";
 import { splitIntoPathsAndNormalize } from "@/helpers/traceFromTheEventToPathsForBalls";
-import { MIST_PER_SUI, fromB64, toB64 } from "@mysten/sui/utils";
+import { MIST_PER_SUI, toB64 } from "@mysten/sui/utils";
 import { useCurrentAccount, useSignTransaction } from "@mysten/dapp-kit";
 
 const client = new SuiClient({
@@ -23,7 +23,6 @@ type EventWithParsedJson = { parsedJson?: unknown; type?: string };
 function extractGameId(events?: EventWithParsedJson[]): string | undefined {
   if (!events?.length) return undefined;
 
-  // Prefer the first event that has a `game_id` field in parsedJson
   const hit = events.find(
     (e) =>
       typeof e?.parsedJson === "object" &&
@@ -33,7 +32,6 @@ function extractGameId(events?: EventWithParsedJson[]): string | undefined {
 
   if (hit?.parsedJson?.game_id) return hit.parsedJson.game_id;
 
-  // Fallback: check first event defensively
   const pj = events[0]?.parsedJson;
   if (typeof pj === "object" && pj !== null) {
     const maybe = (pj as Record<string, unknown>).game_id;
@@ -49,15 +47,10 @@ export const useCreateGame = () => {
   const currentAccount = useCurrentAccount();
   const sender = currentAccount?.address;
 
-  // We only need to sign the sponsored bytes, not execute them on the wallet.
   const { mutateAsync: signTransaction } = useSignTransaction();
 
-  const {
-    finalPaths,
-    setFinalPaths,
-    setPopupInsufficientCoinBalanceIsVisible,
-    setTxDigest,
-  } = usePlayContext();
+  const { finalPaths, setFinalPaths, setTxDigest, showError } =
+    usePlayContext();
 
   const handleCreateGame = async (
     total_bet_amount: number,
@@ -66,25 +59,30 @@ export const useCreateGame = () => {
     setIsLoading(true);
     try {
       if (!sender) {
-        console.error("No wallet/account connected.");
-        setPopupInsufficientCoinBalanceIsVisible(true);
+        showError("No wallet/account connected.");
         return;
       }
-      const betInMist = total_bet_amount * Number(MIST_PER_SUI);
+
+      const betInMist = BigInt(
+        Math.floor(total_bet_amount * Number(MIST_PER_SUI))
+      );
+
+      // Find a non-gas SUI coin with enough balance
       const coinsResp = await client.getCoins({
         owner: sender,
         coinType: "0x2::sui::SUI",
       });
+      //TODO: Get coins the right way and merge coins
       const coin = coinsResp.data.find((c) => BigInt(c.balance) >= betInMist);
       if (!coin) {
-        // (optional) implement merge or show insufficient balance
-        setPopupInsufficientCoinBalanceIsVisible(true);
+        showError("Not enough balance to place this bet.");
         return;
       }
+
       // 1) Create the tx and get TransactionKind bytes
       const tx = new Transaction();
 
-      const betAmountCoin = tx.splitCoins(coin.coinObjectId, [
+      const betAmountCoin = tx.splitCoins(tx.object(coin.coinObjectId), [
         tx.pure.u64(betInMist),
       ]);
 
@@ -101,26 +99,26 @@ export const useCreateGame = () => {
         onlyTransactionKind: true,
       });
 
-      // 2) Sponsor (POST /sponsor). Expect { bytes, digest }
+      // 2) Sponsor (POST /sponsor).
       const sponsorResp = await fetch(`${API_BASE}/sponsor`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           transactionKindBytes: toB64(txBytes),
-          sender, // your wallet address
+          sender,
         }),
       });
 
       if (!sponsorResp.ok) {
         console.error("Failed to sponsor transaction:", sponsorResp.status);
-        setPopupInsufficientCoinBalanceIsVisible(true);
+        showError("Failed to sponsor transaction. Please try again.");
         return;
       }
 
       const { bytes: sponsoredBytes, digest: sponsoredDigest } =
         (await sponsorResp.json()) as { bytes: string; digest: string };
 
-      // 3) Sign the sponsored TxBytes with the connected wallet
+      // 3) Sign the sponsored TxBytes with the connected wallet.
       const { signature } = await signTransaction({
         transaction: sponsoredBytes,
       });
@@ -134,7 +132,7 @@ export const useCreateGame = () => {
 
       if (!execResp.ok) {
         console.error("Failed to execute transaction:", execResp.status);
-        setPopupInsufficientCoinBalanceIsVisible(true);
+        showError("Failed to execute transaction. Please try again.");
         return;
       }
 
@@ -161,18 +159,17 @@ export const useCreateGame = () => {
 
       if (txResult.effects?.status.status === "failure") {
         console.error("TX failed:", txResult.effects?.status);
-        setPopupInsufficientCoinBalanceIsVisible(true);
+        showError(txResult.effects?.status.error ?? "Transaction failed.");
         return;
       }
 
-      // Extract game_id from events (same logic as before, but now from queried tx)
+      // Extract game_id from events
       const game_id = extractGameId(
         txResult.events as EventWithParsedJson[] | undefined
       );
 
       if (!game_id) {
-        // Treat missing game_id as insufficient/invalid state
-        setPopupInsufficientCoinBalanceIsVisible(true);
+        showError("Could not start game. Please try again.");
         return;
       }
 
@@ -180,7 +177,7 @@ export const useCreateGame = () => {
       setGameId(game_id);
       if (executedDigest) setTxDigest(String(executedDigest));
 
-      // --- Call backend only if we have a valid game_id ---
+      // Call backend only if we have a valid game_id
       try {
         const response = await fetch(`${API_BASE}/game/plinko/end`, {
           method: "POST",
@@ -202,12 +199,13 @@ export const useCreateGame = () => {
         setFinalPaths(final_paths_t);
       } catch (err) {
         console.error("Error calling /game/plinko/end:", err);
+        showError("Failed to complete game calculation. Please try again.");
       }
 
       return [game_id, finalPaths];
     } catch (err) {
       console.error("Unexpected error in handleCreateGame:", err);
-      setPopupInsufficientCoinBalanceIsVisible(true); // safe fallback
+      showError("Unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }

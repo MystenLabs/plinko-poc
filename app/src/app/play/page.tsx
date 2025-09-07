@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 "use client";
 import EndGameCard from "@/components/EndGameCard";
-import InsufficientCoinBalance from "@/components/InsufficientCoinBalance";
+import ErrorModal from "@/components/ErrorModal";
 import MatterSim from "@/components/MatterSim";
 import PlinkoSettings from "@/components/PlinkoSettings";
 import ScoreTable from "@/components/ScoreTable";
@@ -28,8 +28,8 @@ export default function Page() {
       const containerWidth = container.offsetWidth;
       const containerHeight = container.offsetHeight;
 
-      const matterSimWidth = 800; // Replace with MatterSim's actual width
-      const matterSimHeight = 600; // Replace with MatterSim's actual height
+      const matterSimWidth = 800;
+      const matterSimHeight = 600;
 
       const scaleX = containerWidth / matterSimWidth;
       const scaleY = containerHeight / matterSimHeight;
@@ -52,7 +52,7 @@ export default function Page() {
         <GameHistoryProvider>
           <IsWaitingToPlayProvider>
             <EndGameCard />
-            <InsufficientCoinBalance />
+            <ErrorModal />
             <div className="relative flex flex-col items-center">
               <TotalWon />
               <div className="flex justify-center w-full">

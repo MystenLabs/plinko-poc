@@ -9,15 +9,15 @@ import { useWaitingToPlayContext } from "@/contexts/IsWaitingToPlay";
 import { useBalance } from "@/contexts/BalanceContext";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import Popup from "@/components/PopUpPicker";
+import { MIST_PER_SUI } from "@mysten/sui/utils";
+
+const MIN_BET_MIST = Number(process.env.NEXT_PUBLIC_MIN_BET_AMOUNT ?? "0"); // total bid minimum (in MIST)
+const MAX_BET_MIST = Number(process.env.NEXT_PUBLIC_MAX_BET_AMOUNT ?? "0"); // total bid maximum (in MIST)
+const MIST_PER_SUI_NUM = Number(MIST_PER_SUI || 1_000_000_000);
 
 const PlinkoSettings = () => {
-  const {
-    isPlaying,
-    setPlaying,
-    betSize,
-    setBetSize,
-    setPopupInsufficientCoinBalanceIsVisible,
-  } = usePlayContext();
+  const { isPlaying, setPlaying, betSize, setBetSize, showError } =
+    usePlayContext();
   const { isWaitingToPlay, setWaitingToPlay } = useWaitingToPlayContext();
   const { handleCreateGame } = useCreateGame();
   const { resetHistory } = useGameHistory();
@@ -25,65 +25,98 @@ const PlinkoSettings = () => {
   const { isMobile } = useIsMobile();
 
   const [numberOfBalls, setNumberOfBalls] = useState(1);
-  const [currentBet, setCurrentBet] = useState(0);
+  const [currentBet, setCurrentBet] = useState(0); // total bid (SUI)
   const [showPopup, setShowPopup] = useState(false);
   const [allowShowPopup, setAllowShowPopup] = useState(true);
 
-  // Popup selection handled via onSubmit in <Popup />
-
   useEffect(() => {
-    const bet = parseFloat(betSize.toString()) || 0;
-    const balls = parseInt(numberOfBalls.toString(), 10) || 0;
-    // i want to keep only 2 decimal places and if the last was 9, i want to round it up
-    let totalBet = bet * balls;
-    totalBet = Math.round(totalBet * 100) / 100;
-    setCurrentBet(totalBet);
+    const perBall = Number(betSize) || 0;
+    const balls = Number(numberOfBalls) || 0;
+    // total bet in SUI (keep 2dp)
+    let total = perBall * balls;
+    total = Math.round(total * 100) / 100;
+    setCurrentBet(total);
   }, [betSize, numberOfBalls]);
 
   const handlePlayClick = async () => {
     if (isPlaying) return;
-    if (currentBet >= balance.c![0] + 0.9) {
-      setPopupInsufficientCoinBalanceIsVisible(true);
+
+    const totalSui = Number(currentBet) || 0;
+    const totalMist = Math.floor(totalSui * MIST_PER_SUI_NUM);
+
+    if (!Number.isFinite(Number(betSize)) || Number(betSize) <= 0) {
+      showError({
+        title: "Invalid bet amount",
+        message: "Please enter a valid per-ball bet amount greater than 0.",
+      });
+      return;
+    }
+
+    if (totalMist < MIN_BET_MIST) {
+      const minSui = MIN_BET_MIST / MIST_PER_SUI_NUM;
+      showError({
+        title: "Total bid too low",
+        message: `Your total bid (${totalSui.toFixed(
+          2
+        )} SUI) is below the minimum allowed (${minSui} SUI). Please increase your bet or number of balls.`,
+      });
+      return;
+    }
+
+    if (totalMist > MAX_BET_MIST) {
+      const maxSui = MAX_BET_MIST / MIST_PER_SUI_NUM;
+      showError({
+        title: "Total bid too high",
+        message: `Your total bid (${totalSui.toFixed(
+          2
+        )} SUI) exceeds the maximum allowed (${maxSui} SUI). Please lower your bet or number of balls.`,
+      });
+      return;
+    }
+
+    // Balance check (approx) TODO:Fix after coin merging is investigated
+    const balanceSuiApprox = Number(balance?.c?.[0] ?? 0);
+    if (totalSui > balanceSuiApprox) {
+      showError({
+        title: "Insufficient balance",
+        message:
+          "Not enough balance. Send SUI to your address or use the Request SUI button in the header.",
+      });
       return;
     }
     resetHistory();
     setWaitingToPlay(true);
-    let currentBetSize = currentBet;
-
-    let result_create_obj = await handleCreateGame(
-      currentBetSize,
-      numberOfBalls
-    );
-    setWaitingToPlay(false);
-    setPlaying(true);
+    try {
+      await handleCreateGame(totalSui, numberOfBalls);
+      setPlaying(true);
+    } finally {
+      setWaitingToPlay(false);
+    }
   };
-  // Function to handle focusing on the input - selects the text
-  const handleInputFocus = (event: any) => {
+
+  const handleInputFocus = (event: React.FocusEvent<HTMLInputElement>) => {
     event.target.select();
   };
 
-  const handleBetSizeChange = (e: any) => {
+  const handleBetSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-
-    // Regular expression to match up to 3 digits in total, allowing for 0 or 1 decimal places
+    // Up to 3 digits total, allowing exactly one decimal place if present
     const isValidInput = /^(?:\d{1,3}|\d{0,2}\.\d)$/.test(value);
-
     if (isValidInput || value === "") {
-      // Allows empty value for backspace functionality
-      setBetSize(value);
+      setBetSize(value === "" ? 0 : parseFloat(value));
     }
   };
 
-  const handleNumberOfBallsChange = (e: any) => {
+  const handleNumberOfBallsChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const value = e.target.value;
-    //Regular expression to match integers only from 1 to 100
+    // Integers 1–100
     const isValidInput = /^(?:[1-9][0-9]?|100)$/.test(value);
     if (isValidInput || value === "") {
-      setNumberOfBalls(value);
+      setNumberOfBalls(value === "" ? 0 : parseInt(value, 10));
     }
   };
-
-  // Popup close handled inline where used
 
   return (
     <div className="w-[950px] max-w-full px-5 pt-5 pb-[25px] bg-emerald-950 rounded-[20px] mx-auto my-4 ">
@@ -95,23 +128,21 @@ const PlinkoSettings = () => {
           setTimeout(() => setAllowShowPopup(true), 300);
         }}
         onSubmit={(bet, balls) => {
-          // Apply selected values
           setBetSize(parseFloat(bet));
           setNumberOfBalls(parseInt(balls, 10));
-          // Close and debounce reopen
           setShowPopup(false);
           setAllowShowPopup(false);
           setTimeout(() => setAllowShowPopup(true), 300);
         }}
       />
+
       <div className="flex justify-center items-center gap-5">
         {/* Bid Amount (per ball) */}
-        <div className="flex flex-col justify-center  gap-2.5">
+        <div className="flex flex-col justify-center gap-2.5">
           <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px] ml-4">
             Bid{" "}
             <span className="md:hidden">
-              {" "}
-              <br />{" "}
+              <br />
             </span>{" "}
             (Per Ball)
           </div>
@@ -128,10 +159,8 @@ const PlinkoSettings = () => {
               onChange={handleBetSizeChange}
               onFocus={(event) => {
                 if (isMobile) {
-                  event.target.blur(); // Remove focus from the input
-                  if (allowShowPopup) {
-                    setShowPopup(true); // Show the popup only if allowed
-                  }
+                  event.currentTarget.blur();
+                  if (allowShowPopup) setShowPopup(true);
                 } else {
                   handleInputFocus(event);
                 }
@@ -141,17 +170,17 @@ const PlinkoSettings = () => {
               placeholder="0"
             />
             <div className="text-white text-opacity-50 text-base font-normal leading-[18.40px]">
-              <img src="/general/sui.svg" alt="plus" width={12} height={12} />
+              <img src="/general/sui.svg" alt="sui" width={12} height={12} />
             </div>
           </div>
         </div>
+
         {/* Number of Balls */}
         <div className="flex flex-col justify-center gap-2.5">
           <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px] ml-4">
             Number{" "}
             <span className="md:hidden">
-              {" "}
-              <br />{" "}
+              <br />
             </span>{" "}
             of Balls
           </div>
@@ -168,10 +197,8 @@ const PlinkoSettings = () => {
               onChange={handleNumberOfBallsChange}
               onFocus={(event) => {
                 if (isMobile) {
-                  event.target.blur(); // Remove focus from the input
-                  if (allowShowPopup) {
-                    setShowPopup(true); // Show the popup only if allowed
-                  }
+                  event.currentTarget.blur();
+                  if (allowShowPopup) setShowPopup(true);
                 } else {
                   handleInputFocus(event);
                 }
@@ -181,13 +208,13 @@ const PlinkoSettings = () => {
             />
           </div>
         </div>
+
         {/* Total Bid & Play Button */}
-        <div className="flex flex-col justify-center  gap-2.5">
+        <div className="flex flex-col justify-center gap-2.5">
           <div className="text-white text-opacity-80 text-base font-medium leading-[18.40px] ml-4">
             Total Bid:{" "}
             <span className="md:hidden">
-              {" "}
-              <br />{" "}
+              <br />
             </span>{" "}
             {currentBet.toFixed(1)} SUI
           </div>
@@ -209,6 +236,7 @@ const PlinkoSettings = () => {
           </button>
         </div>
       </div>
+
       {currentBet > 10 && (
         <div className="text-rose-500 text-sm font-medium text-center mt-4">
           *Total bid needs to be under 10 SUI
