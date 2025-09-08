@@ -49,13 +49,9 @@ public struct Outcome has copy, drop {
 // === Public Functions ===
 
 /// Function used to create a new game. The player must provide a Counter NFT and the number of balls.
-public fun start_game(
-    coin: Coin<SUI>,
-    house_data: &mut HouseData,
-    ctx: &mut TxContext,
-): ID {
+public fun start_game(coin: Coin<SUI>, house_data: &mut HouseData, ctx: &mut TxContext): ID {
     let fee_bp = house_data.base_fee_in_bp();
-    let (id, new_game) = internal_start_game( coin, house_data, fee_bp, ctx);
+    let (id, new_game) = internal_start_game(coin, house_data, fee_bp, ctx);
     dof::add(house_data.borrow_mut(), id, new_game);
     id
 }
@@ -63,7 +59,7 @@ public fun start_game(
 /// finish_game Completes the game by calculating the outcome and transferring the funds to the player.
 /// It emits an Outcome event with the game result and the trace path of the extended beacon.
 #[allow(lint(public_random))]
-public fun finish_game(
+entry fun finish_game(
     game_id: ID,
     random: &Random,
     house_data: &mut HouseData,

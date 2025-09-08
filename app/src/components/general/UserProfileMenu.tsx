@@ -111,7 +111,11 @@ export const UserProfileMenu = () => {
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>
           <div>
-            {decodedJWT?.given_name} {decodedJWT?.family_name}
+            {decodedJWT?.given_name || decodedJWT?.family_name
+              ? `${decodedJWT?.given_name ?? ""} ${
+                  decodedJWT?.family_name ?? ""
+                }`
+              : "Google User"}
           </div>
           <div className="text-black text-opacity-60 text-xs">
             {decodedJWT?.email ? formatString(decodedJWT.email, 25) : ""}

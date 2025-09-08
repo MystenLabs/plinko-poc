@@ -72,7 +72,7 @@ export const useCreateGame = () => {
         owner: sender,
         coinType: "0x2::sui::SUI",
       });
-      //TODO: Get coins the right way and merge coins
+      //TODO: Merge coins? Handle pagination?
       const coin = coinsResp.data.find((c) => BigInt(c.balance) >= betInMist);
       if (!coin) {
         showError("Not enough balance to place this bet.");
@@ -99,7 +99,7 @@ export const useCreateGame = () => {
         onlyTransactionKind: true,
       });
 
-      // 2) Sponsor (POST /sponsor).
+      // 2) Sponsor the un-signed TxBytes
       const sponsorResp = await fetch(`${API_BASE}/sponsor`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -118,12 +118,12 @@ export const useCreateGame = () => {
       const { bytes: sponsoredBytes, digest: sponsoredDigest } =
         (await sponsorResp.json()) as { bytes: string; digest: string };
 
-      // 3) Sign the sponsored TxBytes with the connected wallet.
+      // 3) Sign the sponsored TxBytes
       const { signature } = await signTransaction({
         transaction: sponsoredBytes,
       });
 
-      // 4) Execute (POST /execute) with digest + signature. Expect { digest }
+      // 4) Execute the sponsored + signed TxBytes
       const execResp = await fetch(`${API_BASE}/execute`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -140,13 +140,11 @@ export const useCreateGame = () => {
         digest: string;
       };
 
-      // 5) Wait for finality (optional but recommended)
       await client.waitForTransaction({
         digest: executedDigest,
         timeout: 10_000,
       });
 
-      // 6) Query the executed tx to read effects/events
       const txResult: SuiTransactionBlockResponse =
         await client.getTransactionBlock({
           digest: executedDigest,

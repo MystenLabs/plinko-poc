@@ -58,7 +58,7 @@ class PlinkoGameService {
       onlyTransactionKind: true,
     });
 
-    // 2) Sponsor (POST /sponsor). Expect { bytes, digest }
+    // 2) Sponsor the un-signed TxBytes
     const sponsorResp = await fetch(`${this.API_BASE}/sponsor`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -78,11 +78,11 @@ class PlinkoGameService {
         digest: string;
       };
 
-    // 3) Sign sponsored TxBytes
+    // 3) Sign the sponsored TxBytes
     const signer = await this.suiService.getSigner();
     const { signature } = await signer.signTransaction(fromB64(sponsoredBytes));
 
-    // 4) Execute (POST /execute) with digest + signature. Expect { digest }
+    // 4) Execute the sponsored + signed TxBytes
     const execResp = await fetch(`${this.API_BASE}/execute`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -97,13 +97,11 @@ class PlinkoGameService {
       digest: string;
     };
 
-    // 5) Wait for finality
     await this.suiService.getClient().waitForTransaction({
       digest: executedDigest,
       timeout: 10_000,
     });
 
-    // 6) Query the executed tx to read effects/events (this replaces signAndExecuteTransaction options)
     const txResult = await this.suiService.getClient().getTransactionBlock({
       digest: executedDigest,
       options: {

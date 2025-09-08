@@ -13,7 +13,6 @@ import executeRoutes from "./routes/Execute";
 const app: Express = express();
 const port = Number(process.env.PORT) || 8080;
 
-// Parse TRUSTED_ORIGINS robustly
 let trustedOrigins: string[] = [];
 try {
   trustedOrigins = JSON.parse(String(process.env.TRUSTED_ORIGINS || "[]"));
@@ -36,8 +35,8 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use("/health", healthRoutes);
 app.use("/game", gameRoutes);
-app.use("/sponsor", sponsorRoutes); // final: POST /sponsor
-app.use("/execute", executeRoutes); // final: POST /execute
+app.use("/sponsor", sponsorRoutes);
+app.use("/execute", executeRoutes);
 
 // Errors
 app.use(notFound);
