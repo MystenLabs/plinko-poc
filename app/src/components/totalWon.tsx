@@ -19,7 +19,7 @@ export const TotalWon = () => {
     : false;
 
   return (
-    <div className="w-[205px] h-[41px] px-5 py-2.5 bg-emerald-400 rounded-full shadow flex justify-center items-center gap-2.5">
+    <div className="w-[205px] h-[35px] px-5 py-1 bg-emerald-400 rounded-full shadow flex justify-center items-center gap-2.5">
       <div className="text-black text-opacity-80 text-base font-medium leading-[18.40px] whitespace-nowrap">
         {isWaitingToPlay ? "Loading..." : "Round Earnings"}
       </div>
