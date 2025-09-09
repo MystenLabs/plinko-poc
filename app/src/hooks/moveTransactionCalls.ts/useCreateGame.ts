@@ -4,9 +4,9 @@
 import { SuiClient, SuiTransactionBlockResponse } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import { useState } from "react";
-import { usePlayContext } from "../../contexts/PlayContext";
+import { usePlayContext } from "@/contexts/PlayContext";
 import { splitIntoPathsAndNormalize } from "@/helpers/traceFromTheEventToPathsForBalls";
-import { MIST_PER_SUI, toB64 } from "@mysten/sui/utils";
+import { MIST_PER_SUI, toBase64 } from "@mysten/sui/utils";
 import { useCurrentAccount, useSignTransaction } from "@mysten/dapp-kit";
 
 const client = new SuiClient({
@@ -101,7 +101,7 @@ export const useCreateGame = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          transactionKindBytes: toB64(txBytes),
+          transactionKindBytes: toBase64(txBytes),
           sender,
         }),
       });

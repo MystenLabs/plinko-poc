@@ -7,7 +7,7 @@ dotenv.config({ path: "../.env.local" });
 import { SuiClient } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
-import { fromB64 } from "@mysten/sui/utils";
+import { fromBase64 } from "@mysten/sui/utils";
 
 import {
   PACKAGE_ADDRESS,
@@ -17,14 +17,16 @@ import {
   HOUSE_CAP,
 } from "./config";
 
-import { toB64 } from "@mysten/bcs";
+import { toBase64 } from "@mysten/bcs";
 import fs from "fs";
 
 // The multipliers for the plinko game
 let multiplierArray = [
   900, 820, 650, 380, 100, 60, 40, 60, 100, 380, 650, 820, 900,
 ];
-let privateKeyArray = Uint8Array.from(Array.from(fromB64(HOUSE_PRIVATE_KEY!)));
+let privateKeyArray = Uint8Array.from(
+  Array.from(fromBase64(HOUSE_PRIVATE_KEY!))
+);
 
 const keypairAdmin = Ed25519Keypair.fromSecretKey(privateKeyArray.slice(1));
 
@@ -40,7 +42,7 @@ console.log("Package ID  = " + PACKAGE_ADDRESS);
 console.log("House Cap  = " + HOUSE_CAP);
 
 // The initial balance of the house
-const initHouseBalance = 50000000000;
+const initHouseBalance = 40000000000;
 
 const tx = new Transaction();
 
@@ -73,7 +75,7 @@ if (SUI_NETWORK.includes("mainnet")) {
 
   tx.build({ client: provider }).then((bytes) => {
     console.log("serialized_setup_tx bytes = ", bytes);
-    let serializedBase64 = toB64(bytes);
+    let serializedBase64 = toBase64(bytes);
     fs.writeFileSync("./serialized_setup_tx.txt", serializedBase64);
   });
 } else {
@@ -115,23 +117,3 @@ if (SUI_NETWORK.includes("mainnet")) {
       }
     });
 }
-
-//---------------------------------------------------------
-/// Helper Functions
-//---------------------------------------------------------
-
-// function getBLS_KeyAsMoveParameter() {
-//   const derived_bls_key = deriveBLS_SK(HOUSE_PRIVATE_KEY!);
-//   return bls.getPublicKey(derived_bls_key);
-// }
-
-// function deriveBLS_SK(private_key: string): Uint8Array {
-//   // initial key material
-//   const ikm = private_key;
-//   const length = 32;
-//   const salt = "plinko";
-//   const info = "bls-signature";
-//   const hash = "SHA-256";
-//   const derived_sk = hkdf(ikm, length, { salt, info, hash });
-//   return Uint8Array.from(derived_sk);
-// }

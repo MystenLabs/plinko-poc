@@ -1,11 +1,11 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useSui } from "./useSui";
 import { useBalance } from "@/contexts/BalanceContext";
-import { useCurrentAccount, useWallets } from "@mysten/dapp-kit";
+import { useWallets } from "@mysten/dapp-kit";
 import {
   isEnokiWallet,
   EnokiWallet,
@@ -18,9 +18,6 @@ export const useRequestSui = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [balance, setBalance] = useState(0);
   const [jwt, setJwt] = useState<string | null>(null);
-
-  const currentAccount = useCurrentAccount();
-  const address = currentAccount?.address;
   const { handleRefreshBalance } = useBalance();
 
   const wallets = useWallets().filter(isEnokiWallet);

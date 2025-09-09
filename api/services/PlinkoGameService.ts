@@ -3,7 +3,7 @@
 
 import { SuiService } from "./SuiService";
 import { Transaction } from "@mysten/sui/transactions";
-import { fromB64, toB64 } from "@mysten/sui/utils";
+import { fromBase64, toBase64 } from "@mysten/sui/utils";
 
 type EventWithParsedJson = { parsedJson?: unknown; type?: string };
 
@@ -56,7 +56,7 @@ class PlinkoGameService {
       target: `${process.env.PACKAGE_ADDRESS}::plinko::finish_game`,
       arguments: [
         tx.pure.address(gameId),
-        tx.object("0x8"),
+        tx.object("0x8"), //SUI Random object, to be replaced with tx.object.random() when stable
         tx.object(String(process.env.HOUSE_DATA_ID!)),
         tx.pure.u64(numberofBalls),
       ],
@@ -72,7 +72,7 @@ class PlinkoGameService {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        transactionKindBytes: toB64(txBytes),
+        transactionKindBytes: toBase64(txBytes),
         sender: this.suiService.getSigner().getPublicKey().toSuiAddress(),
       }),
     });
@@ -88,8 +88,10 @@ class PlinkoGameService {
       };
 
     // 3) Sign the sponsored TxBytes
-    const signer = await this.suiService.getSigner();
-    const { signature } = await signer.signTransaction(fromB64(sponsoredBytes));
+    const signer = this.suiService.getSigner();
+    const { signature } = await signer.signTransaction(
+      fromBase64(sponsoredBytes)
+    );
 
     // 4) Execute the sponsored + signed TxBytes
     const execResp = await fetch(`${this.API_BASE}/execute`, {
