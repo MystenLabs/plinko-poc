@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SuiClient, SuiTransactionBlockResponse } from "@mysten/sui/client";
-import { Transaction } from "@mysten/sui/transactions";
+import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import { useState } from "react";
 import { usePlayContext } from "@/contexts/PlayContext";
 import { splitIntoPathsAndNormalize } from "@/helpers/traceFromTheEventToPathsForBalls";
@@ -61,32 +61,23 @@ export const useCreateGame = () => {
       }
 
       const betInMist = BigInt(
-        Math.floor(total_bet_amount * Number(MIST_PER_SUI))
+        Math.trunc(total_bet_amount * Number(MIST_PER_SUI))
       );
-
-      // Find a non-gas SUI coin with enough balance
-      const coinsResp = await client.getCoins({
-        owner: sender,
-        coinType: "0x2::sui::SUI",
-      });
-      //TODO: Merge coins? Handle pagination?
-      const coin = coinsResp.data.find((c) => BigInt(c.balance) >= betInMist);
-      if (!coin) {
-        showError("Not enough balance to place this bet.");
-        return;
-      }
 
       // 1) Create the tx and get TransactionKind bytes
       const tx = new Transaction();
+      tx.setSender(sender);
+      const betCoin = coinWithBalance({
+        type: "0x2::sui::SUI",
+        balance: betInMist,
+        useGasCoin: false, // important for sponsorship
+      })(tx);
 
-      const betAmountCoin = tx.splitCoins(tx.object(coin.coinObjectId), [
-        tx.pure.u64(betInMist),
-      ]);
-
+      // Call your Move function with that coin directly
       tx.moveCall({
         target: `${process.env.NEXT_PUBLIC_PACKAGE_ADDRESS}::plinko::start_game`,
         arguments: [
-          betAmountCoin,
+          betCoin,
           tx.object(`${process.env.NEXT_PUBLIC_HOUSE_DATA_ID}`),
         ],
       });
