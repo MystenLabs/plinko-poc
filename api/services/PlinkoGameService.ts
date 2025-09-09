@@ -1,9 +1,11 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
+import { EnokiClient } from "@mysten/enoki";
 import { SuiService } from "./SuiService";
 import { Transaction } from "@mysten/sui/transactions";
 import { fromBase64, toBase64 } from "@mysten/sui/utils";
+import { enokiClient } from "../utils/EnokiClient";
 
 type EventWithParsedJson = { parsedJson?: unknown; type?: string };
 
@@ -40,11 +42,12 @@ function extractTrace(events?: EventWithParsedJson[]): string | undefined {
 
 class PlinkoGameService {
   private suiService: SuiService;
+  private enokiClient: EnokiClient;
 
   constructor() {
     this.suiService = new SuiService();
+    this.enokiClient = enokiClient;
   }
-  API_BASE = process.env.NEXT_PUBLIC_BACKEND_API ?? "http://localhost:8080";
 
   public async finishGame(
     gameId: string,
@@ -67,54 +70,35 @@ class PlinkoGameService {
       onlyTransactionKind: true,
     });
 
+    const sender = this.suiService.getSigner().getPublicKey().toSuiAddress();
+    const network = process.env.SUI_NETWORK_NAME ?? "testnet";
     // 2) Sponsor the un-signed TxBytes
-    const sponsorResp = await fetch(`${this.API_BASE}/sponsor`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        transactionKindBytes: toBase64(txBytes),
-        sender: this.suiService.getSigner().getPublicKey().toSuiAddress(),
-      }),
+    const sponsored = await this.enokiClient.createSponsoredTransaction({
+      network: network as "mainnet" | "testnet" | "devnet",
+      transactionKindBytes: toBase64(txBytes),
+      sender,
+      allowedAddresses: [sender],
     });
-
-    if (!sponsorResp.ok) {
-      throw new Error(`Failed to sponsor transaction: ${sponsorResp.status}`);
-    }
-
-    const { bytes: sponsoredBytes, digest: sponsoredDigest } =
-      (await sponsorResp.json()) as {
-        bytes: string;
-        digest: string;
-      };
 
     // 3) Sign the sponsored TxBytes
     const signer = this.suiService.getSigner();
     const { signature } = await signer.signTransaction(
-      fromBase64(sponsoredBytes)
+      fromBase64(sponsored.bytes)
     );
 
     // 4) Execute the sponsored + signed TxBytes
-    const execResp = await fetch(`${this.API_BASE}/execute`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ digest: sponsoredDigest, signature }),
+    const exec = await this.enokiClient.executeSponsoredTransaction({
+      digest: sponsored.digest,
+      signature,
     });
 
-    if (!execResp.ok) {
-      throw new Error(`Failed to execute transaction: ${execResp.status}`);
-    }
-
-    const { digest: executedDigest } = (await execResp.json()) as {
-      digest: string;
-    };
-
     await this.suiService.getClient().waitForTransaction({
-      digest: executedDigest,
+      digest: exec.digest,
       timeout: 10_000,
     });
 
     const txResult = await this.suiService.getClient().getTransactionBlock({
-      digest: executedDigest,
+      digest: exec.digest,
       options: {
         showEffects: true,
         showEvents: true,
@@ -140,7 +124,7 @@ class PlinkoGameService {
 
     return {
       trace,
-      transactionDigest: executedDigest,
+      transactionDigest: exec.digest,
     };
   }
 }
