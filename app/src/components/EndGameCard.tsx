@@ -22,7 +22,7 @@ const EndGameCard = () => {
   const [showHistory, setShowHistory] = useState(false);
 
   const togglePopup = () => setPopupIsVisible(!popupIsVisible);
-  const toggleHistory = () => setShowHistory((v) => !v);
+  const toggleHistory = () => setShowHistory((value) => !value);
 
   // Player won if net > 0
   const hasWon = totalWon - bid * finalPaths.length > 0;

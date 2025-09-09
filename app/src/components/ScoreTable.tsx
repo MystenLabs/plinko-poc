@@ -82,7 +82,6 @@ const ScoreTable = () => {
           isScrollNeeded ? "overflow-auto" : ""
         } flex-1 w-full`}
       >
-        {/* Column: Bet */}
         <div className="flex flex-col gap-5 mr-5">
           {currentGameHistory.map((row: any, idx: number) => (
             <div
@@ -109,7 +108,6 @@ const ScoreTable = () => {
               )}
         </div>
 
-        {/* Column: Multiplier */}
         <div className="flex flex-col gap-5 mr-10">
           {currentGameHistory.map((row: any, idx: number) => (
             <div
@@ -140,7 +138,6 @@ const ScoreTable = () => {
               )}
         </div>
 
-        {/* Column: Earnings */}
         <div className="flex flex-col gap-5 ml-4">
           {currentGameHistory.map((row: any, idx: number) => {
             const rounded = Number(

@@ -24,7 +24,7 @@ try {
 // CORS
 app.use(
   cors({
-    origin: trustedOrigins.length ? trustedOrigins : undefined, // allow all if empty
+    origin: trustedOrigins,
   })
 );
 

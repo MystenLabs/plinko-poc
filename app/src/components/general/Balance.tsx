@@ -10,7 +10,7 @@ import BigNumber from "bignumber.js";
 
 export const Balance = () => {
   const { isLoading, handleRequestSui } = useRequestSui();
-  const { balance } = useBalance(); // assume balance: BigNumber
+  const { balance } = useBalance();
 
   const shouldShowRequestButton =
     balance.isLessThanOrEqualTo(new BigNumber(3)) || balance.isNaN();

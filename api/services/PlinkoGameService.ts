@@ -7,25 +7,34 @@ import { fromB64, toB64 } from "@mysten/sui/utils";
 
 type EventWithParsedJson = { parsedJson?: unknown; type?: string };
 
+// Return the `trace` field from the first event that actually contains it.
+// If none match, fall back to checking the first event.
+
 function extractTrace(events?: EventWithParsedJson[]): string | undefined {
   if (!events?.length) return undefined;
 
-  // Prefer the first event that *actually* has a "trace" field in parsedJson
-  const hit = events.find(
-    (e) =>
-      typeof e?.parsedJson === "object" &&
-      e.parsedJson !== null &&
-      "trace" in (e.parsedJson as Record<string, unknown>)
-  ) as { parsedJson: { trace?: string } } | undefined;
-
-  if (hit?.parsedJson?.trace) return hit.parsedJson.trace;
-
-  // Fallback: check first event defensively
-  const pj = events[0]?.parsedJson;
-  if (typeof pj === "object" && pj !== null) {
-    const maybe = (pj as Record<string, unknown>).trace;
-    if (typeof maybe === "string") return maybe;
+  // 1) Prefer the first event that explicitly has a `trace` in its parsedJson
+  for (const event of events) {
+    const parsed = event.parsedJson;
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      "trace" in (parsed as Record<string, unknown>)
+    ) {
+      return (parsed as Record<string, unknown>).trace as string | undefined;
+    }
   }
+
+  // 2) Fallback: check the very first event
+  const firstParsed = events[0]?.parsedJson;
+  if (
+    firstParsed &&
+    typeof firstParsed === "object" &&
+    "trace" in (firstParsed as Record<string, unknown>)
+  ) {
+    return (firstParsed as Record<string, unknown>).trace as string | undefined;
+  }
+
   return undefined;
 }
 
@@ -35,7 +44,7 @@ class PlinkoGameService {
   constructor() {
     this.suiService = new SuiService();
   }
-  API_BASE = process.env.API_BASE_URL ?? "http://localhost:8080";
+  API_BASE = process.env.NEXT_PUBLIC_BACKEND_API ?? "http://localhost:8080";
 
   public async finishGame(
     gameId: string,

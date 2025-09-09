@@ -13,10 +13,7 @@ const client = new SuiClient({
   url: process.env.NEXT_PUBLIC_SUI_NETWORK!,
 });
 
-const API_BASE =
-  // process.env.NEXT_PUBLIC_API_BASE ??
-  // process.env.NEXT_PUBLIC_BACKEND_API ??
-  "http://localhost:8080";
+const API_BASE = process.env.NEXT_PUBLIC_BACKEND_API ?? "http://localhost:8080";
 
 type EventWithParsedJson = { parsedJson?: unknown; type?: string };
 
