@@ -14,6 +14,7 @@ module plinko::plinko_tests {
     use sui::random::Random;
     const HOUSE: address = @0x21ba535ffa74e261a6281a205398ac9400bbbac41b49bfa967882abdf86b1486;
     const PLAYER: address = @0x4670405fc30d04de9946ad2d6ad822a2859af40a12a0a6ea4516a526884359cf;
+    const SYSTEM_OBJECT: address = @0x0;
     const INITIAL_HOUSE_BALANCE: u64 = 50000000000; // 50 SUI
     const LOW_HOUSE_BALANCE: u64 = 10000000000; // 10 SUI
     const INITIAL_PLAYER_BALANCE: u64 = 20_000_000_000; // 20 SUI
@@ -95,12 +96,6 @@ module plinko::plinko_tests {
     #[expected_failure(abort_code = plk::EInsufficientHouseBalance)]
     fun insuficient_house_balance(){
         start_game( 1, true,  true);
-    }
-
-    #[test]
-    #[expected_failure(abort_code = plk::EInvalidBlsSig)]
-    fun invalid_bls_sig(){
-        start_game( 1, false,  true);
     }
 
     #[test]
@@ -191,13 +186,14 @@ module plinko::plinko_tests {
     /// House ends the game.
     /// Variable valid_sig is used to test expected failures.
     public fun end_game(scenario: &mut Scenario, game_id: ID, house: address, num_balls: u64) {
-        scenario.next_tx(house);
+        scenario.next_tx(SYSTEM_OBJECT);
         {
             let mut house_data = scenario.take_shared<HouseData>();
 
             sui::random::create_for_testing(scenario.ctx());
+            scenario.next_tx(SYSTEM_OBJECT);
             let random = scenario.take_shared<Random>();
-
+            scenario.next_tx(house);
             plk::finish_game(game_id, &random, &mut house_data, num_balls, scenario.ctx());
 
             test_scenario::return_shared(random);
