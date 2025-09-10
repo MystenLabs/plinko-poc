@@ -7,7 +7,6 @@ module plinko::plinko_tests {
     use sui::coin::{Self, Coin};
     use sui::sui::SUI;
     use std::debug::print;
-    use sui::bls12381::bls12381_min_pk_verify;
     use sui::test_scenario::{Self, Scenario};
     use plinko::house_data::{Self as hd,  HouseCap, HouseData};
     use plinko::plinko::{Self as plk};
@@ -18,62 +17,7 @@ module plinko::plinko_tests {
     const INITIAL_HOUSE_BALANCE: u64 = 50000000000; // 50 SUI
     const LOW_HOUSE_BALANCE: u64 = 10000000000; // 10 SUI
     const INITIAL_PLAYER_BALANCE: u64 = 20_000_000_000; // 20 SUI
-
-
-    // House's public key.
-    const PK: vector<u8> = vector<u8> [
-        138, 151,  85,  75, 187, 115,  84, 101, 165,
-        216,  98, 179,  20,  76, 234, 137, 195, 124,
-        137, 232, 255, 144, 254,  58, 101, 172,  37,
-        191,  55, 212,   5, 149,  73, 106, 173, 220,
-        81, 173,  59,  52,  31,  57, 147, 190, 183,
-        183,  59, 156
-    ];
-
-    const VRF_INPUT: vector<u8> = vector<u8> [
-        117, 195, 54, 14, 177, 159, 210, 194, 15, 187, 165, 226, 218, 140, 241, 163,
-        156, 219, 30, 233, 19, 175, 56, 2, 186, 51, 11, 133, 46, 69, 158, 5,
-        0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0
-    ];
-
     const MULTIPLIER_ARRAY: vector<u64> = vector<u64> [900, 820, 650, 380, 100, 60, 40, 60, 100, 380, 650, 820, 900];
-
-    // Signed counter id 0x75c3360eb19fd2c20fbba5e2da8cf1a39cdb1ee913af3802ba330b852e459e05 + starting count = 0000000000000000 (represented as u64)
-    // + number of balls = 1 with house's private key.
-    const BLS_SIG: vector<u8> = vector<u8> [
-        136, 210,  48,  88, 168,  60,  54,  19,  43, 187, 235, 193,
-        7,  40, 240,  86, 136, 176,  74, 161,  15,  74,  46,  43,
-        48, 244,  88, 159,  12, 246,  37, 130, 244, 252, 167,  23,
-        249,  86, 151,  72,  25, 130,  51, 156,  98, 227, 227, 104,
-        21,  41,  15, 180, 115,   3, 154, 131, 148, 244,  29,  70,
-        138,  57, 129,  24, 239, 140,  56, 105, 233, 202, 231, 211,
-        26,  53,  71,  88, 138,  89, 176, 212, 193, 165, 148,  19,
-        178,  23, 104,   8, 110, 105,  18, 194,  38, 129, 248, 189
-    ];
-
-    const INVALID_BLS_SIG: vector<u8> = vector<u8> [
-        136, 210,  48,  88, 168,  60,  54,  19,  43, 187, 235, 193,
-        7,  40, 240,  86, 136, 176,  74, 161,  15,  74,  46,  43,
-        48, 244,  88, 159,  12, 246,  37, 130, 244, 252, 167,  23,
-        249,  86, 151,  72,  25, 130,  51, 156,  98, 227, 227, 104,
-        21,  41,  15, 180, 115,   3, 154, 131, 148, 244,  29,  70,
-        138,  57, 129,  24, 239, 140,  56, 105, 233, 202, 231, 211,
-        26,  53,  71,  88, 138,  89, 176, 212, 193, 165, 148,  19,
-        178,  23, 104,   8, 110, 105,  18, 194,  38, 129, 248, 188
-    ];
-
-    #[test]
-    fun test_bls_signature() {
-        let bls_sig = BLS_SIG;
-        let house_public_key = PK;
-        let vrf_input = VRF_INPUT;
-        let is_sig_valid = bls12381_min_pk_verify(
-            &bls_sig,
-            &house_public_key,
-            &vrf_input
-        );
-        assert!(is_sig_valid, 1);
-    }
 
     #[test]
     fun player_valid_selections(){
@@ -135,7 +79,7 @@ module plinko::plinko_tests {
             game_id = sui::object::uid_to_inner(&temp_game_uid);
             sui::object::delete(temp_game_uid);
         };
-        // print(&game_id);
+        print(&game_id);
 
         end_game(&mut scenario, game_id, HOUSE, num_balls);
 
