@@ -3,10 +3,10 @@
 import "server-only";
 
 import { EnokiClient } from "@mysten/enoki";
-import { SuiService } from "@/server/SuiService";
+import { SuiService } from "@/app/api/services/SuiService";
 import { Transaction } from "@mysten/sui/transactions";
 import { fromBase64, toBase64 } from "@mysten/sui/utils";
-import { enokiClient } from "@/server/EnokiClient";
+import { enokiClient } from "@/app/api/EnokiClient";
 
 type EventWithParsedJson = { parsedJson?: unknown; type?: string };
 

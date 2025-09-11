@@ -58,7 +58,6 @@ public fun start_game(coin: Coin<SUI>, house_data: &mut HouseData, ctx: &mut TxC
 
 /// finish_game Completes the game by calculating the outcome and transferring the funds to the player.
 /// It emits a GameFinished event with the game result and the trace path of the extended beacon.
-#[allow(lint(public_random))]
 entry fun finish_game(
     game_id: ID,
     random: &Random,

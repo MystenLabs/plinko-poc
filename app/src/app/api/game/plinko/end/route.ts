@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
-import PlinkoGameService from "@/server/PlinkoGameService";
+import PlinkoGameService from "@/app/api/services/PlinkoGameService";
 
 export const runtime = "nodejs";
 

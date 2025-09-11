@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import "server-only";
 import { NextRequest, NextResponse } from "next/server";
-import { enokiClient } from "@/server/EnokiClient";
+import { enokiClient } from "../EnokiClient";
 
 export const runtime = "nodejs";
 
