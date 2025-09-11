@@ -13,15 +13,6 @@ module plinko::house_data_tests {
     const HOUSE: address = @0xCAFE;
     const PLAYER: address = @0x1234;
 
-    // House's public key.
-    const PK: vector<u8> = vector<u8> [
-        138, 151,  85,  75, 187, 115,  84, 101, 165,
-        216,  98, 179,  20,  76, 234, 137, 195, 124,
-        137, 232, 255, 144, 254,  58, 101, 172,  37,
-        191,  55, 212,   5, 149,  73, 106, 173, 220,
-        81, 173,  59,  52,  31,  57, 147, 190, 183,
-        183,  59, 156
-    ];
 
     const INITIAL_HOUSE_BALANCE: u64 = 5_000_000_000; // 1 SUI
 

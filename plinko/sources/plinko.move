@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 module plinko::plinko;
-use plinko::house_data::HouseData;
-use sui::balance::Balance;
+use plinko::house_data::{Self as hd,HouseData};
+use sui::balance::{Balance};
 use sui::coin::{Self, Coin};
 use sui::dynamic_object_field as dof;
 use sui::event::emit;
@@ -121,6 +121,9 @@ entry fun finish_game(
     };
 
     // Processes the payout to the player and returns the game outcome.
+    // Read available balance and fail early if insufficient.
+    let available: u64 = hd::balance(house_data);
+    assert!(available >= total_funds_amount, EInsufficientHouseBalance);
     let payout_balance_mut = house_data.borrow_balance_mut();
     let payout_coin: Coin<SUI> = coin::take(payout_balance_mut, total_funds_amount, ctx);
 
