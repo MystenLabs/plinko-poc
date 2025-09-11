@@ -18,16 +18,16 @@ import {
   WalletProvider,
 } from "@mysten/dapp-kit";
 import { RegisterEnokiWallets } from "@/contexts/RegisterEnokiWallets";
+const queryClient = new QueryClient();
+const { networkConfig } = createNetworkConfig({
+  [process.env.NEXT_PUBLIC_SUI_NETWORK_NAME!]: {
+    url: process.env.NEXT_PUBLIC_SUI_NETWORK!,
+  },
+});
 
 export const ProvidersAndLayout = ({ children }: ChildrenProps) => {
   const _ = useRegisterServiceWorker();
   const { isMobile } = useIsMobile();
-  const queryClient = new QueryClient();
-  const { networkConfig } = createNetworkConfig({
-    [process.env.NEXT_PUBLIC_SUI_NETWORK_NAME!]: {
-      url: process.env.NEXT_PUBLIC_SUI_NETWORK!,
-    },
-  });
 
   return (
     <QueryClientProvider client={queryClient}>
