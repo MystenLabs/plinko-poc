@@ -39,8 +39,7 @@ fun player_valid_selections() {
     start_game(1, true, true);
 }
 
-#[test]
-#[expected_failure(abort_code = plk::EStakeTooLow)]
+#[test, expected_failure(abort_code = plk::EStakeTooLow)]
 fun player_low_stake() {
     let mut scenario = test_scenario::begin(HOUSE);
     fund_addresses(&mut scenario, HOUSE, PLAYER, INITIAL_HOUSE_BALANCE, INITIAL_PLAYER_BALANCE);
@@ -49,8 +48,7 @@ fun player_low_stake() {
     scenario.end();
 }
 
-#[test]
-#[expected_failure(abort_code = plk::EStakeTooHigh)]
+#[test, expected_failure(abort_code = plk::EStakeTooHigh)]
 fun player_high_stake() {
     let mut scenario = test_scenario::begin(HOUSE);
     fund_addresses(&mut scenario, HOUSE, PLAYER, INITIAL_HOUSE_BALANCE, INITIAL_PLAYER_BALANCE);
@@ -59,8 +57,7 @@ fun player_high_stake() {
 
     scenario.end();
 }
-#[test]
-#[expected_failure(abort_code = plk::EInsufficientHouseBalance)]
+#[test, expected_failure(abort_code = plk::EInsufficientHouseBalance)]
 fun insuficient_house_balance() {
     let mut scenario = test_scenario::begin(HOUSE);
 
@@ -89,8 +86,7 @@ fun insuficient_house_balance() {
 
     scenario.end();
 }
-#[test]
-#[expected_failure(abort_code = plk::EGameDoesNotExist)]
+#[test, expected_failure(abort_code = plk::EGameDoesNotExist)]
 fun invalid_game_id() {
     start_game(1, false, false);
 }

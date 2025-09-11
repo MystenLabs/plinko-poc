@@ -69,7 +69,7 @@ public fun fund_house_address(scenario: &mut Scenario, house: address, house_fun
 }
 
 #[test]
-fun test_update_multiplier_vector() {
+fun update_multiplier_vector() {
     let mut scenario = test_scenario::begin(HOUSE);
     {
         fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
@@ -90,7 +90,7 @@ fun test_update_multiplier_vector() {
 }
 
 #[test]
-fun test_top_up() {
+fun top_up() {
     let mut scenario = test_scenario::begin(HOUSE);
     {
         fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
@@ -113,7 +113,7 @@ fun test_top_up() {
 }
 
 #[test]
-fun test_withdraw() {
+fun withdraw() {
     let mut scenario = test_scenario::begin(HOUSE);
     {
         fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
@@ -134,9 +134,8 @@ fun test_withdraw() {
     scenario.end();
 }
 
-#[test]
-#[expected_failure(abort_code = hd::ECallerNotHouse)]
-fun test_invalid_withdraw() {
+#[test, expected_failure(abort_code = hd::ECallerNotHouse)]
+fun invalid_withdraw() {
     let mut scenario = test_scenario::begin(HOUSE);
     {
         fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
@@ -158,7 +157,7 @@ fun test_invalid_withdraw() {
 }
 
 #[test]
-fun test_claim_fees() {
+fun claim_fees() {
     let mut scenario = test_scenario::begin(HOUSE);
     {
         fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
@@ -179,9 +178,8 @@ fun test_claim_fees() {
     scenario.end();
 }
 
-#[test]
-#[expected_failure(abort_code = hd::ECallerNotHouse)]
-fun test_invalid_claim_fees() {
+#[test, expected_failure(abort_code = hd::ECallerNotHouse)]
+fun invalid_claim_fees() {
     let mut scenario = test_scenario::begin(HOUSE);
     {
         fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
@@ -203,7 +201,7 @@ fun test_invalid_claim_fees() {
 }
 
 #[test]
-fun test_update_min_stake() {
+fun update_min_stake() {
     let mut scenario = test_scenario::begin(HOUSE);
     {
         fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
@@ -225,7 +223,7 @@ fun test_update_min_stake() {
 }
 
 #[test]
-fun test_update_max_stake() {
+fun update_max_stake() {
     let mut scenario = test_scenario::begin(HOUSE);
     {
         fund_house_address(&mut scenario, HOUSE, INITIAL_HOUSE_BALANCE);
