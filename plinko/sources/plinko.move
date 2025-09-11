@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 module plinko::plinko;
-use plinko::house_data::{Self as hd,HouseData};
-use sui::balance::{Balance};
+use plinko::house_data::{Self as hd, HouseData};
+use sui::balance::Balance;
 use sui::coin::{Self, Coin};
 use sui::dynamic_object_field as dof;
 use sui::event::emit;
