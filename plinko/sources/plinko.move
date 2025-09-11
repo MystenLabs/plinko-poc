@@ -30,7 +30,7 @@ public struct Game has key, store {
 // === Events ===
 
 /// Emitted when a new game has started.
-public struct NewGame has copy, drop {
+public struct NewGameStarted has copy, drop {
     game_id: ID,
     player: address,
     user_stake: u64,
@@ -38,7 +38,7 @@ public struct NewGame has copy, drop {
 }
 
 /// Emitted when a game has finished.
-public struct Outcome has copy, drop {
+public struct GameFinished has copy, drop {
     game_id: ID,
     result: u64,
     player: address,
@@ -57,7 +57,7 @@ public fun start_game(coin: Coin<SUI>, house_data: &mut HouseData, ctx: &mut TxC
 }
 
 /// finish_game Completes the game by calculating the outcome and transferring the funds to the player.
-/// It emits an Outcome event with the game result and the trace path of the extended beacon.
+/// It emits a GameFinished event with the game result and the trace path of the extended beacon.
 #[allow(lint(public_random))]
 entry fun finish_game(
     game_id: ID,
@@ -78,7 +78,7 @@ entry fun finish_game(
         fee_bp: _,
     } = dof::remove<ID, Game>(house_data.borrow_mut(), game_id);
 
-    object::delete(id);
+    id.delete();
 
     // Initialize random generator and variables
     let mut random_generator = random.new_generator(ctx);
@@ -131,8 +131,8 @@ entry fun finish_game(
 
     // transfer the payout coins to the player
     transfer::public_transfer(payout_coin, player);
-    // Emit the Outcome event
-    emit(Outcome {
+    // Emit the GameFinished event
+    emit(GameFinished {
         game_id,
         result: total_funds_amount,
         player,
@@ -212,8 +212,8 @@ fun internal_start_game(
         player: ctx.sender(),
         fee_bp,
     };
-    // Emit a NewGame event
-    emit(NewGame {
+    // Emit a NewGameStarted event
+    emit(NewGameStarted {
         game_id,
         player: ctx.sender(),
         user_stake,

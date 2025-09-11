@@ -123,7 +123,7 @@ fun try_start_only(scenario: &mut Scenario, stake_amount: u64) {
     let stake_coin = coin::split(&mut player_coin, stake_amount, scenario.ctx());
     transfer::public_transfer(player_coin, PLAYER);
 
-    let _ = plk::start_game(stake_coin, &mut house_data, scenario.ctx());
+    plk::start_game(stake_coin, &mut house_data, scenario.ctx());
 
     scenario.next_tx(HOUSE);
     test_scenario::return_shared(house_data);

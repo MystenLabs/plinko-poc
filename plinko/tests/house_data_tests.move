@@ -11,7 +11,7 @@ use sui::test_scenario::{Self, Scenario};
 const HOUSE: address = @0xCAFE;
 const PLAYER: address = @0x1234;
 
-const INITIAL_HOUSE_BALANCE: u64 = 5_000_000_000; // 1 SUI
+const INITIAL_HOUSE_BALANCE: u64 = 5_000_000_000; // 5 SUI
 
 const MULTIPLIER_ARRAY: vector<u64> = vector<u64>[
     900,

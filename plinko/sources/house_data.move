@@ -80,7 +80,7 @@ public fun initialize_house_data(
     house_data.set_multiplier_vector(multiplier);
 
     let HouseCap { id } = house_cap;
-    object::delete(id);
+    id.delete();
 
     transfer::share_object(house_data);
 }
