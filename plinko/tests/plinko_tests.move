@@ -45,7 +45,7 @@ fun player_low_stake() {
     fund_addresses(&mut scenario, HOUSE, PLAYER, INITIAL_HOUSE_BALANCE, INITIAL_PLAYER_BALANCE);
     init_house(&mut scenario, HOUSE, true);
     try_start_only(&mut scenario, TOO_LOW);
-    scenario.end();
+    abort
 }
 
 #[test, expected_failure(abort_code = plk::EStakeTooHigh)]
@@ -55,7 +55,7 @@ fun player_high_stake() {
     init_house(&mut scenario, HOUSE, true);
     try_start_only(&mut scenario, TOO_HIGH);
 
-    scenario.end();
+    abort
 }
 #[test, expected_failure(abort_code = plk::EInsufficientHouseBalance)]
 fun insuficient_house_balance() {
@@ -84,7 +84,7 @@ fun insuficient_house_balance() {
     // finish_game will abort with EInsufficientHouseBalance.
     end_game(&mut scenario, game_id, 1);
 
-    scenario.end();
+    abort
 }
 #[test, expected_failure(abort_code = plk::EGameDoesNotExist)]
 fun invalid_game_id() {
@@ -196,7 +196,6 @@ public fun get_initial_house_balance(): u64 {
 }
 
 /// House ends the game.
-/// Variable valid_sig is used to test expected failures.
 public fun end_game(scenario: &mut Scenario, game_id: ID, num_balls: u64) {
     scenario.next_tx(SYSTEM_OBJECT);
     sui::random::create_for_testing(scenario.ctx());

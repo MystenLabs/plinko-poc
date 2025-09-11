@@ -147,13 +147,11 @@ fun invalid_withdraw() {
 
     // A player tries to withdraw from the contract
     scenario.next_tx(PLAYER);
-    {
-        let mut house_data = scenario.take_shared<HouseData>();
-        let ctx = scenario.ctx();
-        house_data.withdraw(ctx);
-        test_scenario::return_shared(house_data);
-    };
-    scenario.end();
+
+    let mut house_data = scenario.take_shared<HouseData>();
+    let ctx = scenario.ctx();
+    house_data.withdraw(ctx);
+    abort
 }
 
 #[test]
@@ -191,13 +189,11 @@ fun invalid_claim_fees() {
 
     // House claims fees from the contract
     scenario.next_tx(PLAYER);
-    {
-        let mut house_data = scenario.take_shared<HouseData>();
-        let ctx = scenario.ctx();
-        house_data.claim_fees(ctx);
-        test_scenario::return_shared(house_data);
-    };
-    scenario.end();
+
+    let mut house_data = scenario.take_shared<HouseData>();
+    let ctx = scenario.ctx();
+    house_data.claim_fees(ctx);
+    abort
 }
 
 #[test]
