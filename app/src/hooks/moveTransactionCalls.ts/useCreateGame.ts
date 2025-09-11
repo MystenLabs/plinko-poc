@@ -13,8 +13,6 @@ const client = new SuiClient({
   url: process.env.NEXT_PUBLIC_SUI_NETWORK!,
 });
 
-const API_BASE = process.env.NEXT_PUBLIC_BACKEND_API ?? "http://localhost:8080";
-
 type EventWithParsedJson = { parsedJson?: unknown; type?: string };
 
 function extractGameId(events?: EventWithParsedJson[]): string | undefined {
@@ -88,7 +86,7 @@ export const useCreateGame = () => {
       });
 
       // 2) Sponsor the un-signed TxBytes
-      const sponsorResp = await fetch(`${API_BASE}/sponsor`, {
+      const sponsorResp = await fetch("/api/sponsor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -112,7 +110,7 @@ export const useCreateGame = () => {
       });
 
       // 4) Execute the sponsored + signed TxBytes
-      const execResp = await fetch(`${API_BASE}/execute`, {
+      const execResp = await fetch("/api/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ digest: sponsoredDigest, signature }),
@@ -165,7 +163,7 @@ export const useCreateGame = () => {
 
       // Call backend only if we have a valid game_id
       try {
-        const response = await fetch(`${API_BASE}/game/plinko/end`, {
+        const response = await fetch("/api/game/plinko/end", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ gameId: game_id, numberofBalls }),
