@@ -21,7 +21,7 @@ export const MobileLayout = ({ children }: ChildrenProps) => {
     >
       <TopNavbar />
       {children}
-      <div className="px-4">
+      <div className="absolute bottom-2 left-2">
         <InfoIcon />
       </div>
     </div>

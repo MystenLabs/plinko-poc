@@ -23,7 +23,6 @@ export const LargeScreenLayout = ({ children }: ChildrenProps) => {
         <div className="w-full max-w-7xl mx-auto px-4">{children}</div>
       </main>
 
-      {/* Keep this absolutely positioned but relative to this wrapper */}
       <div className="absolute bottom-4 left-4">
         <InfoIcon />
       </div>

@@ -58,7 +58,7 @@ export default function Page() {
               <div className="flex justify-center w-full">
                 <div ref={containerRef} className="relative max-w-full">
                   <div
-                    className="w-full flex justify-center items-center overflow-hidden"
+                    className="w-full flex justify-center items-center overflow-hidden mt-8 lg:-mt-10"
                     style={{ height: 600 * scale }}
                   >
                     <div
@@ -90,7 +90,7 @@ export default function Page() {
               </div>
             </div>
 
-            <div className="flex justify-center w-full">
+            <div className="flex justify-center w-full pt-10 md:pt-10 lg:pt-4">
               <PlinkoSettings />
             </div>
           </IsWaitingToPlayProvider>
