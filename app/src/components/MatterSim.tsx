@@ -21,7 +21,7 @@ import {
   findTheExpectedMultipliers,
   findTheMultipliers,
   generateMultiplierText,
-} from "@/helpers/automatedTests";
+} from "@/helpers/findMultiplier";
 import { useWaitingToPlayContext } from "@/contexts/IsWaitingToPlay";
 
 const MatterSim: React.FC = () => {
