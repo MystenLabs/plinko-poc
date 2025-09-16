@@ -57,3 +57,5 @@ workspace.json
 .publish.res.json
 
 tx_res.json
+
+check.sh
