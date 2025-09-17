@@ -118,7 +118,7 @@ export function normalizeMoveArguments(
       continue;
     }
 
-    let arg;
+    let arg: unknown;
     if (Array.isArray(args)) {
       if (index >= args.length) {
         throw new Error(
