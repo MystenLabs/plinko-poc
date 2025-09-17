@@ -5,9 +5,8 @@
 import React from "react";
 import { ChildrenProps } from "@/types/ChildrenProps";
 import { TopNavbar } from "./navbars/TopNavbar";
-
-import { InfoIcon } from "@/components/layouts/InfoIcon";
 import { useCurrentAccount } from "@mysten/dapp-kit";
+import Footer from "@/components/Footer";
 
 export const MobileLayout = ({ children }: ChildrenProps) => {
   const currentAccount = useCurrentAccount();
@@ -21,8 +20,8 @@ export const MobileLayout = ({ children }: ChildrenProps) => {
     >
       <TopNavbar />
       {children}
-      <div className="absolute bottom-2 left-2">
-        <InfoIcon />
+      <div className="w-full mt-6 px-2">
+        <Footer />
       </div>
     </div>
   );
