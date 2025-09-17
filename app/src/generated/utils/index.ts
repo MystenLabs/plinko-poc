@@ -88,7 +88,8 @@ export function normalizeMoveArguments(
   const normalizedArgs: TransactionArgument[] = [];
 
   let index = 0;
-  for (const [i, argType] of argTypes.entries()) {
+  for (let i = 0; i < argTypes.length; i++) {
+    const argType = argTypes[i]!;
     if (argType === `${SUI_FRAMEWORK_ADDRESS}::deny_list::DenyList`) {
       normalizedArgs.push((tx) => tx.object.denyList());
       // Advance the parameter index to keep named arguments aligned
