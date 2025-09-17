@@ -155,7 +155,8 @@ export function normalizeMoveArguments(
       normalizedArgs.push((tx) => tx.pure(bytes));
       continue;
     } else if (typeof arg === "string") {
-      normalizedArgs.push((tx) => tx.object(arg));
+      const objectId: string = arg;
+      normalizedArgs.push((tx) => tx.object(objectId));
       continue;
     }
 
