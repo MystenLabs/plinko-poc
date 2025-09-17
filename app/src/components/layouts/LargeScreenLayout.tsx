@@ -6,7 +6,7 @@ import { ChildrenProps } from "@/types/ChildrenProps";
 import React from "react";
 import { TopNavbar } from "./navbars/TopNavbar";
 import { useCurrentAccount } from "@mysten/dapp-kit";
-import Footer from "@/components/Footer";
+import { InfoIcon } from "./InfoIcon";
 
 export const LargeScreenLayout = ({ children }: ChildrenProps) => {
   const currentAccount = useCurrentAccount();
@@ -23,8 +23,8 @@ export const LargeScreenLayout = ({ children }: ChildrenProps) => {
         <div className="w-full max-w-7xl mx-auto px-4">{children}</div>
       </main>
 
-      <div className="w-full mt-6 px-4">
-        <Footer />
+      <div className="absolute bottom-4 left-4">
+        <InfoIcon />
       </div>
     </div>
   );

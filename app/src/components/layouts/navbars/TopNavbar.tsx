@@ -27,18 +27,13 @@ export const TopNavbar = () => {
           [Plinko Game] is provided for testnet purposes only and does not
           involve real money or the opportunity to win real money.
         </span>
-        <div className="grid grid-cols-6 mx-5 my-5 items-center">
-          <div className="col-span-3 flex items-center">
-            <Link
-              href="/play"
-              className="w-[min-content] md:w-[300px] text-2xl font-bold text-white flex items-center"
-            >
-              Plinko Game
-              <span className="ml-1">
-                <InfoIcon />
-              </span>
-            </Link>
-          </div>
+        <div className="grid grid-cols-6 mx-5 my-5">
+          <Link
+            href="/play"
+            className="col-span-3 w-[min-content] md:w-[300px] text-2xl font-bold text-white"
+          >
+            Plinko Game
+          </Link>
 
           <div className="col-span-3 flex justify-end items-center space-x-1">
             {!!address && (
