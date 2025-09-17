@@ -1,72 +1,96 @@
 /**************************************************************
  * THIS FILE IS GENERATED AND SHOULD NOT BE MANUALLY MODIFIED *
  **************************************************************/
-import { MoveStruct, normalizeMoveArguments, type RawTransactionArgument } from '../utils';
-import { bcs } from '@mysten/sui/bcs';
-import { type Transaction } from '@mysten/sui/transactions';
-import * as object from './deps/sui/object';
-import * as balance from './deps/sui/balance';
-const $moduleName = '@local-pkg/plinko::plinko';
-export const Game = new MoveStruct({ name: `${$moduleName}::Game`, fields: {
-        id: object.UID,
-        game_start_epoch: bcs.u64(),
-        stake: balance.Balance,
-        player: bcs.Address,
-        fee_bp: bcs.u16()
-    } });
-export const NewGameStarted = new MoveStruct({ name: `${$moduleName}::NewGameStarted`, fields: {
-        game_id: bcs.Address,
-        player: bcs.Address,
-        user_stake: bcs.u64(),
-        fee_bp: bcs.u16()
-    } });
-export const GameFinished = new MoveStruct({ name: `${$moduleName}::GameFinished`, fields: {
-        game_id: bcs.Address,
-        result: bcs.u64(),
-        player: bcs.Address,
-        trace: bcs.vector(bcs.u8())
-    } });
+import {
+  MoveStruct,
+  normalizeMoveArguments,
+  type RawTransactionArgument,
+} from "../utils";
+import { bcs } from "@mysten/sui/bcs";
+import { type Transaction } from "@mysten/sui/transactions";
+import * as object from "./deps/sui/object";
+import * as balance from "./deps/sui/balance";
+const $moduleName = "@local-pkg/plinko::plinko";
+export const Game = new MoveStruct({
+  name: `${$moduleName}::Game`,
+  fields: {
+    id: object.UID,
+    game_start_epoch: bcs.u64(),
+    stake: balance.Balance,
+    player: bcs.Address,
+    fee_bp: bcs.u16(),
+  },
+});
+export const NewGameStarted = new MoveStruct({
+  name: `${$moduleName}::NewGameStarted`,
+  fields: {
+    game_id: bcs.Address,
+    player: bcs.Address,
+    user_stake: bcs.u64(),
+    fee_bp: bcs.u16(),
+  },
+});
+export const GameFinished = new MoveStruct({
+  name: `${$moduleName}::GameFinished`,
+  fields: {
+    game_id: bcs.Address,
+    result: bcs.u64(),
+    player: bcs.Address,
+    trace: bcs.vector(bcs.u8()),
+  },
+});
 export interface StartGameArguments {
-    coin: RawTransactionArgument<string>;
-    houseData: RawTransactionArgument<string>;
+  coin: RawTransactionArgument<string>;
+  houseData: RawTransactionArgument<string>;
 }
 export interface StartGameOptions {
-    package?: string;
-    arguments: StartGameArguments | [
+  package?: string;
+  arguments:
+    | StartGameArguments
+    | [
         coin: RawTransactionArgument<string>,
         houseData: RawTransactionArgument<string>
-    ];
+      ];
 }
 /**
  * Function used to create a new game. The player must provide a Counter NFT and
  * the number of balls.
  */
 export function startGame(options: StartGameOptions) {
-    const packageAddress = options.package ?? '@local-pkg/plinko';
-    const argumentsTypes = [
-        '0x0000000000000000000000000000000000000000000000000000000000000002::coin::Coin<0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI>',
-        `${packageAddress}::house_data::HouseData`
-    ] satisfies string[];
-    const parameterNames = ["coin", "houseData"];
-    return (tx: Transaction) => tx.moveCall({
-        package: packageAddress,
-        module: 'plinko',
-        function: 'start_game',
-        arguments: normalizeMoveArguments(options.arguments, argumentsTypes, parameterNames),
+  const packageAddress = options.package ?? "@local-pkg/plinko";
+  const argumentsTypes = [
+    "0x0000000000000000000000000000000000000000000000000000000000000002::coin::Coin<0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI>",
+    `${packageAddress}::house_data::HouseData`,
+  ] satisfies string[];
+  const parameterNames = ["coin", "houseData"];
+  return (tx: Transaction) =>
+    tx.moveCall({
+      package: packageAddress,
+      module: "plinko",
+      function: "start_game",
+      arguments: normalizeMoveArguments(
+        options.arguments,
+        argumentsTypes,
+        parameterNames
+      ),
     });
 }
 export interface FinishGameArguments {
-    gameId: RawTransactionArgument<string>;
-    houseData: RawTransactionArgument<string>;
-    numBalls: RawTransactionArgument<number | bigint>;
+  gameId: RawTransactionArgument<string>;
+  random: RawTransactionArgument<object>;
+  houseData: RawTransactionArgument<string>;
+  numBalls: RawTransactionArgument<number | bigint>;
 }
 export interface FinishGameOptions {
-    package?: string;
-    arguments: FinishGameArguments | [
+  package?: string;
+  arguments:
+    | FinishGameArguments
+    | [
         gameId: RawTransactionArgument<string>,
+        random: RawTransactionArgument<object>,
         houseData: RawTransactionArgument<string>,
         numBalls: RawTransactionArgument<number | bigint>
-    ];
+      ];
 }
 /**
  * finish_game Completes the game by calculating the outcome and transferring the
@@ -74,149 +98,168 @@ export interface FinishGameOptions {
  * trace path of the extended beacon.
  */
 export function finishGame(options: FinishGameOptions) {
-    const packageAddress = options.package ?? '@local-pkg/plinko';
-    const argumentsTypes = [
-        '0x0000000000000000000000000000000000000000000000000000000000000002::object::ID',
-        '0x0000000000000000000000000000000000000000000000000000000000000002::random::Random',
-        `${packageAddress}::house_data::HouseData`,
-        'u64'
-    ] satisfies string[];
-    const parameterNames = ["gameId", "houseData", "numBalls"];
-    return (tx: Transaction) => tx.moveCall({
-        package: packageAddress,
-        module: 'plinko',
-        function: 'finish_game',
-        arguments: normalizeMoveArguments(options.arguments, argumentsTypes, parameterNames),
+  const packageAddress = options.package ?? "@local-pkg/plinko";
+  const argumentsTypes = [
+    "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID",
+    "0x0000000000000000000000000000000000000000000000000000000000000002::random::Random",
+    `${packageAddress}::house_data::HouseData`,
+    "u64",
+  ] satisfies string[];
+  const parameterNames = ["gameId", "random", "houseData", "numBalls"];
+  console.log(options.arguments, "hererere");
+  return (tx: Transaction) =>
+    tx.moveCall({
+      package: packageAddress,
+      module: "plinko",
+      function: "finish_game",
+      arguments: normalizeMoveArguments(
+        options.arguments,
+        argumentsTypes,
+        parameterNames
+      ),
     });
 }
 export interface GameStartEpochArguments {
-    game: RawTransactionArgument<string>;
+  game: RawTransactionArgument<string>;
 }
 export interface GameStartEpochOptions {
-    package?: string;
-    arguments: GameStartEpochArguments | [
-        game: RawTransactionArgument<string>
-    ];
+  package?: string;
+  arguments: GameStartEpochArguments | [game: RawTransactionArgument<string>];
 }
 /** Returns the epoch in which the game started. */
 export function gameStartEpoch(options: GameStartEpochOptions) {
-    const packageAddress = options.package ?? '@local-pkg/plinko';
-    const argumentsTypes = [
-        `${packageAddress}::plinko::Game`
-    ] satisfies string[];
-    const parameterNames = ["game"];
-    return (tx: Transaction) => tx.moveCall({
-        package: packageAddress,
-        module: 'plinko',
-        function: 'game_start_epoch',
-        arguments: normalizeMoveArguments(options.arguments, argumentsTypes, parameterNames),
+  const packageAddress = options.package ?? "@local-pkg/plinko";
+  const argumentsTypes = [`${packageAddress}::plinko::Game`] satisfies string[];
+  const parameterNames = ["game"];
+  return (tx: Transaction) =>
+    tx.moveCall({
+      package: packageAddress,
+      module: "plinko",
+      function: "game_start_epoch",
+      arguments: normalizeMoveArguments(
+        options.arguments,
+        argumentsTypes,
+        parameterNames
+      ),
     });
 }
 export interface StakeArguments {
-    game: RawTransactionArgument<string>;
+  game: RawTransactionArgument<string>;
 }
 export interface StakeOptions {
-    package?: string;
-    arguments: StakeArguments | [
-        game: RawTransactionArgument<string>
-    ];
+  package?: string;
+  arguments: StakeArguments | [game: RawTransactionArgument<string>];
 }
 /** Returns the total stake. */
 export function stake(options: StakeOptions) {
-    const packageAddress = options.package ?? '@local-pkg/plinko';
-    const argumentsTypes = [
-        `${packageAddress}::plinko::Game`
-    ] satisfies string[];
-    const parameterNames = ["game"];
-    return (tx: Transaction) => tx.moveCall({
-        package: packageAddress,
-        module: 'plinko',
-        function: 'stake',
-        arguments: normalizeMoveArguments(options.arguments, argumentsTypes, parameterNames),
+  const packageAddress = options.package ?? "@local-pkg/plinko";
+  const argumentsTypes = [`${packageAddress}::plinko::Game`] satisfies string[];
+  const parameterNames = ["game"];
+  return (tx: Transaction) =>
+    tx.moveCall({
+      package: packageAddress,
+      module: "plinko",
+      function: "stake",
+      arguments: normalizeMoveArguments(
+        options.arguments,
+        argumentsTypes,
+        parameterNames
+      ),
     });
 }
 export interface PlayerArguments {
-    game: RawTransactionArgument<string>;
+  game: RawTransactionArgument<string>;
 }
 export interface PlayerOptions {
-    package?: string;
-    arguments: PlayerArguments | [
-        game: RawTransactionArgument<string>
-    ];
+  package?: string;
+  arguments: PlayerArguments | [game: RawTransactionArgument<string>];
 }
 /** Returns the player's address. */
 export function player(options: PlayerOptions) {
-    const packageAddress = options.package ?? '@local-pkg/plinko';
-    const argumentsTypes = [
-        `${packageAddress}::plinko::Game`
-    ] satisfies string[];
-    const parameterNames = ["game"];
-    return (tx: Transaction) => tx.moveCall({
-        package: packageAddress,
-        module: 'plinko',
-        function: 'player',
-        arguments: normalizeMoveArguments(options.arguments, argumentsTypes, parameterNames),
+  const packageAddress = options.package ?? "@local-pkg/plinko";
+  const argumentsTypes = [`${packageAddress}::plinko::Game`] satisfies string[];
+  const parameterNames = ["game"];
+  return (tx: Transaction) =>
+    tx.moveCall({
+      package: packageAddress,
+      module: "plinko",
+      function: "player",
+      arguments: normalizeMoveArguments(
+        options.arguments,
+        argumentsTypes,
+        parameterNames
+      ),
     });
 }
 export interface FeeInBpArguments {
-    game: RawTransactionArgument<string>;
+  game: RawTransactionArgument<string>;
 }
 export interface FeeInBpOptions {
-    package?: string;
-    arguments: FeeInBpArguments | [
-        game: RawTransactionArgument<string>
-    ];
+  package?: string;
+  arguments: FeeInBpArguments | [game: RawTransactionArgument<string>];
 }
 /** Returns the fee of the game. */
 export function feeInBp(options: FeeInBpOptions) {
-    const packageAddress = options.package ?? '@local-pkg/plinko';
-    const argumentsTypes = [
-        `${packageAddress}::plinko::Game`
-    ] satisfies string[];
-    const parameterNames = ["game"];
-    return (tx: Transaction) => tx.moveCall({
-        package: packageAddress,
-        module: 'plinko',
-        function: 'fee_in_bp',
-        arguments: normalizeMoveArguments(options.arguments, argumentsTypes, parameterNames),
+  const packageAddress = options.package ?? "@local-pkg/plinko";
+  const argumentsTypes = [`${packageAddress}::plinko::Game`] satisfies string[];
+  const parameterNames = ["game"];
+  return (tx: Transaction) =>
+    tx.moveCall({
+      package: packageAddress,
+      module: "plinko",
+      function: "fee_in_bp",
+      arguments: normalizeMoveArguments(
+        options.arguments,
+        argumentsTypes,
+        parameterNames
+      ),
     });
 }
 export interface GameExistsArguments {
-    houseData: RawTransactionArgument<string>;
-    gameId: RawTransactionArgument<string>;
+  houseData: RawTransactionArgument<string>;
+  gameId: RawTransactionArgument<string>;
 }
 export interface GameExistsOptions {
-    package?: string;
-    arguments: GameExistsArguments | [
+  package?: string;
+  arguments:
+    | GameExistsArguments
+    | [
         houseData: RawTransactionArgument<string>,
         gameId: RawTransactionArgument<string>
-    ];
+      ];
 }
 /** Helper function to check if a game exists. */
 export function gameExists(options: GameExistsOptions) {
-    const packageAddress = options.package ?? '@local-pkg/plinko';
-    const argumentsTypes = [
-        `${packageAddress}::house_data::HouseData`,
-        '0x0000000000000000000000000000000000000000000000000000000000000002::object::ID'
-    ] satisfies string[];
-    const parameterNames = ["houseData", "gameId"];
-    return (tx: Transaction) => tx.moveCall({
-        package: packageAddress,
-        module: 'plinko',
-        function: 'game_exists',
-        arguments: normalizeMoveArguments(options.arguments, argumentsTypes, parameterNames),
+  const packageAddress = options.package ?? "@local-pkg/plinko";
+  const argumentsTypes = [
+    `${packageAddress}::house_data::HouseData`,
+    "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID",
+  ] satisfies string[];
+  const parameterNames = ["houseData", "gameId"];
+  return (tx: Transaction) =>
+    tx.moveCall({
+      package: packageAddress,
+      module: "plinko",
+      function: "game_exists",
+      arguments: normalizeMoveArguments(
+        options.arguments,
+        argumentsTypes,
+        parameterNames
+      ),
     });
 }
 export interface BorrowGameArguments {
-    gameId: RawTransactionArgument<string>;
-    houseData: RawTransactionArgument<string>;
+  gameId: RawTransactionArgument<string>;
+  houseData: RawTransactionArgument<string>;
 }
 export interface BorrowGameOptions {
-    package?: string;
-    arguments: BorrowGameArguments | [
+  package?: string;
+  arguments:
+    | BorrowGameArguments
+    | [
         gameId: RawTransactionArgument<string>,
         houseData: RawTransactionArgument<string>
-    ];
+      ];
 }
 /**
  * Helper function to check that a game exists and return a reference to the game
@@ -224,16 +267,21 @@ export interface BorrowGameOptions {
  * game field.
  */
 export function borrowGame(options: BorrowGameOptions) {
-    const packageAddress = options.package ?? '@local-pkg/plinko';
-    const argumentsTypes = [
-        '0x0000000000000000000000000000000000000000000000000000000000000002::object::ID',
-        `${packageAddress}::house_data::HouseData`
-    ] satisfies string[];
-    const parameterNames = ["gameId", "houseData"];
-    return (tx: Transaction) => tx.moveCall({
-        package: packageAddress,
-        module: 'plinko',
-        function: 'borrow_game',
-        arguments: normalizeMoveArguments(options.arguments, argumentsTypes, parameterNames),
+  const packageAddress = options.package ?? "@local-pkg/plinko";
+  const argumentsTypes = [
+    "0x0000000000000000000000000000000000000000000000000000000000000002::object::ID",
+    `${packageAddress}::house_data::HouseData`,
+  ] satisfies string[];
+  const parameterNames = ["gameId", "houseData"];
+  return (tx: Transaction) =>
+    tx.moveCall({
+      package: packageAddress,
+      module: "plinko",
+      function: "borrow_game",
+      arguments: normalizeMoveArguments(
+        options.arguments,
+        argumentsTypes,
+        parameterNames
+      ),
     });
 }

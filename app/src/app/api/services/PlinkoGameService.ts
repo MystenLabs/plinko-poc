@@ -7,6 +7,7 @@ import { SuiService } from "@/app/api/services/SuiService";
 import { Transaction } from "@mysten/sui/transactions";
 import { fromBase64, toBase64 } from "@mysten/sui/utils";
 import { enokiClient } from "@/app/api/EnokiClient";
+import * as plinko from "../../../generated/plinko/plinko";
 
 type EventWithParsedJson = { parsedJson?: unknown; type?: string };
 
@@ -51,15 +52,17 @@ class PlinkoGameService {
   ): Promise<{ trace: string; transactionDigest: string }> {
     // 1) Create the tx and get TransactionKind bytes
     const tx = new Transaction();
-    tx.moveCall({
-      target: `${process.env.NEXT_PUBLIC_PACKAGE_ADDRESS}::plinko::finish_game`,
-      arguments: [
-        tx.pure.address(gameId),
-        tx.object("0x8"), //SUI Random object, to be replaced with tx.object.random() when stable
-        tx.object(String(process.env.NEXT_PUBLIC_HOUSE_DATA_ID!)),
-        tx.pure.u64(numberofBalls),
-      ],
-    });
+    tx.add(
+      plinko.finishGame({
+        package: process.env.NEXT_PUBLIC_PACKAGE_ADDRESS!,
+        arguments: {
+          gameId,
+          random: tx.object("0x8"), //SUI Random object, to be replaced with tx.object.random() when stable
+          houseData: tx.object(process.env.NEXT_PUBLIC_HOUSE_DATA_ID!),
+          numBalls: BigInt(Number(numberofBalls)),
+        },
+      })
+    );
 
     const txBytes = await tx.build({
       client: this.suiService.getClient(),

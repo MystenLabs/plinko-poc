@@ -73,19 +73,10 @@ export const useCreateGame = () => {
       })(tx);
       tx.add(
         plinko.startGame({
-          arguments: {
-            coin: betCoin,
-            houseData: `${process.env.NEXT_PUBLIC_HOUSE_DATA_ID}`,
-          },
+          package: process.env.NEXT_PUBLIC_PACKAGE_ADDRESS,
+          arguments: [betCoin, `${process.env.NEXT_PUBLIC_HOUSE_DATA_ID}`],
         })
       );
-      // tx.moveCall({
-      //   target: `${process.env.NEXT_PUBLIC_PACKAGE_ADDRESS}::plinko::start_game`,
-      //   arguments: [
-      //     betCoin,
-      //     tx.object(`${process.env.NEXT_PUBLIC_HOUSE_DATA_ID}`),
-      //   ],
-      // });
 
       const txBytes = await tx.build({
         client,
