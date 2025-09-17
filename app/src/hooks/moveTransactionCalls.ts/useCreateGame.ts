@@ -8,6 +8,7 @@ import { usePlayContext } from "@/contexts/PlayContext";
 import { splitIntoPathsAndNormalize } from "@/helpers/traceFromTheEventToPathsForBalls";
 import { MIST_PER_SUI, toBase64 } from "@mysten/sui/utils";
 import { useCurrentAccount, useSignTransaction } from "@mysten/dapp-kit";
+import * as plinko from "../../generated/plinko/plinko";
 
 const client = new SuiClient({
   url: process.env.NEXT_PUBLIC_SUI_NETWORK!,
@@ -70,15 +71,21 @@ export const useCreateGame = () => {
         balance: betInMist,
         useGasCoin: false, // important for sponsorship
       })(tx);
-
-      // Call your Move function with that coin directly
-      tx.moveCall({
-        target: `${process.env.NEXT_PUBLIC_PACKAGE_ADDRESS}::plinko::start_game`,
-        arguments: [
-          betCoin,
-          tx.object(`${process.env.NEXT_PUBLIC_HOUSE_DATA_ID}`),
-        ],
-      });
+      tx.add(
+        plinko.startGame({
+          arguments: {
+            coin: betCoin,
+            houseData: `${process.env.NEXT_PUBLIC_HOUSE_DATA_ID}`,
+          },
+        })
+      );
+      // tx.moveCall({
+      //   target: `${process.env.NEXT_PUBLIC_PACKAGE_ADDRESS}::plinko::start_game`,
+      //   arguments: [
+      //     betCoin,
+      //     tx.object(`${process.env.NEXT_PUBLIC_HOUSE_DATA_ID}`),
+      //   ],
+      // });
 
       const txBytes = await tx.build({
         client,

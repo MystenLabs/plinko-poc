@@ -10,6 +10,7 @@ const config: SuiCodegenConfig = {
     {
       package: "@local-pkg/plinko",
       path: "../plinko",
+      packageName: "plinko",
     },
   ],
 };
