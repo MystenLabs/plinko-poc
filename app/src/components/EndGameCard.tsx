@@ -1,13 +1,15 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 "use client";
 
 import { useBalance } from "@/contexts/BalanceContext";
 import { useGameHistory } from "@/contexts/GameHistoryContext";
 import { usePlayContext } from "@/contexts/PlayContext";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const PopupComponent = () => {
+const EndGameCard = () => {
   const { handleRefreshBalance } = useBalance();
-  const { totalWon, resetHistory } = useGameHistory(); // Assuming you store previous games' history here
+  const { totalWon, resetHistory } = useGameHistory();
   const {
     popupIsVisible,
     setPopupIsVisible,
@@ -16,46 +18,35 @@ const PopupComponent = () => {
     finalPaths,
     setFinalPaths,
   } = usePlayContext();
-  const [showHistory, setShowHistory] = useState(false); // State to toggle match history visibility
+
+  const [showHistory, setShowHistory] = useState(false);
 
   const togglePopup = () => setPopupIsVisible(!popupIsVisible);
-  const toggleHistory = () => setShowHistory(!showHistory); // Function to toggle history visibility
+  const toggleHistory = () => setShowHistory((value) => !value);
 
-  // Check if the player has won or lost
+  // Player won if net > 0
   const hasWon = totalWon - bid * finalPaths.length > 0;
   const suiExplorerUrl = `https://suiscan.xyz/testnet/tx/${txDigest}`;
 
   const handlePlayAgain = () => {
-    setPopupIsVisible(false); // This will hide the popup
-    setFinalPaths([[15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]]); // Reset the final paths
-    resetHistory(); // Reset the history
-    handleRefreshBalance(); // Refresh the balance
+    setPopupIsVisible(false);
+    setFinalPaths([[15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15]]);
+    resetHistory();
+    handleRefreshBalance();
   };
 
   return (
     <>
       {popupIsVisible && (
         <div
-          className={`fixed inset-0 ${
+          className={`fixed inset-0 overflow-y-auto h-full w-full flex justify-center items-center z-20 ${
             hasWon ? "" : "bg-gray-600 bg-opacity-50"
-          } overflow-y-auto h-full w-full flex justify-center items-center z-20`}
-          style={{
-            ...(hasWon
-              ? {
-                  backgroundImage: "url('/general/confetti.svg')",
-                  backgroundSize: "cover",
-                  backgroundPositionX: "center",
-                  backgroundPositionY: "top",
-                }
-              : {}),
-          }}
+          }`}
+          onClick={togglePopup}
         >
           <div
-            className="p-5 border bg-white rounded-3xl shadow-lg"
-            style={{
-              width: "80%", // Use percentage for responsiveness
-              maxWidth: "600px", // Maximum width
-            }}
+            className="p-5 border bg-white rounded-3xl shadow-lg relative z-40"
+            style={{ width: "80%", maxWidth: "600px" }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col justify-center items-center gap-10">
@@ -79,32 +70,32 @@ const PopupComponent = () => {
                     </div>
                   </>
                 )}
+
                 <div className="opacity-70 text-right text-neutral-900 text-base font-medium">
                   You Bid: {Math.round(bid * finalPaths.length * 100) / 100} SUI
                 </div>
               </div>
 
-              <div className="self-stretch bg-white  justify-start items-center gap-2 inline-flex">
+              <div className="self-stretch bg-white justify-start items-center gap-2 inline-flex">
                 <button
                   onClick={handlePlayAgain}
-                  className="grow shrink basis-0 self-stretch px-5 py-4 bg-black rounded-[38px] justify-center items-center gap-2 flex"
+                  className="grow shrink basis-0 self-stretch px-5 py-4 bg-black rounded-[38px] justify-center items-center gap-2 flex hover:bg-neutral-900 transition-colors"
                 >
                   <div className="text-white text-base font-bold">
                     Play again
                   </div>
                 </button>
               </div>
+
               <div className="justify-center items-center gap-2 inline-flex">
-                <div className="text-neutral-900 text-base font-semibold">
-                  <a
-                    href={suiExplorerUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-neutral-900 text-base font-semibold"
-                  >
-                    Verify on Sui Explorer
-                  </a>
-                </div>
+                <a
+                  href={suiExplorerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-neutral-900 text-base font-semibold underline-offset-2 hover:underline"
+                >
+                  Verify on Sui Explorer
+                </a>
               </div>
             </div>
           </div>
@@ -114,4 +105,4 @@ const PopupComponent = () => {
   );
 };
 
-export default PopupComponent;
+export default EndGameCard;

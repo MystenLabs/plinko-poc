@@ -1,3 +1,5 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 import "../styles/globals.css";
 import { Inter } from "next/font/google";
 import { ChildrenProps } from "@/types/ChildrenProps";
@@ -6,7 +8,6 @@ import { ProvidersAndLayout } from "./ProvidersAndLayout";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({ children }: ChildrenProps) {
-  console.log("layout.tsx is on server:", !!process.env.IS_SERVER_SIDE);
   return (
     <html lang="en">
       <head>

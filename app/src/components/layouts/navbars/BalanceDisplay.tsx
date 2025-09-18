@@ -1,3 +1,5 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 import { FaCoins } from "react-icons/fa"; // Ensure you have this import
 
 const BalanceDisplay = ({ balance = 100, currencySymbol = "SUI" }) => {

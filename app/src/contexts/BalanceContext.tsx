@@ -1,3 +1,5 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 import {
   useContext,
   useEffect,
@@ -7,9 +9,9 @@ import {
 } from "react";
 import { ChildrenProps } from "@/types/ChildrenProps";
 import BigNumber from "bignumber.js";
-import { MIST_PER_SUI } from "@mysten/sui.js/utils";
+import { MIST_PER_SUI } from "@mysten/sui/utils";
 import { useSui } from "@/hooks/useSui";
-import { useZkLogin } from "@mysten/enoki/react";
+import { useCurrentAccount } from "@mysten/dapp-kit";
 
 export const useBalance = () => {
   const context = useContext(BalanceContext);
@@ -32,7 +34,8 @@ export const BalanceProvider = ({ children }: ChildrenProps) => {
   const [balance, setBalance] = useState(BigNumber(0));
   const [isLoading, setIsLoading] = useState(false);
   const { suiClient } = useSui();
-  const { address } = useZkLogin();
+  const currentAccount = useCurrentAccount();
+  const address = currentAccount?.address!;
 
   useEffect(() => {
     if (address) handleRefreshBalance();
@@ -40,7 +43,6 @@ export const BalanceProvider = ({ children }: ChildrenProps) => {
 
   const handleRefreshBalance = useCallback(async () => {
     if (!address) return;
-    console.log(`Refreshing balance for ${address}...`);
     setIsLoading(true);
     await suiClient
       .getBalance({

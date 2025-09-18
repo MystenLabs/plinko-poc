@@ -1,5 +1,6 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 "use client";
-import { is } from "@mysten/sui.js";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface IWaitingContext {

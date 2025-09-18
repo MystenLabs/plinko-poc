@@ -13,7 +13,7 @@ const activateEvent = () => {
 activateEvent();
 
 self.addEventListener("message", (event) => {
-  console.log("messaeg received in service worker", event);
+  console.log("message received in service worker", event);
   if (event.data && event.data.type === "custom-push") {
     // Handle custom push event
     const customPushData = event.data.payload;
@@ -49,7 +49,6 @@ self.addEventListener("message", (event) => {
 self.addEventListener("notificationclick", function (event) {
   console.log("Notification clicked.");
   event.notification.close();
-  console.log("aaaaaa");
 
   console.log(event.notification.data);
 

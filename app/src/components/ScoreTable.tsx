@@ -1,8 +1,9 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 "use client";
 import { useGameHistory } from "@/contexts/GameHistoryContext";
 import { usePlayContext } from "@/contexts/PlayContext";
-import React, { useEffect, useState } from "react";
-import { set } from "zod";
+import React, { useEffect } from "react";
 
 const bucketColors = [
   "#FF0000", // Red
@@ -28,24 +29,20 @@ const ScoreTable = () => {
   const isScrollNeeded = true;
   const {
     colors,
-    addTotalWon,
-    currentGameHistory,
     setCurrentGameHistory,
+    currentGameHistory,
     historyFromPreviousGames,
   } = useGameHistory();
   const { betSize } = usePlayContext();
-  // const [currentGameHistory, setCurrentGameHistory] = useState([]);
 
   useEffect(() => {
     setCurrentGameHistory([]);
-    let data: any = [];
-    // Only append new data if colors array is not empty
     if (colors.length > 0) {
       const newEntries = colors.map((color) => {
         const position = bucketColors.indexOf(color);
         const multiplier = multipliersNumbers[position];
-        const earnings = `${(betSize * multiplier).toFixed(2)} SUI`;
         const earningsValue = betSize * multiplier;
+        const earnings = `${earningsValue.toFixed(2)} SUI`;
         const isLost = earningsValue < betSize;
         return {
           bet: `${betSize} SUI`,
@@ -55,15 +52,11 @@ const ScoreTable = () => {
           isLost,
         };
       });
-      //@ts-ignore
-      data = (prevData) => {
-        // Reverse the array to maintain the newest entry at the top if needed
-        return [...newEntries.reverse(), ...prevData];
-      };
 
-      setCurrentGameHistory(data);
+      // prepend newest entries
+      setCurrentGameHistory((prev) => [...newEntries.reverse(), ...prev]);
     }
-  }, [colors]);
+  }, [colors, betSize, setCurrentGameHistory]);
 
   return (
     <div
@@ -83,125 +76,102 @@ const ScoreTable = () => {
         </div>
       </div>
       <div className="self-stretch h-px opacity-50 bg-white bg-opacity-20"></div>
+
       <div
         className={`flex ${
           isScrollNeeded ? "overflow-auto" : ""
         } flex-1 w-full`}
       >
         <div className="flex flex-col gap-5 mr-5">
-          {
-            //@ts-ignore
-            currentGameHistory.map((data, index) => (
-              <div
-                key={index}
-                className="text-white text-base font-normal leading-[18.40px]"
-              >
-                {
-                  //@ts-ignore
-                  data.bet
-                }
-              </div>
-            ))
-          }
+          {currentGameHistory.map((row: any, idx: number) => (
+            <div
+              key={`cur-bet-${idx}`}
+              className="text-white text-base font-normal leading-[18.40px]"
+            >
+              {row.bet}
+            </div>
+          ))}
+
           {historyFromPreviousGames.length > 1 &&
-            [...historyFromPreviousGames] // Create a shallow copy to avoid mutating the original array
+            [...historyFromPreviousGames]
               .slice(1)
-              .reverse() // Reverse the copied array(
-              .map((data, index) =>
-                // @ts-ignore
-                data.map((data2, index2) => (
+              .reverse()
+              .map((game, gIdx) =>
+                game.map((row: any, rIdx: number) => (
                   <div
-                    key={index2 + 1}
+                    key={`prev-bet-${gIdx}-${rIdx}`}
                     className="text-white text-opacity-40 text-base font-normal leading-[18.40px]"
                   >
-                    {data2.bet}
+                    {row.bet}
                   </div>
                 ))
               )}
         </div>
+
         <div className="flex flex-col gap-5 mr-10">
-          {" "}
-          {/* Adjust the right margin here */}
-          {
-            //@ts-ignore
-            currentGameHistory.map((data, index) => (
-              <div
-                key={index}
-                className={`text-white ${
-                  //@ts-ignore
-                  data.multiplier === "-"
-                    ? "text-opacity-40"
-                    : "text-base font-semibold"
-                } leading-[18.40px]`}
-              >
-                {
-                  //@ts-ignore
-                  data.multiplier
-                }
-              </div>
-            ))
-          }
+          {currentGameHistory.map((row: any, idx: number) => (
+            <div
+              key={`cur-mul-${idx}`}
+              className={`text-white ${
+                row.multiplier === "-"
+                  ? "text-opacity-40"
+                  : "text-base font-semibold"
+              } leading-[18.40px]`}
+            >
+              {row.multiplier}
+            </div>
+          ))}
+
           {historyFromPreviousGames.length > 1 &&
-            [...historyFromPreviousGames] // Create a shallow copy to avoid mutating the original array
+            [...historyFromPreviousGames]
               .slice(1)
-              .reverse() // Reverse the copied array(
-              .map((data, index) =>
-                // @ts-ignore
-                data.map((data2, index) => (
+              .reverse()
+              .map((game, gIdx) =>
+                game.map((row: any, rIdx: number) => (
                   <div
-                    key={index + 1}
+                    key={`prev-mul-${gIdx}-${rIdx}`}
                     className="text-white text-opacity-40 text-base font-normal leading-[18.40px]"
                   >
-                    {data2.multiplier}
+                    {row.multiplier}
                   </div>
                 ))
               )}
         </div>
+
         <div className="flex flex-col gap-5 ml-4">
-          {
-            //@ts-ignore
-            currentGameHistory.map((data, index) => {
-              // Round earningsValue to two decimal places
-              data.earningsValue = (
-                Math.round(data.earningsValue * 100) / 100
-              ).toFixed(2);
-              return (
-                <div
-                  key={index}
-                  className={`${
-                    //@ts-ignore
-                    data.earnings.startsWith("-")
-                      ? "text-orange-600"
-                      : //@ts-ignore
-                      data.earnings === "-"
-                      ? "text-opacity-40"
-                      : "text-emerald-400"
-                  } text-base font-semibold leading-[18.40px] ${
-                    //@ts-ignore
-                    data.isLost ? "text-red-500" : "text-green-500"
-                  }`}
-                >
-                  {
-                    //@ts-ignore
-                    (Math.round(data.earningsValue * 100) / 100).toFixed(2)
-                  }{" "}
-                  SUI
-                </div>
-              );
-            })
-          }
+          {currentGameHistory.map((row: any, idx: number) => {
+            const rounded = Number(
+              (Math.round(row.earningsValue * 100) / 100).toFixed(2)
+            );
+            return (
+              <div
+                key={`cur-earn-${idx}`}
+                className={`${
+                  row.earnings.startsWith("-")
+                    ? "text-orange-600"
+                    : row.earnings === "-"
+                    ? "text-opacity-40"
+                    : "text-emerald-400"
+                } text-base font-semibold leading-[18.40px] ${
+                  row.isLost ? "text-red-500" : "text-green-500"
+                }`}
+              >
+                {rounded.toFixed(2)} SUI
+              </div>
+            );
+          })}
+
           {historyFromPreviousGames.length > 1 &&
-            [...historyFromPreviousGames] // Create a shallow copy to avoid mutating the original array
+            [...historyFromPreviousGames]
               .slice(1)
-              .reverse() // Reverse the copied array(
-              .map((data, index) =>
-                // @ts-ignore
-                data.map((data2, index) => (
+              .reverse()
+              .map((game, gIdx) =>
+                game.map((row: any, rIdx: number) => (
                   <div
-                    key={index + 1}
+                    key={`prev-earn-${gIdx}-${rIdx}`}
                     className="text-white text-opacity-40 text-base font-normal leading-[18.40px]"
                   >
-                    {data2.earnings}
+                    {row.earnings}
                   </div>
                 ))
               )}

@@ -1,27 +1,31 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 "use client";
 
 import { ChildrenProps } from "@/types/ChildrenProps";
 import React from "react";
-import { InfoIcon } from "./InfoIcon";
 import { TopNavbar } from "./navbars/TopNavbar";
-import { useZkLogin } from "@mysten/enoki/react";
-
-const NAVBAR_WIDTH = 350;
+import { useCurrentAccount } from "@mysten/dapp-kit";
+import { InfoIcon } from "./InfoIcon";
 
 export const LargeScreenLayout = ({ children }: ChildrenProps) => {
-  const { address } = useZkLogin();
+  const currentAccount = useCurrentAccount();
+  const address = currentAccount?.address!;
 
   return (
-    <>
-      <div
-        className={`static w-full h-full flex-col items-center justify-center ${
-          address ? "role-admin" : "role-anonymous"
-        }`}
-      >
-        <TopNavbar/>
-        <div>{children}</div>
-        <div className="absolute bottom-0 left-0 p-8"><InfoIcon/></div>
+    <div
+      className={`relative flex min-h-screen w-full flex-col items-center justify-start overflow-x-hidden ${
+        address ? "role-admin" : "role-anonymous"
+      }`}
+    >
+      <TopNavbar />
+      <main className="flex-1 w-full flex flex-col items-center">
+        <div className="w-full max-w-7xl mx-auto px-4">{children}</div>
+      </main>
+
+      <div className="absolute bottom-4 left-4">
+        <InfoIcon />
       </div>
-    </>
+    </div>
   );
 };

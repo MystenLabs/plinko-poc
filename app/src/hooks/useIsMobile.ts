@@ -1,3 +1,5 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 import { useEffect, useState } from "react";
 
 const MEDIUM_BREAKPOINT = 768; // Breakpoint for medium screens

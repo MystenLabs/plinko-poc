@@ -1,11 +1,13 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 import * as dotenv from "dotenv";
 
 dotenv.config({ path: "../.env.local" });
 
-import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
-import { TransactionBlock } from "@mysten/sui.js/transactions";
-import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
-import { fromB64 } from "@mysten/sui.js/utils";
+import { SuiClient } from "@mysten/sui/client";
+import { Transaction } from "@mysten/sui/transactions";
+import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
+import { fromBase64 } from "@mysten/sui/utils";
 
 import {
   PACKAGE_ADDRESS,
@@ -15,15 +17,16 @@ import {
   HOUSE_CAP,
 } from "./config";
 
-import { toB64 } from "@mysten/bcs";
-import hkdf from "futoin-hkdf";
-import * as bls from "@noble/bls12-381";
-
+import { toBase64 } from "@mysten/bcs";
 import fs from "fs";
 
 // The multipliers for the plinko game
-let multiplierArray = [900, 820, 650, 380, 100, 60, 40, 60, 100, 380, 650, 820, 900];
-let privateKeyArray = Uint8Array.from(Array.from(fromB64(HOUSE_PRIVATE_KEY!)));
+let multiplierArray = [
+  900, 820, 650, 380, 100, 60, 40, 60, 100, 380, 650, 820, 900,
+];
+let privateKeyArray = Uint8Array.from(
+  Array.from(fromBase64(HOUSE_PRIVATE_KEY!))
+);
 
 const keypairAdmin = Ed25519Keypair.fromSecretKey(privateKeyArray.slice(1));
 
@@ -39,9 +42,9 @@ console.log("Package ID  = " + PACKAGE_ADDRESS);
 console.log("House Cap  = " + HOUSE_CAP);
 
 // The initial balance of the house
-const initHouseBalance = 50000000000;
+const initHouseBalance = 40000000000;
 
-const tx = new TransactionBlock();
+const tx = new Transaction();
 
 initializeContract();
 
@@ -50,18 +53,13 @@ initializeContract();
 //---------------------------------------------------------
 
 function initializeContract() {
-  const houseCoin = tx.splitCoins(tx.gas, [tx.pure(initHouseBalance)]);
-  // The BLS public key of the house
-  let blsKeyAsMoveParameter = getBLS_KeyAsMoveParameter();
-  console.log("PK = ", blsKeyAsMoveParameter);
-
+  const houseCoin = tx.splitCoins(tx.gas, [tx.pure("u64", initHouseBalance)]);
   tx.moveCall({
     target: `${PACKAGE_ADDRESS}::house_data::initialize_house_data`,
     arguments: [
       tx.object(HOUSE_CAP),
       houseCoin,
-      tx.pure(Array.from(blsKeyAsMoveParameter)),
-      tx.pure(multiplierArray),
+      tx.pure.vector("u64", multiplierArray),
     ],
   });
 }
@@ -77,15 +75,14 @@ if (SUI_NETWORK.includes("mainnet")) {
 
   tx.build({ client: provider }).then((bytes) => {
     console.log("serialized_setup_tx bytes = ", bytes);
-    let serializedBase64 = toB64(bytes);
+    let serializedBase64 = toBase64(bytes);
     fs.writeFileSync("./serialized_setup_tx.txt", serializedBase64);
   });
 } else {
   provider
-    .signAndExecuteTransactionBlock({
-      transactionBlock: tx,
+    .signAndExecuteTransaction({
+      transaction: tx,
       signer: keypairAdmin,
-      requestType: "WaitForLocalExecution",
       options: {
         showObjectChanges: true,
         showEffects: true,
@@ -119,24 +116,4 @@ if (SUI_NETWORK.includes("mainnet")) {
         process.exit(1);
       }
     });
-}
-
-//---------------------------------------------------------
-/// Helper Functions
-//---------------------------------------------------------
-
-function getBLS_KeyAsMoveParameter() {
-  const derived_bls_key = deriveBLS_SK(HOUSE_PRIVATE_KEY!);
-  return bls.getPublicKey(derived_bls_key);
-}
-
-function deriveBLS_SK(private_key: string): Uint8Array {
-  // initial key material
-  const ikm = private_key;
-  const length = 32;
-  const salt = "plinko";
-  const info = "bls-signature";
-  const hash = "SHA-256";
-  const derived_sk = hkdf(ikm, length, { salt, info, hash });
-  return Uint8Array.from(derived_sk);
 }

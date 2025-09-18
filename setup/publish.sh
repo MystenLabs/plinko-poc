@@ -79,7 +79,6 @@ API_ENV
 cat >../app/.env$suffix<<-VITE_API_ENV
 NEXT_PUBLIC_SUI_NETWORK=$NETWORK
 NEXT_PUBLIC_PACKAGE_ADDRESS=$PACKAGE_ID
-NEXT_PUBLIC_BACKEND_API=$BACKEND_API
 NEXT_PUBLIC_USE_TOP_NAVBAR_IN_LARGE_SCREEN=1
 # used for logging purposes inside the UI components
 # on purpose not starting with NEXT_PUBLIC_ to avoid exposing it to the client side

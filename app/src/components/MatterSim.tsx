@@ -1,5 +1,7 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Matter, {
   Engine,
@@ -19,11 +21,10 @@ import {
   findTheExpectedMultipliers,
   findTheMultipliers,
   generateMultiplierText,
-} from "@/helpers/automatedTests";
+} from "@/helpers/findMultiplier";
 import { useWaitingToPlayContext } from "@/contexts/IsWaitingToPlay";
 
 const MatterSim: React.FC = () => {
-  //@ts-ignore
   const {
     isPlaying,
     setPlaying,
@@ -95,8 +96,7 @@ const MatterSim: React.FC = () => {
     // Setup the rendering context
     // const container = document.getElementById("matter-canvas-container");
     const render = Render.create({
-      // @ts-ignore
-      element: container,
+      element: container!,
       engine: engine,
       options: {
         width: worldWidth,
@@ -104,9 +104,6 @@ const MatterSim: React.FC = () => {
         // background: "#36454F",
         background: "transparent",
         showVelocity: true,
-        showAngleIndicator: true,
-        // showPerformance: true, // Show FPS (only for testing) TODO : remove it
-        //@ts-ignore
         showAngleIndicator: false,
       },
     });
@@ -341,6 +338,14 @@ const MatterSim: React.FC = () => {
             const color = bottomArea.render.fillStyle;
             addColor(color);
 
+            const position = bucketColors.indexOf(color as string);
+            if (position !== -1) {
+              const multiplier = multipliersNumbers[position];
+              const lastBallWon = multiplier * betSize;
+              // colors.length is the previous count; the just-landed ball is the next index
+              const nextIndex = colors.length + 1;
+              addTotalWon(lastBallWon, nextIndex);
+            }
             // Temporarily increase the size of the bottomArea
             Body.scale(bottomArea, 1.1, 1.1); // Increase by 10%
 
@@ -478,15 +483,6 @@ const MatterSim: React.FC = () => {
       let areEqual = multipliersHistroty.every(
         (value, index) => value === expectedMultipliers[index]
       );
-      console.log(
-        "*Check if all balls goes to the correct bucket",
-        //@ts-ignore
-        areEqual,
-        "With expected multipliers:",
-        expectedMultipliers,
-        "and history of multipliers:",
-        multipliersHistroty
-      );
     }
   }, [multipliersHistroty]);
 
@@ -506,25 +502,11 @@ const MatterSim: React.FC = () => {
         {colors.map((color, index) => {
           const isLastColor = index === colors.length - 1;
           const size = isLastColor ? "70px" : "50px";
-          // What position got this color at the bucketColors array
-          const position = bucketColors.indexOf(color);
-          const multiplier = multipliersNumbers[position];
-          let lastBallWon = 0; // Initialize last ball won variable
-
-          if (isLastColor) {
-            lastBallWon = multiplier * betSize;
-            addTotalWon(lastBallWon, colors.length);
-          }
-
           return (
             <div
               key={index}
-              className={`${
-                isLastColor ? "w-24" : "w-[size]"
-              } h-[size] bg-[color] text-white flex items-center justify-center text-[fontSize] font-[fontWeight] border-1 border-black rounded-[4px]`}
-              style={{
-                backgroundColor: color,
-              }}
+              className={`${isLastColor ? "w-24" : "w-[size]"} h-[size] ...`}
+              style={{ backgroundColor: color }}
             ></div>
           );
         })}

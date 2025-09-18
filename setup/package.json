@@ -10,16 +10,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@mysten/sui.js": "~0.48.1",
-    "dotenv": "^16.1.4",
-    "typescript": "^5.0.4",
-    "@noble/bls12-381": "^1.4.0",
+    "@mysten/bcs": "^1.7.0",
+    "@mysten/sui": "^1.37.5",
     "@types/node": "^20.8.10",
+    "dotenv": "^16.1.4",
     "env-cmd": "^10.1.0",
-    "futoin-hkdf": "^1.5.1"
+    "futoin-hkdf": "^1.5.1",
+    "typescript": "^5.0.4"
   },
   "devDependencies": {
     "env-cmd": "^10.1.0",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "tsx": "^4.20.5"
   }
 }

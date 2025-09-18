@@ -1,3 +1,5 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 "use client";
 import { useGameHistory } from "@/contexts/GameHistoryContext";
 import { useWaitingToPlayContext } from "@/contexts/IsWaitingToPlay";
@@ -17,14 +19,13 @@ export const TotalWon = () => {
     : false;
 
   return (
-    <div className="w-[205px] h-[41px] px-5 py-2.5 bg-emerald-400 rounded-full shadow flex justify-center items-center gap-2.5">
+    <div className="w-[205px] h-[35px] px-5 py-1 bg-emerald-400 rounded-full shadow flex justify-center items-center gap-2.5">
       <div className="text-black text-opacity-80 text-base font-medium leading-[18.40px] whitespace-nowrap">
         {isWaitingToPlay ? "Loading..." : "Round Earnings"}
       </div>
       {!isWaitingToPlay && (
         <div className="flex items-baseline text-black text-lg font-bold font-['Inter'] leading-tight relative">
           {" "}
-          {/* Add relative here */}
           {totalWon !== -1 ? (
             <>
               {parseFloat(totalWon.toString()).toFixed(2)}
@@ -32,7 +33,7 @@ export const TotalWon = () => {
                 <span
                   className={`text-sm font-normal ${
                     isLost ? "text-red-500" : "text-green-900"
-                  } absolute -bottom-3 left-0`} // Positioning adjustment here
+                  } absolute -bottom-3 left-0`}
                 >
                   +{firstEarningsValue}
                 </span>

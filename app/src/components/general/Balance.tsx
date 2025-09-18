@@ -1,3 +1,5 @@
+// Copyright (c) Mysten Labs, Inc.
+// SPDX-License-Identifier: Apache-2.0
 import React from "react";
 import { LoadingButton } from "./LoadingButton";
 import { useRequestSui } from "@/hooks/useRequestSui";
@@ -10,6 +12,9 @@ export const Balance = () => {
   const { isLoading, handleRequestSui } = useRequestSui();
   const { balance } = useBalance();
 
+  const shouldShowRequestButton =
+    balance.isLessThanOrEqualTo(new BigNumber(3)) || balance.isNaN();
+
   return (
     <div className="flex space-x-2 items-center">
       <div className="flex space-x-2 items-center h-10 border-[1px] border-custom-border rounded-[36px] px-[10px] bg-[inherit]">
@@ -20,19 +25,16 @@ export const Balance = () => {
         </div>
       </div>
 
-      {
-        //@ts-ignore
-        (balance.c[0] <= BigNumber(3) || balance.c.length == 1) && (
-          <LoadingButton
-            onClick={handleRequestSui}
-            isLoading={isLoading}
-            className="flex space-x-0 md:space-x-2 items-center border-[1px] border-custom-border rounded-[36px] px-[10px] bg-[inherit] hover:bg-[#12BF77]"
-          >
-            <Image src="/general/plus.svg" alt="plus" width={20} height={20} />
-            <div className="hidden md:block font-semibold">Request SUI</div>
-          </LoadingButton>
-        )
-      }
+      {shouldShowRequestButton && (
+        <LoadingButton
+          onClick={handleRequestSui}
+          isLoading={isLoading}
+          className="flex space-x-0 md:space-x-2 items-center border-[1px] border-custom-border rounded-[36px] px-[10px] bg-[inherit] hover:bg-[#12BF77]"
+        >
+          <Image src="/general/plus.svg" alt="plus" width={20} height={20} />
+          <div className="hidden md:block font-semibold">Request SUI</div>
+        </LoadingButton>
+      )}
     </div>
   );
 };

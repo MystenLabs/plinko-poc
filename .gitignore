@@ -51,3 +51,11 @@ setup/.publish.res.json
 
 .structurizr
 workspace.json
+
+*/package_summaries
+
+.publish.res.json
+
+tx_res.json
+
+check.sh
