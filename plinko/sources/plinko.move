@@ -15,6 +15,7 @@ const EStakeTooLow: u64 = 0;
 const EStakeTooHigh: u64 = 1;
 const EInsufficientHouseBalance: u64 = 5;
 const EGameDoesNotExist: u64 = 6;
+const ENumberOfBallsNotAllowed: u64 = 7;
 
 // === Structs ===
 
@@ -48,7 +49,7 @@ public struct GameFinished has copy, drop {
 
 // === Public Functions ===
 
-/// Function used to create a new game. The player must provide a Counter NFT and the number of balls.
+/// Function used to create a new game.
 public fun start_game(coin: Coin<SUI>, house_data: &mut HouseData, ctx: &mut TxContext): ID {
     let fee_bp = house_data.base_fee_in_bp();
     let (id, new_game) = internal_start_game(coin, house_data, fee_bp, ctx);
@@ -67,6 +68,9 @@ entry fun finish_game(
 ): (u64, address, vector<u8>) {
     // Ensure that the game exists.
     assert!(game_exists(house_data, game_id), EGameDoesNotExist);
+
+    // Ensure that the player selected at least one ball and no more than 100 balls.
+    assert!(num_balls > 0 && num_balls <= 100, ENumberOfBallsNotAllowed);
 
     // Retrieves and removes the game from HouseData, preparing for outcome calculation.
     let Game {
@@ -181,7 +185,6 @@ public fun borrow_game(game_id: ID, house_data: &HouseData): &Game {
 // === Private Functions ===
 
 /// Internal helper function used to create a new game.
-/// The player must provide a guess and a Counter NFT.
 /// Stake is taken from the player's coin and added to the game's stake.
 fun internal_start_game(
     coin: Coin<SUI>,
