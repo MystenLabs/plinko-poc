@@ -93,6 +93,4 @@ sequenceDiagram
     UI-->>Player: Animate balls and show payout
 ```
 
-[Project Diagrams and FlowCharts](/Diagrams-FlowCharts.md)
-
 This project is powered by Mysten Labs and the Sui blockchain technology.
