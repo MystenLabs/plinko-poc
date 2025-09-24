@@ -22,16 +22,23 @@ interface BalanceContextProps {
   balance: BigNumber;
   isLoading: boolean;
   handleRefreshBalance: () => void;
+  decreaseDisplayedBalance: (amountSui: number) => void;
+  increaseDisplayedBalance: (amountSui: number) => void;
 }
 
 export const BalanceContext = createContext<BalanceContextProps>({
   balance: BigNumber(0),
   isLoading: true,
   handleRefreshBalance: () => {},
+  decreaseDisplayedBalance: () => {},
+  increaseDisplayedBalance: () => {},
 });
 
 export const BalanceProvider = ({ children }: ChildrenProps) => {
-  const [balance, setBalance] = useState(BigNumber(0));
+  // Base balance fetched from the network
+  const [fetchedBalance, setFetchedBalance] = useState(BigNumber(0));
+  // Adjustment applied to the displayed balance
+  const [displayedDelta, setDisplayedDelta] = useState(BigNumber(0));
   const [isLoading, setIsLoading] = useState(false);
   const { suiClient } = useSui();
   const currentAccount = useCurrentAccount();
@@ -50,22 +57,44 @@ export const BalanceProvider = ({ children }: ChildrenProps) => {
       })
       .then((resp) => {
         setIsLoading(false);
-        setBalance(
+        setFetchedBalance(
           BigNumber(resp.totalBalance).dividedBy(
             BigNumber(Number(MIST_PER_SUI))
           )
         );
+        // Reset display adjustment after syncing with chain
+        setDisplayedDelta(BigNumber(0));
       })
       .catch((err) => {
         console.error(err);
         setIsLoading(false);
-        setBalance(BigNumber(0));
+        setFetchedBalance(BigNumber(0));
+        setDisplayedDelta(BigNumber(0));
       });
   }, [address, suiClient]);
 
+  const decreaseDisplayedBalance = useCallback((amountSui: number) => {
+    if (!Number.isFinite(amountSui) || amountSui <= 0) return;
+    setDisplayedDelta((prev) => prev.minus(amountSui));
+  }, []);
+
+  const increaseDisplayedBalance = useCallback((amountSui: number) => {
+    if (!Number.isFinite(amountSui) || amountSui <= 0) return;
+    setDisplayedDelta((prev) => prev.plus(amountSui));
+  }, []);
+
+  // Displayed balance = fetched + display delta
+  const balance = fetchedBalance.plus(displayedDelta);
+
   return (
     <BalanceContext.Provider
-      value={{ balance, handleRefreshBalance, isLoading }}
+      value={{
+        balance,
+        handleRefreshBalance,
+        isLoading,
+        decreaseDisplayedBalance,
+        increaseDisplayedBalance,
+      }}
     >
       {children}
     </BalanceContext.Provider>

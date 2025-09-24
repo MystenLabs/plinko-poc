@@ -21,7 +21,8 @@ const PlinkoSettings = () => {
   const { isWaitingToPlay, setWaitingToPlay } = useWaitingToPlayContext();
   const { handleCreateGame } = useCreateGame();
   const { resetHistory } = useGameHistory();
-  const { balance } = useBalance();
+  const { balance, decreaseDisplayedBalance, increaseDisplayedBalance } =
+    useBalance();
   const { isMobile } = useIsMobile();
 
   const [numberOfBalls, setNumberOfBalls] = useState(1);
@@ -86,9 +87,19 @@ const PlinkoSettings = () => {
     }
     resetHistory();
     setWaitingToPlay(true);
+    // Subtract the total bid from the displayed balance
+    decreaseDisplayedBalance(totalSui);
     try {
-      await handleCreateGame(totalSui, numberOfBalls);
-      setPlaying(true);
+      const result = await handleCreateGame(totalSui, numberOfBalls);
+      if (result) {
+        setPlaying(true);
+      } else {
+        // Revert deduction if game failed to start
+        increaseDisplayedBalance(totalSui);
+      }
+    } catch (e) {
+      // On unexpected errors, also revert the deduction
+      increaseDisplayedBalance(totalSui);
     } finally {
       setWaitingToPlay(false);
     }

@@ -17,6 +17,7 @@ import Matter, {
 import { usePlayContext } from "../contexts/PlayContext";
 
 import { useGameHistory } from "@/contexts/GameHistoryContext";
+import { useBalance } from "@/contexts/BalanceContext";
 import {
   findTheExpectedMultipliers,
   findTheMultipliers,
@@ -33,8 +34,10 @@ const MatterSim: React.FC = () => {
     setPopupIsVisible,
   } = usePlayContext();
   const { addColor, colors, addTotalWon, totalWon } = useGameHistory();
+  const { increaseDisplayedBalance } = useBalance();
   const [multipliersHistroty, setMultipliersHistory] = useState([0]);
   const { isWaitingToPlay } = useWaitingToPlayContext();
+  const [winningsCredited, setWinningsCredited] = useState(false);
 
   // Define bucket colors
   const bucketColors = [
@@ -80,6 +83,8 @@ const MatterSim: React.FC = () => {
   const pinRestitution = 0.8;
 
   useEffect(() => {
+    // New game or state change, reset credit guard
+    setWinningsCredited(false);
     //Restart the container
     const container = document.getElementById("matter-canvas-container");
     container!.innerHTML = "";
@@ -473,10 +478,22 @@ const MatterSim: React.FC = () => {
         colors
       );
       setMultipliersHistory(historyOfMultipliers);
+      if (!winningsCredited) {
+        increaseDisplayedBalance(totalWon);
+        setWinningsCredited(true);
+      }
       setPopupIsVisible(true);
       setPlaying(false);
     }
-  }, [finishedBalls, predefinedPaths.length, setPlaying, colors]);
+  }, [
+    finishedBalls,
+    predefinedPaths.length,
+    setPlaying,
+    colors,
+    totalWon,
+    increaseDisplayedBalance,
+    winningsCredited,
+  ]);
 
   useEffect(() => {
     if (multipliersHistroty.length == expectedMultipliers.length) {
