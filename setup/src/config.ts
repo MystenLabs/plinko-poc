@@ -42,8 +42,6 @@ export const PACKAGE_ADDRESS = req("PACKAGE_ADDRESS");
 export const HOUSE_ADDRESS = req("PLINKO_HOUSE_ADDRESS");
 export const HOUSE_PRIVATE_KEY = req("PLINKO_HOUSE_PRIVATE_KEY");
 export const HOUSE_CAP = req("HOUSE_ADMIN_CAP");
-export const HOUSE_DATA_ID = process.env.HOUSE_DATA_ID || "";
-export const PLAYER_PRIVATE_KEY = process.env.PLAYER_PRIVATE_KEY || "";
 
 // eslint-disable-next-line no-console
 console.log("[env] Keys present:", {
