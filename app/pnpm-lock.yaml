@@ -18,17 +18,17 @@ importers:
         specifier: ^3.3.1
         version: 3.3.4(react-hook-form@7.49.3(react@18.2.0))
       '@mysten/codegen':
-        specifier: ^0.5.0
-        version: 0.5.0
+        specifier: ^0.5.10
+        version: 0.5.10
       '@mysten/dapp-kit':
-        specifier: ^0.17.6
-        version: 0.17.6(@tanstack/react-query@5.85.6(react@18.2.0))(@types/react-dom@18.2.6)(@types/react@18.2.14)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.1.6)
+        specifier: ^0.19.9
+        version: 0.19.9(@tanstack/react-query@5.85.6(react@18.2.0))(@types/react-dom@18.2.6)(@types/react@18.2.14)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.1.6)
       '@mysten/enoki':
-        specifier: ^0.12.0
-        version: 0.12.0(@types/react@18.2.14)(encoding@0.1.13)(react@18.2.0)(typescript@5.1.6)
+        specifier: ^0.12.12
+        version: 0.12.12(@types/react@18.2.14)(encoding@0.1.13)(react@18.2.0)(typescript@5.1.6)
       '@mysten/sui':
-        specifier: ^1.37.5
-        version: 1.37.5(typescript@5.1.6)
+        specifier: ^1.45.0
+        version: 1.45.0(typescript@5.1.6)
       '@radix-ui/react-accordion':
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@18.2.6)(@types/react@18.2.14)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -901,33 +901,60 @@ packages:
   '@ledgerhq/devices@8.5.1':
     resolution: {integrity: sha512-oW75YQQiP2muHveXTuwSAze6CBxJ7jOYILhFiJbsVzmgLPVqtdw4s0bJJlOBft4Aup67yNAjboFCIU7kTYQBFg==}
 
-  '@ledgerhq/errors@6.25.0':
-    resolution: {integrity: sha512-9cU0dgUyq3Adb1bHAjJnbwl+r+4WBjuPq0k+/DbBNpuYHwcz2xKtRIjLimUJyACjHti3iWwRt1sFcbQDDdI08w==}
+  '@ledgerhq/devices@8.7.0':
+    resolution: {integrity: sha512-3pSOULPUhClk2oOxa6UnoyXW8+05FK7r6cpq2WiTey4kyIUjmIraO7AX9lhz9IU73dGVtBMdU+NCPPO2RYJaTQ==}
+
+  '@ledgerhq/errors@6.27.0':
+    resolution: {integrity: sha512-EE2hATONHdNP3YWFe3rZwwpSEzI5oN+q/xTjOulnjHZo84TLjungegEJ54A/Pzld0woulkkeVA27FbW5SAO1aA==}
+
+  '@ledgerhq/hw-bolos@6.32.9':
+    resolution: {integrity: sha512-4GDpBPPl0weqcvm/+gvYs01whsbwwl+HIiTtFi5iDfHa/6JmV7KxRaT8JfPRc8M4fSnJs5Z7NxHnrhEHu+tA2Q==}
 
   '@ledgerhq/hw-transport@6.31.10':
     resolution: {integrity: sha512-ruNtkTPMO3rFCaSM+oPTOXXerzxWFZF43pAHVAHhsjiQGhLWzLSkMc7qBEpWIpZPubKRAbWSXR2zXBIJPNy8oQ==}
 
+  '@ledgerhq/hw-transport@6.31.13':
+    resolution: {integrity: sha512-MrJRDk74wY980ofiFPRpTHQBbRw1wDuKbdag1zqlO1xtJglymwwY03K2kvBNvkm1RTSCPUp/nAoNG+WThZuuew==}
+
+  '@ledgerhq/ledger-cal-service@1.9.0':
+    resolution: {integrity: sha512-OuM5+pOcRYDs25VgTD1f5hzhc154g6Oh8dL3M+77MtpQOO3XCnLuWe7eFNS28r6jWrojN1v8I1aTYiVJh+vdeg==}
+
+  '@ledgerhq/ledger-trust-service@0.3.14':
+    resolution: {integrity: sha512-Q83QXnLDFIDnm2Bv4WgWilurE1WGSX7gGaMEhVxb/BQXH1O78QlNgNRys8K35wnG7BxYKjBJGMoK9U6JdWwW2Q==}
+
+  '@ledgerhq/live-env@2.18.0':
+    resolution: {integrity: sha512-wasAK0IPyyX4ZAU0FLTZUsRzxJfdHlewyhkbz3HryYKbNofuMRwIWyaZ2xhpXXjEdP6qHb9HzewAZevjSn7DLQ==}
+
+  '@ledgerhq/live-env@2.21.0':
+    resolution: {integrity: sha512-A/+lCW6HNE9TWMCVo3dluZ0qTp9l+LMV9vH62SXqeHNYL3MqE/gsdZ1sZEMimLx8fURkCIKlHdNd1lN/tY5t/A==}
+
+  '@ledgerhq/live-network@2.0.19':
+    resolution: {integrity: sha512-KVdqFDQcqEUNoC/TnaOJeo/I7TY39lQhzcVlnkAt2jbp5Xfv5YNuazL9lId5+bBb28jNPAv5uNJSlgvzpSSNIg==}
+
+  '@ledgerhq/live-network@2.1.1':
+    resolution: {integrity: sha512-58YMh/dUyntKubtzOsToyBjVakIM58h3k7nEyrUXY7UpO0VWY1TvSF0D4mdPGVpbwNs9C2KP3Lf/kowbAYpVJA==}
+
+  '@ledgerhq/live-promise@0.1.1':
+    resolution: {integrity: sha512-oFo6KUZIdFEndp2uokSU9XE9UCT/7NLOOKa1nQUfHhAfyKxRWqBlZOGRuivM/BIwKm0IUFa3+HE7uxK497kYPg==}
+
   '@ledgerhq/logs@6.13.0':
     resolution: {integrity: sha512-4+qRW2Pc8V+btL0QEmdB2X+uyx0kOWMWE1/LWsq5sZy3Q5tpi4eItJS6mB0XL3wGW59RQ+8bchNQQ1OW/va8Og==}
 
-  '@mysten/bcs@1.7.0':
-    resolution: {integrity: sha512-8zE2Jzj2ai55RlVXx2pEMbbq+X3vB+uPGBvZr0F79IdTwuwcu4QdFG3PT/zHsytsvATkn+z0f2YDWhM5916u2A==}
+  '@mysten/bcs@1.9.2':
+    resolution: {integrity: sha512-kBk5xrxV9OWR7i+JhL/plQrgQ2/KJhB2pB5gj+w6GXhbMQwS3DPpOvi/zN0Tj84jwPvHMllpEl0QHj6ywN7/eQ==}
 
-  '@mysten/bcs@1.8.0':
-    resolution: {integrity: sha512-bDoLN1nN+XPONsvpNyNyqYHndM3PKWS419GLeRnbLoWyNm4bnyD1X4luEpJLLDq400hBuXiCan4RWjofvyTUIQ==}
-
-  '@mysten/codegen@0.5.0':
-    resolution: {integrity: sha512-BOFIp1OHPPkvPIlNyzARnJyFZjnz9WbvkJC09gfbIr7CwsAgLZCieT29KtSHP+U242pqo4YLxSiRQD9MrqboUQ==}
+  '@mysten/codegen@0.5.10':
+    resolution: {integrity: sha512-DEMgaEUdU417auD2T7zKbe6WLpq8u7LsU5JSG5ZeHg95S+Aynv3nMgWc85V3Etc8UsFaRtJUJVeg4egodh11Og==}
     hasBin: true
 
-  '@mysten/dapp-kit@0.17.6':
-    resolution: {integrity: sha512-iHguiCflE3MxTI0Oknv/Onzbu/9H3oKS/3szw72zDe7wh9skfM+OC21sUPR/KHrzESCdVtC1sPmGXbUhscqFKw==}
+  '@mysten/dapp-kit@0.19.9':
+    resolution: {integrity: sha512-tQmAp9vTpNkN+t8kB5RNuNy7hPDQMDBaWA+IlxeZdTk9ovYzfj0rDWoTpbWzom8zSGJRayKbHKIbq04Jtw2pZg==}
     peerDependencies:
       '@tanstack/react-query': ^5.0.0
       react: '*'
 
-  '@mysten/enoki@0.12.0':
-    resolution: {integrity: sha512-CC+EaiVaQYISogfZOS5RgveAREazrCBs6O6ykm2wYeWNOUISAl2wXpoASbXK4ZiaAvQU9OTsO2e4QHY0dtnufQ==}
+  '@mysten/enoki@0.12.12':
+    resolution: {integrity: sha512-E/ugaZpc91LC3v9jG3T2ZV5+Q3/jN1mQi74yxlBH2J1Y1SrLTPd47Hf4mlR5n3gXbzMmDhRj9HCpRhHWmii0Uw==}
     peerDependencies:
       '@types/react': '>=17.0.0'
       react: '>=17.0.0'
@@ -937,38 +964,28 @@ packages:
       react:
         optional: true
 
-  '@mysten/ledgerjs-hw-app-sui@0.6.0':
-    resolution: {integrity: sha512-UopsSSI1gphfoh59feiPPhZUEybYIvYEcvmudGR2RAIN3IDJHkaA3Uu0HPH8BZQbQXhkgvFW4V2KNWIWj2IE2g==}
+  '@mysten/ledgerjs-hw-app-sui@0.7.0':
+    resolution: {integrity: sha512-Z2ydxg35U2tk3pThsWzPewticDnHWqAeLlh2Vp4NhYU/YFyoVxK9obh21pnvU/hmRzL+BRpYlwbX5Nuo77+lwA==}
 
-  '@mysten/signers@0.4.0':
-    resolution: {integrity: sha512-edZdUSG8b68FfKbZwlxgovf/3AstznmBRZEmxyAMr+GP25y/jss7r8VRoj+TebeMSLHF5uOjf296Fqce2ROmpg==}
+  '@mysten/signers@0.6.0':
+    resolution: {integrity: sha512-aZ2nH+rcDchx+gv5v9otVbMFFVsOuc9i0xUINy/glUUcTO9CXwdBeAN3sYgxTTMCPFQ0guMBZZwfyDg4/2FEYA==}
     engines: {node: '>=20'}
 
-  '@mysten/slush-wallet@0.1.23':
-    resolution: {integrity: sha512-zE1HsrNJZktmpAobFifYeg75e7rb/oMJpBt/5azcqdfRcB8ujAhQ+NQgCWvJDENa+NO/uqhw2Rf6o2Lk/U8w/Q==}
+  '@mysten/slush-wallet@0.2.10':
+    resolution: {integrity: sha512-+Km3FSGMJ1RoRMijpiq9YFL0rocKPAsBolUdd8pjI7PR9wYgA/wTRV5gJmzVLgJTGfkEkJOqdOccg51XGw1NBw==}
 
-  '@mysten/sui@1.37.5':
-    resolution: {integrity: sha512-kAKizRUdhC/gwQ7UkubbmwTno5UoA1a7Ps8R6GlPVWpCfpVM2HytmwFDOKVMA+51Qji4BaNxyq25SRpJw76fPw==}
+  '@mysten/sui@1.45.0':
+    resolution: {integrity: sha512-WYpZmrGWE/FeQaRhYrAYpHcHallj4BFIfSmjq6BkODzEhP9HfMplQAtd8AmtctwO7cpHJ+BjPUOguEAcf1gU4g==}
     engines: {node: '>=18'}
-
-  '@mysten/sui@1.38.0':
-    resolution: {integrity: sha512-tH6V4BJsYi5d97MOiLoOhyldrYxkm/cu8dYV52asqh1i88HrSVMbPAJ9sVoeWN2Ju+QsJ/Go4ldSjdCkaBCyJQ==}
-    engines: {node: '>=18'}
-
-  '@mysten/utils@0.1.1':
-    resolution: {integrity: sha512-jvhJC6/2la1QHltukQXzfyTZ+VVHxe187JjPx+mEXRUWyAo6jCSdioOQJIfaGu4K4i+37KeiydXRwV/bq/7UJQ==}
 
   '@mysten/utils@0.2.0':
     resolution: {integrity: sha512-CM6kJcJHX365cK6aXfFRLBiuyXc5WSBHQ43t94jqlCAIRw8umgNcTb5EnEA9n31wPAQgLDGgbG/rCUISCTJ66w==}
 
-  '@mysten/wallet-standard@0.16.13':
-    resolution: {integrity: sha512-hoWcqD2CEtzwdGm2V40n3j1rfkJboiFiaiMdrnxjGqbZvsHYb/T31pPNmXlFq+8fi292E3NASSFjmnjiOCd5vw==}
+  '@mysten/wallet-standard@0.19.7':
+    resolution: {integrity: sha512-p0W1WUkXqUXtmCL8wlkjToSXoqTj5zRH2dVI+yhxrFCiR236SdgZ+BGIZrx0yaE/igzttsTaVztbA7jMc8t6oQ==}
 
-  '@mysten/wallet-standard@0.17.0':
-    resolution: {integrity: sha512-UQ6tvqQ/lDKZhQm2d3ajky/xl+NgpYpNXYIpWfYGOLvGe4GyK6GHysMNHsRpFa+xA2yVa6w3nWO2RQ8WIy7ivA==}
-
-  '@mysten/window-wallet-core@0.0.6':
-    resolution: {integrity: sha512-uYjdUVok0pAaMGMxAdZfmW+2SCXgdQok9YtKmno5Tj8zlRQGv9Qet7EuCnDcBKquSbtqid3yhug7fcD+t8/KmA==}
+  '@mysten/window-wallet-core@0.1.0':
+    resolution: {integrity: sha512-QVFthpAv+HJBqoLjsE6gZylE28lrzEd/C68S5tyOCpRV6T3O+P3LCcFmNkLK8gNM6DJNHc/GZgM3f4rTNGOfAQ==}
 
   '@nanostores/react@1.0.0':
     resolution: {integrity: sha512-eDduyNy+lbQJMg6XxZ/YssQqF6b4OXMFEZMYKPJCCmBevp1lg0g+4ZRi94qGHirMtsNfAWKNwsjOhC+q1gvC+A==}
@@ -1037,6 +1054,10 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@noble/curves@1.9.4':
+    resolution: {integrity: sha512-2bKONnuM53lINoDrSmK8qP8W271ms7pygDhZt4SiLOoLwBtoHqeCFi6RG42V8zd3mLHuJFhU/Bmaqo4nX0/kBw==}
+    engines: {node: ^14.21.3 || >=16}
+
   '@noble/curves@1.9.7':
     resolution: {integrity: sha512-gbKGcRUYIjA3/zCCNaWDciTMFI0dCkvou3TL8Zmy5Nc7sJ47a0jtOeZoTaMxkuqRo9cRhjOdZJXegxYE5FN/xw==}
     engines: {node: ^14.21.3 || >=16}
@@ -1060,6 +1081,15 @@ packages:
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
+
+  '@protobuf-ts/grpcweb-transport@2.11.1':
+    resolution: {integrity: sha512-1W4utDdvOB+RHMFQ0soL4JdnxjXV+ddeGIUg08DvZrA8Ms6k5NN6GBFU2oHZdTOcJVpPrDJ02RJlqtaoCMNBtw==}
+
+  '@protobuf-ts/runtime-rpc@2.11.1':
+    resolution: {integrity: sha512-4CqqUmNA+/uMz00+d3CYKgElXO9VrEbucjnBFEjqI4GuDrEQ32MaI3q+9qPBvIGOlL4PmHXrzM32vBPWRhQKWQ==}
+
+  '@protobuf-ts/runtime@2.11.1':
+    resolution: {integrity: sha512-KuDaT1IfHkugM2pyz+FwiY80ejWrkH1pAtOBOZFuR6SXEFTsnb/jiQWQ1rCIrcKx2BtyxnxW6BWwsVSA/Ie+WQ==}
 
   '@protobufjs/aspromise@1.1.2':
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}
@@ -2404,6 +2434,12 @@ packages:
     resolution: {integrity: sha512-M0JtH+hlOL5pLQwHOLNYZaXuhqmvS8oExsqB1SBYgA4Dk7u/xx+YdGHXaK5pyUfed5mYXdlYiphWq3G8cRi5JQ==}
     engines: {node: '>=4'}
 
+  axios@1.11.0:
+    resolution: {integrity: sha512-1Lx3WLFQWm3ooKDYZD1eXmoGO9fxYQjrycfHFC8P0sCfQVXyROp0p9PFWBehewBOdCwHc+f/b8I0fMto5eSfwA==}
+
+  axios@1.12.2:
+    resolution: {integrity: sha512-vMJzPewAlRyOgxV2dU0Cuz2O8zzzx9VYtbJOaBgXFeLc4IV/Eg50n4LowmehOOR61S8ZMpc2K5Sa7g6A4jfkUw==}
+
   axios@1.6.7:
     resolution: {integrity: sha512-/hDJGff6/c7u0hDkvkGxR/oy6CbCs8ziCsC7SqmhjfozqiJGc8Z11wrv9z9lYfY4K8l+H9TpjcMDX0xOZmx+RA==}
 
@@ -2977,6 +3013,15 @@ packages:
   flatted@3.2.9:
     resolution: {integrity: sha512-36yxDn5H7OFZQla0/jFJmbIKTdZAQHngCedGxiMmpNfEZM0sdEeT+WczLQrjK6D7o2aiyLYDnkw0R3JK0Qv1RQ==}
 
+  follow-redirects@1.15.11:
+    resolution: {integrity: sha512-deG2P0JfjrTxl50XGCDyfI97ZGVCxIpfKYmfyrQ54n5FO/0gfIES8C/Psl6kWVDolizcaaxZJnTS0QSMxvnsBQ==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+
   follow-redirects@1.15.5:
     resolution: {integrity: sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==}
     engines: {node: '>=4.0'}
@@ -2999,6 +3044,10 @@ packages:
 
   form-data@4.0.0:
     resolution: {integrity: sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==}
+    engines: {node: '>= 6'}
+
+  form-data@4.0.5:
+    resolution: {integrity: sha512-8RipRLol37bNs2bhoV67fiTEvdTrbMUYcFTiy3+wuuOnUog2QBHCZWXDRijWQfAkhBj2Uf5UnVaiWwA5vdd82w==}
     engines: {node: '>= 6'}
 
   fraction.js@4.3.7:
@@ -3557,6 +3606,10 @@ packages:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
 
+  lru-cache@7.18.3:
+    resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
+    engines: {node: '>=12'}
+
   lucide-react@0.279.0:
     resolution: {integrity: sha512-LJ8g66+Bxc3t3x9vKTeK3wn3xucrOQGfJ9ou9GsBwCt2offsrT2BB90XrTrIzE1noYYDe2O8jZaRHi6sAHXNxw==}
     peerDependencies:
@@ -3825,9 +3878,6 @@ packages:
   pkg-dir@4.2.0:
     resolution: {integrity: sha512-HRDzbaKjC+AOWVXxAU/x54COGeIv9eb+6CkDSQoNTt4XyWoIJvuPsXizxu/Fr23EiekbtZwmh1IcIG/l/a10GQ==}
     engines: {node: '>=8'}
-
-  poseidon-lite@0.2.0:
-    resolution: {integrity: sha512-vivDZnGmz8W4G/GzVA72PXkfYStjilu83rjjUfpL4PueKcC8nfX6hCPh2XhoC5FBgC6y0TA3YuUeUo5YCcNoig==}
 
   poseidon-lite@0.2.1:
     resolution: {integrity: sha512-xIr+G6HeYfOhCuswdqcFpSX47SPhm0EpisWJ6h7fHlWwaVIvH3dLnejpatrtw6Xc6HaLrpq05y7VRfvDmDGIog==}
@@ -4546,6 +4596,10 @@ packages:
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
+
+  utility-types@3.11.0:
+    resolution: {integrity: sha512-6Z7Ma2aVEWisaL6TvBCy7P8rm2LQoPv6dJ7ecIaIixHcwfbJ0x7mWdbcwlIM5IGQxPZSFYeqRCqlOOeKoJYMkw==}
+    engines: {node: '>= 4'}
 
   uuid@9.0.1:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
@@ -5608,36 +5662,99 @@ snapshots:
 
   '@ledgerhq/devices@8.5.1':
     dependencies:
-      '@ledgerhq/errors': 6.25.0
+      '@ledgerhq/errors': 6.27.0
       '@ledgerhq/logs': 6.13.0
       rxjs: 7.8.2
       semver: 7.5.4
 
-  '@ledgerhq/errors@6.25.0': {}
+  '@ledgerhq/devices@8.7.0':
+    dependencies:
+      '@ledgerhq/errors': 6.27.0
+      '@ledgerhq/logs': 6.13.0
+      rxjs: 7.8.2
+      semver: 7.5.4
+
+  '@ledgerhq/errors@6.27.0': {}
+
+  '@ledgerhq/hw-bolos@6.32.9':
+    dependencies:
+      '@ledgerhq/hw-transport': 6.31.13
 
   '@ledgerhq/hw-transport@6.31.10':
     dependencies:
       '@ledgerhq/devices': 8.5.1
-      '@ledgerhq/errors': 6.25.0
+      '@ledgerhq/errors': 6.27.0
       '@ledgerhq/logs': 6.13.0
       events: 3.3.0
 
+  '@ledgerhq/hw-transport@6.31.13':
+    dependencies:
+      '@ledgerhq/devices': 8.7.0
+      '@ledgerhq/errors': 6.27.0
+      '@ledgerhq/logs': 6.13.0
+      events: 3.3.0
+
+  '@ledgerhq/ledger-cal-service@1.9.0':
+    dependencies:
+      '@ledgerhq/live-env': 2.21.0
+      '@ledgerhq/live-network': 2.1.1
+    transitivePeerDependencies:
+      - debug
+
+  '@ledgerhq/ledger-trust-service@0.3.14':
+    dependencies:
+      '@ledgerhq/live-env': 2.18.0
+      '@ledgerhq/live-network': 2.0.19
+    transitivePeerDependencies:
+      - debug
+
+  '@ledgerhq/live-env@2.18.0':
+    dependencies:
+      rxjs: 7.8.2
+      utility-types: 3.11.0
+
+  '@ledgerhq/live-env@2.21.0':
+    dependencies:
+      rxjs: 7.8.2
+      utility-types: 3.11.0
+
+  '@ledgerhq/live-network@2.0.19':
+    dependencies:
+      '@ledgerhq/errors': 6.27.0
+      '@ledgerhq/live-env': 2.18.0
+      '@ledgerhq/live-promise': 0.1.1
+      '@ledgerhq/logs': 6.13.0
+      axios: 1.11.0
+      lru-cache: 7.18.3
+    transitivePeerDependencies:
+      - debug
+
+  '@ledgerhq/live-network@2.1.1':
+    dependencies:
+      '@ledgerhq/errors': 6.27.0
+      '@ledgerhq/live-env': 2.21.0
+      '@ledgerhq/live-promise': 0.1.1
+      '@ledgerhq/logs': 6.13.0
+      axios: 1.12.2
+      lru-cache: 7.18.3
+    transitivePeerDependencies:
+      - debug
+
+  '@ledgerhq/live-promise@0.1.1':
+    dependencies:
+      '@ledgerhq/logs': 6.13.0
+
   '@ledgerhq/logs@6.13.0': {}
 
-  '@mysten/bcs@1.7.0':
-    dependencies:
-      '@mysten/utils': 0.1.1
-      '@scure/base': 1.2.6
-
-  '@mysten/bcs@1.8.0':
+  '@mysten/bcs@1.9.2':
     dependencies:
       '@mysten/utils': 0.2.0
       '@scure/base': 1.2.6
 
-  '@mysten/codegen@0.5.0':
+  '@mysten/codegen@0.5.10':
     dependencies:
-      '@mysten/bcs': 1.8.0
-      '@mysten/sui': 1.38.0(typescript@5.9.2)
+      '@mysten/bcs': 1.9.2
+      '@mysten/sui': 1.45.0(typescript@5.9.2)
       '@stricli/auto-complete': 1.2.0
       '@stricli/core': 1.2.0
       '@types/node': 22.18.5
@@ -5650,12 +5767,12 @@ snapshots:
       - '@gql.tada/svelte-support'
       - '@gql.tada/vue-support'
 
-  '@mysten/dapp-kit@0.17.6(@tanstack/react-query@5.85.6(react@18.2.0))(@types/react-dom@18.2.6)(@types/react@18.2.14)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.1.6)':
+  '@mysten/dapp-kit@0.19.9(@tanstack/react-query@5.85.6(react@18.2.0))(@types/react-dom@18.2.6)(@types/react@18.2.14)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.1.6)':
     dependencies:
-      '@mysten/slush-wallet': 0.1.23(typescript@5.1.6)
-      '@mysten/sui': 1.37.5(typescript@5.1.6)
-      '@mysten/utils': 0.1.1
-      '@mysten/wallet-standard': 0.16.13(typescript@5.1.6)
+      '@mysten/slush-wallet': 0.2.10(typescript@5.1.6)
+      '@mysten/sui': 1.45.0(typescript@5.1.6)
+      '@mysten/utils': 0.2.0
+      '@mysten/wallet-standard': 0.19.7(typescript@5.1.6)
       '@radix-ui/react-dialog': 1.1.15(@types/react-dom@18.2.6)(@types/react@18.2.14)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@radix-ui/react-dropdown-menu': 2.1.16(@types/react-dom@18.2.6)(@types/react@18.2.14)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@radix-ui/react-slot': 1.2.3(@types/react@18.2.14)(react@18.2.0)
@@ -5676,11 +5793,11 @@ snapshots:
       - react-dom
       - typescript
 
-  '@mysten/enoki@0.12.0(@types/react@18.2.14)(encoding@0.1.13)(react@18.2.0)(typescript@5.1.6)':
+  '@mysten/enoki@0.12.12(@types/react@18.2.14)(encoding@0.1.13)(react@18.2.0)(typescript@5.1.6)':
     dependencies:
-      '@mysten/signers': 0.4.0(encoding@0.1.13)(typescript@5.1.6)
-      '@mysten/sui': 1.38.0(typescript@5.1.6)
-      '@mysten/wallet-standard': 0.17.0(typescript@5.1.6)
+      '@mysten/signers': 0.6.0(encoding@0.1.13)(typescript@5.1.6)
+      '@mysten/sui': 1.45.0(typescript@5.1.6)
+      '@mysten/wallet-standard': 0.19.7(typescript@5.1.6)
       '@nanostores/react': 1.0.0(nanostores@1.0.1)(react@18.2.0)
       '@wallet-standard/ui': 1.0.1
       idb-keyval: 6.2.2
@@ -5692,36 +5809,46 @@ snapshots:
     transitivePeerDependencies:
       - '@gql.tada/svelte-support'
       - '@gql.tada/vue-support'
+      - debug
       - encoding
       - supports-color
       - typescript
 
-  '@mysten/ledgerjs-hw-app-sui@0.6.0':
+  '@mysten/ledgerjs-hw-app-sui@0.7.0':
     dependencies:
+      '@ledgerhq/devices': 8.7.0
+      '@ledgerhq/errors': 6.27.0
+      '@ledgerhq/hw-bolos': 6.32.9
       '@ledgerhq/hw-transport': 6.31.10
+      '@ledgerhq/ledger-cal-service': 1.9.0
+      '@ledgerhq/ledger-trust-service': 0.3.14
       fast-sha256: 1.3.0
+      semver: 7.5.4
+    transitivePeerDependencies:
+      - debug
 
-  '@mysten/signers@0.4.0(encoding@0.1.13)(typescript@5.1.6)':
+  '@mysten/signers@0.6.0(encoding@0.1.13)(typescript@5.1.6)':
     dependencies:
       '@google-cloud/kms': 4.5.0(encoding@0.1.13)
-      '@mysten/ledgerjs-hw-app-sui': 0.6.0
-      '@mysten/sui': 1.38.0(typescript@5.1.6)
-      '@noble/curves': 1.9.7
+      '@mysten/ledgerjs-hw-app-sui': 0.7.0
+      '@mysten/sui': 1.45.0(typescript@5.1.6)
+      '@noble/curves': 1.9.4
       '@noble/hashes': 1.8.0
       asn1-ts: 8.0.5
     transitivePeerDependencies:
       - '@gql.tada/svelte-support'
       - '@gql.tada/vue-support'
+      - debug
       - encoding
       - supports-color
       - typescript
 
-  '@mysten/slush-wallet@0.1.23(typescript@5.1.6)':
+  '@mysten/slush-wallet@0.2.10(typescript@5.1.6)':
     dependencies:
-      '@mysten/sui': 1.37.5(typescript@5.1.6)
-      '@mysten/utils': 0.1.1
-      '@mysten/wallet-standard': 0.16.13(typescript@5.1.6)
-      '@mysten/window-wallet-core': 0.0.6
+      '@mysten/sui': 1.45.0(typescript@5.1.6)
+      '@mysten/utils': 0.2.0
+      '@mysten/wallet-standard': 0.19.7(typescript@5.1.6)
+      '@mysten/window-wallet-core': 0.1.0
       mitt: 3.0.1
       valibot: 0.36.0
     transitivePeerDependencies:
@@ -5729,32 +5856,16 @@ snapshots:
       - '@gql.tada/vue-support'
       - typescript
 
-  '@mysten/sui@1.37.5(typescript@5.1.6)':
+  '@mysten/sui@1.45.0(typescript@5.1.6)':
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.11.0)
-      '@mysten/bcs': 1.7.0
-      '@mysten/utils': 0.1.1
-      '@noble/curves': 1.9.7
-      '@noble/hashes': 1.8.0
-      '@scure/base': 1.2.6
-      '@scure/bip32': 1.7.0
-      '@scure/bip39': 1.6.0
-      gql.tada: 1.8.13(graphql@16.11.0)(typescript@5.1.6)
-      graphql: 16.11.0
-      poseidon-lite: 0.2.0
-      valibot: 0.36.0
-    transitivePeerDependencies:
-      - '@gql.tada/svelte-support'
-      - '@gql.tada/vue-support'
-      - typescript
-
-  '@mysten/sui@1.38.0(typescript@5.1.6)':
-    dependencies:
-      '@graphql-typed-document-node/core': 3.2.0(graphql@16.11.0)
-      '@mysten/bcs': 1.8.0
+      '@mysten/bcs': 1.9.2
       '@mysten/utils': 0.2.0
-      '@noble/curves': 1.9.7
+      '@noble/curves': 1.9.4
       '@noble/hashes': 1.8.0
+      '@protobuf-ts/grpcweb-transport': 2.11.1
+      '@protobuf-ts/runtime': 2.11.1
+      '@protobuf-ts/runtime-rpc': 2.11.1
       '@scure/base': 1.2.6
       '@scure/bip32': 1.7.0
       '@scure/bip39': 1.6.0
@@ -5767,13 +5878,16 @@ snapshots:
       - '@gql.tada/vue-support'
       - typescript
 
-  '@mysten/sui@1.38.0(typescript@5.9.2)':
+  '@mysten/sui@1.45.0(typescript@5.9.2)':
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.11.0)
-      '@mysten/bcs': 1.8.0
+      '@mysten/bcs': 1.9.2
       '@mysten/utils': 0.2.0
-      '@noble/curves': 1.9.7
+      '@noble/curves': 1.9.4
       '@noble/hashes': 1.8.0
+      '@protobuf-ts/grpcweb-transport': 2.11.1
+      '@protobuf-ts/runtime': 2.11.1
+      '@protobuf-ts/runtime-rpc': 2.11.1
       '@scure/base': 1.2.6
       '@scure/bip32': 1.7.0
       '@scure/bip39': 1.6.0
@@ -5786,35 +5900,22 @@ snapshots:
       - '@gql.tada/vue-support'
       - typescript
 
-  '@mysten/utils@0.1.1':
-    dependencies:
-      '@scure/base': 1.2.6
-
   '@mysten/utils@0.2.0':
     dependencies:
       '@scure/base': 1.2.6
 
-  '@mysten/wallet-standard@0.16.13(typescript@5.1.6)':
+  '@mysten/wallet-standard@0.19.7(typescript@5.1.6)':
     dependencies:
-      '@mysten/sui': 1.37.5(typescript@5.1.6)
+      '@mysten/sui': 1.45.0(typescript@5.1.6)
       '@wallet-standard/core': 1.1.1
     transitivePeerDependencies:
       - '@gql.tada/svelte-support'
       - '@gql.tada/vue-support'
       - typescript
 
-  '@mysten/wallet-standard@0.17.0(typescript@5.1.6)':
+  '@mysten/window-wallet-core@0.1.0':
     dependencies:
-      '@mysten/sui': 1.38.0(typescript@5.1.6)
-      '@wallet-standard/core': 1.1.1
-    transitivePeerDependencies:
-      - '@gql.tada/svelte-support'
-      - '@gql.tada/vue-support'
-      - typescript
-
-  '@mysten/window-wallet-core@0.0.6':
-    dependencies:
-      '@mysten/utils': 0.1.1
+      '@mysten/utils': 0.2.0
       jose: 6.1.0
       valibot: 0.36.0
 
@@ -5856,6 +5957,10 @@ snapshots:
   '@next/swc-win32-x64-msvc@13.4.9':
     optional: true
 
+  '@noble/curves@1.9.4':
+    dependencies:
+      '@noble/hashes': 1.8.0
+
   '@noble/curves@1.9.7':
     dependencies:
       '@noble/hashes': 1.8.0
@@ -5876,6 +5981,17 @@ snapshots:
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
+
+  '@protobuf-ts/grpcweb-transport@2.11.1':
+    dependencies:
+      '@protobuf-ts/runtime': 2.11.1
+      '@protobuf-ts/runtime-rpc': 2.11.1
+
+  '@protobuf-ts/runtime-rpc@2.11.1':
+    dependencies:
+      '@protobuf-ts/runtime': 2.11.1
+
+  '@protobuf-ts/runtime@2.11.1': {}
 
   '@protobufjs/aspromise@1.1.2': {}
 
@@ -7278,6 +7394,22 @@ snapshots:
 
   axe-core@4.7.0: {}
 
+  axios@1.11.0:
+    dependencies:
+      follow-redirects: 1.15.11
+      form-data: 4.0.5
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+
+  axios@1.12.2:
+    dependencies:
+      follow-redirects: 1.15.11
+      form-data: 4.0.5
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+
   axios@1.6.7:
     dependencies:
       follow-redirects: 1.15.5
@@ -7715,7 +7847,7 @@ snapshots:
       eslint: 8.44.0
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.44.0))(eslint@8.44.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.44.0))(eslint@8.44.0))(eslint@8.44.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-typescript@3.6.1)(eslint@8.44.0)
       eslint-plugin-jsx-a11y: 6.8.0(eslint@8.44.0)
       eslint-plugin-react: 7.33.2(eslint@8.44.0)
       eslint-plugin-react-hooks: 5.0.0-canary-7118f5dd7-20230705(eslint@8.44.0)
@@ -7738,8 +7870,8 @@ snapshots:
       debug: 4.3.4
       enhanced-resolve: 5.15.0
       eslint: 8.44.0
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.44.0))(eslint@8.44.0))(eslint@8.44.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.44.0))(eslint@8.44.0))(eslint@8.44.0)
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.44.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-typescript@3.6.1)(eslint@8.44.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.2
       is-core-module: 2.13.1
@@ -7750,7 +7882,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.8.0(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.44.0))(eslint@8.44.0))(eslint@8.44.0):
+  eslint-module-utils@2.8.0(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.44.0):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -7761,7 +7893,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.44.0))(eslint@8.44.0))(eslint@8.44.0):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-typescript@3.6.1)(eslint@8.44.0):
     dependencies:
       array-includes: 3.1.7
       array.prototype.findlastindex: 1.2.3
@@ -7771,7 +7903,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.44.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.44.0))(eslint@8.44.0))(eslint@8.44.0)
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@5.62.0(eslint@8.44.0)(typescript@5.1.6))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.44.0)
       hasown: 2.0.0
       is-core-module: 2.13.1
       is-glob: 4.0.3
@@ -7972,6 +8104,8 @@ snapshots:
 
   flatted@3.2.9: {}
 
+  follow-redirects@1.15.11: {}
+
   follow-redirects@1.15.5: {}
 
   for-each@0.3.3:
@@ -7996,6 +8130,14 @@ snapshots:
     dependencies:
       asynckit: 0.4.0
       combined-stream: 1.0.8
+      mime-types: 2.1.35
+
+  form-data@4.0.5:
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      es-set-tostringtag: 2.1.0
+      hasown: 2.0.2
       mime-types: 2.1.35
 
   fraction.js@4.3.7: {}
@@ -8250,7 +8392,7 @@ snapshots:
 
   has-tostringtag@1.0.2:
     dependencies:
-      has-symbols: 1.0.3
+      has-symbols: 1.1.0
 
   hasown@2.0.0:
     dependencies:
@@ -8605,6 +8747,8 @@ snapshots:
     dependencies:
       yallist: 4.0.0
 
+  lru-cache@7.18.3: {}
+
   lucide-react@0.279.0(react@18.2.0):
     dependencies:
       react: 18.2.0
@@ -8861,8 +9005,6 @@ snapshots:
   pkg-dir@4.2.0:
     dependencies:
       find-up: 4.1.0
-
-  poseidon-lite@0.2.0: {}
 
   poseidon-lite@0.2.1: {}
 
@@ -9613,6 +9755,8 @@ snapshots:
       node-gyp-build: 4.8.0
 
   util-deprecate@1.0.2: {}
+
+  utility-types@3.11.0: {}
 
   uuid@9.0.1: {}
 
