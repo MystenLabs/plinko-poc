@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@mysten/bcs": "^1.7.0",
-    "@mysten/sui": "^1.37.5",
+    "@mysten/bcs": "^2.0.3",
+    "@mysten/sui": "^2.15.0",
     "@types/node": "^20.8.10",
     "dotenv": "^16.1.4",
     "env-cmd": "^10.1.0",
