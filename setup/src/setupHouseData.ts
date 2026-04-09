@@ -4,10 +4,10 @@ import * as dotenv from "dotenv";
 
 dotenv.config({ path: "../.env.local" });
 
-import { SuiClient } from "@mysten/sui/client";
+import { SuiGrpcClient } from "@mysten/sui/grpc";
 import { Transaction } from "@mysten/sui/transactions";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
-import { fromBase64 } from "@mysten/sui/utils";
+import { fromBase64, toBase64 } from "@mysten/sui/utils";
 
 import {
   PACKAGE_ADDRESS,
@@ -16,8 +16,6 @@ import {
   HOUSE_PRIVATE_KEY,
   HOUSE_CAP,
 } from "./config";
-
-import { toBase64 } from "@mysten/bcs";
 import fs from "fs";
 
 // The multipliers for the plinko game
@@ -31,8 +29,9 @@ let privateKeyArray = Uint8Array.from(
 const keypairAdmin = Ed25519Keypair.fromSecretKey(privateKeyArray.slice(1));
 
 console.log("Connecting to ", SUI_NETWORK);
-let provider = new SuiClient({
-  url: SUI_NETWORK,
+let provider = new SuiGrpcClient({
+  baseUrl: SUI_NETWORK,
+  network: SUI_NETWORK.includes("mainnet") ? "mainnet" : SUI_NETWORK.includes("testnet") ? "testnet" : "devnet",
 });
 
 console.log("SUI_NETWORK = ", SUI_NETWORK);
@@ -79,40 +78,45 @@ if (SUI_NETWORK.includes("mainnet")) {
     fs.writeFileSync("./serialized_setup_tx.txt", serializedBase64);
   });
 } else {
-  provider
+  keypairAdmin
     .signAndExecuteTransaction({
       transaction: tx,
-      signer: keypairAdmin,
-      options: {
-        showObjectChanges: true,
-        showEffects: true,
-      },
+      client: provider,
     })
-    .then(function (res) {
-      const status = res?.effects?.status.status;
+    .then(async function (res: any) {
+      const txData = res.Transaction ?? res.FailedTransaction;
+      const status = txData?.effects?.status?.success;
 
-      console.log("executed! status = ", status);
-      if (status === "success") {
+      console.log("executed! status = ", status ? "success" : "failure");
+      if (status) {
         fs.writeFileSync("./tx_res.json", JSON.stringify(res));
 
-        res?.objectChanges?.find((obj) => {
-          if (
-            obj.type === "created" &&
-            obj.objectType.endsWith("house_data::HouseData")
-          ) {
-            const houseDataString = `HOUSE_DATA_ID=${obj.objectId}\n`;
-            const next_house_data_id = `NEXT_PUBLIC_HOUSE_DATA_ID=${obj.objectId}\n`;
+        // Fetch transaction with effects and objectTypes to find created HouseData
+        const txDetails = await provider.core.getTransaction({
+          digest: txData.digest,
+          include: { effects: true, objectTypes: true },
+        });
+        const detailData = txDetails.Transaction ?? txDetails.FailedTransaction;
+        const created = (detailData?.effects?.changedObjects ?? []).filter(
+          (o: any) => o.idOperation === "Created"
+        );
+        const objectTypes: Record<string, string> = detailData?.objectTypes ?? {};
+
+        for (const obj of created) {
+          const objectId = obj.objectId;
+          const objectType = objectTypes[objectId];
+          if (objectType && objectType.endsWith("house_data::HouseData")) {
+            const houseDataString = `HOUSE_DATA_ID=${objectId}\n`;
+            const next_house_data_id = `NEXT_PUBLIC_HOUSE_DATA_ID=${objectId}\n`;
             console.log(houseDataString);
-            // Append the house_data_id to the .env files
             fs.appendFileSync("../.env.local", houseDataString);
             fs.appendFileSync("../../api/.env.local", houseDataString);
             fs.appendFileSync("../../app/.env", next_house_data_id);
           }
-        });
+        }
         process.exit(0);
-      }
-      if (status == "failure") {
-        console.log("Error = ", res?.effects);
+      } else {
+        console.log("Error = ", txData?.effects);
         process.exit(1);
       }
     });
