@@ -16,18 +16,18 @@ import { formatAddress } from "@mysten/sui/utils";
 import toast from "react-hot-toast";
 import {
   isEnokiWallet,
-  EnokiWallet,
   getSession,
   AuthProvider,
+  getWalletMetadata,
 } from "@mysten/enoki";
 import { useEffect, useMemo, useState } from "react";
 import { formatString } from "@/helpers/formatString";
 import Image from "next/image";
 import {
   useCurrentAccount,
-  useDisconnectWallet,
+  useDAppKit,
   useWallets,
-} from "@mysten/dapp-kit";
+} from "@mysten/dapp-kit-react";
 
 type DecodedZkJwt = {
   picture?: string;
@@ -39,15 +39,17 @@ type DecodedZkJwt = {
 export const UserProfileMenu = () => {
   const currentAccount = useCurrentAccount();
   const address = currentAccount?.address;
-  const { mutate: disconnect } = useDisconnectWallet();
-  const wallets = useWallets().filter(isEnokiWallet);
+  const dAppKit = useDAppKit();
+  const allWallets = useWallets();
+  const enokiWallets = allWallets.filter(isEnokiWallet);
 
   const walletsByProvider = useMemo(() => {
-    return wallets.reduce<Map<AuthProvider, EnokiWallet>>((map, wallet) => {
-      map.set(wallet.provider, wallet);
+    return enokiWallets.reduce((map, wallet) => {
+      const meta = getWalletMetadata(wallet);
+      if (meta) map.set(meta.provider, wallet);
       return map;
-    }, new Map<AuthProvider, EnokiWallet>());
-  }, [wallets]);
+    }, new Map<AuthProvider, (typeof enokiWallets)[number]>());
+  }, [enokiWallets]);
 
   const googleWallet = walletsByProvider.get("google");
 
@@ -136,7 +138,7 @@ export const UserProfileMenu = () => {
         </DropdownMenuGroup>
 
         <DropdownMenuItem
-          onClick={() => disconnect()}
+          onClick={() => dAppKit.disconnectWallet()}
           className="flex items-center justify-between w-full"
         >
           <div>Log out</div>

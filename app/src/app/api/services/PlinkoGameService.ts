@@ -9,29 +9,24 @@ import { fromBase64, toBase64 } from "@mysten/sui/utils";
 import { enokiClient } from "@/app/api/EnokiClient";
 import * as plinko from "../../../generated/plinko/plinko";
 
-type EventWithParsedJson = { parsedJson?: unknown; type?: string };
+type CoreEvent = { json?: Record<string, unknown> | null; eventType?: string };
 
-function extractTrace(events?: EventWithParsedJson[]): string | undefined {
+function extractTrace(events?: CoreEvent[]): number[] | undefined {
   if (!events?.length) return undefined;
 
   for (const event of events) {
-    const parsed = event.parsedJson;
-    if (
-      parsed &&
-      typeof parsed === "object" &&
-      "trace" in (parsed as Record<string, unknown>)
-    ) {
-      return (parsed as Record<string, unknown>).trace as string | undefined;
+    const parsed = event.json;
+    if (parsed && typeof parsed === "object" && "trace" in parsed) {
+      const trace = parsed.trace;
+      // gRPC returns vector<u8> as base64 string; decode to number array
+      if (typeof trace === "string") {
+        return Array.from(fromBase64(trace));
+      }
+      // JSON-RPC returned it as number array directly
+      if (Array.isArray(trace)) {
+        return trace as number[];
+      }
     }
-  }
-
-  const firstParsed = events[0]?.parsedJson;
-  if (
-    firstParsed &&
-    typeof firstParsed === "object" &&
-    "trace" in (firstParsed as Record<string, unknown>)
-  ) {
-    return (firstParsed as Record<string, unknown>).trace as string | undefined;
   }
 
   return undefined;
@@ -49,7 +44,7 @@ class PlinkoGameService {
   public async finishGame(
     gameId: string,
     numberofBalls: number
-  ): Promise<{ trace: string; transactionDigest: string }> {
+  ): Promise<{ trace: number[]; transactionDigest: string }> {
     // 1) Create the tx and get TransactionKind bytes
     const tx = new Transaction();
     tx.add(
@@ -92,31 +87,32 @@ class PlinkoGameService {
       signature,
     });
 
-    await this.suiService.getClient().waitForTransaction({
+    await this.suiService.getClient().core.waitForTransaction({
       digest: exec.digest,
       timeout: 10_000,
     });
 
-    const txResult = await this.suiService.getClient().getTransactionBlock({
+    const txResult = await this.suiService.getClient().core.getTransaction({
       digest: exec.digest,
-      options: {
-        showEffects: true,
-        showEvents: true,
-        showObjectChanges: false,
+      include: {
+        effects: true,
+        events: true,
       },
     });
 
-    const status = txResult.effects?.status?.status;
-    if (status !== "success") {
+    const txData = txResult.Transaction ?? txResult.FailedTransaction;
+    if (!txData) {
+      throw new Error("Transaction result not found");
+    }
+
+    if (!txData.effects.status.success) {
       throw new Error(
-        `Transaction failed: ${
-          txResult.effects?.status?.error ?? "unknown error"
-        }`
+        `Transaction failed: ${txData.effects.status.error ?? "unknown error"}`
       );
     }
 
     const trace = extractTrace(
-      txResult.events as EventWithParsedJson[] | undefined
+      txData.events as CoreEvent[] | undefined
     );
     if (!trace) {
       throw new Error("Trace not found in transaction events");

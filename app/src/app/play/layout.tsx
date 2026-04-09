@@ -3,7 +3,7 @@
 "use client";
 
 import { ChildrenProps } from "@/types/ChildrenProps";
-import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 

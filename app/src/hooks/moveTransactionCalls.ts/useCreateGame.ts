@@ -1,36 +1,35 @@
 // Copyright (c) Mysten Labs, Inc.
 // SPDX-License-Identifier: Apache-2.0
 
-import { SuiClient, SuiTransactionBlockResponse } from "@mysten/sui/client";
 import { coinWithBalance, Transaction } from "@mysten/sui/transactions";
 import { useState } from "react";
 import { usePlayContext } from "@/contexts/PlayContext";
 import { splitIntoPathsAndNormalize } from "@/helpers/traceFromTheEventToPathsForBalls";
 import { MIST_PER_SUI, toBase64 } from "@mysten/sui/utils";
-import { useCurrentAccount, useSignTransaction } from "@mysten/dapp-kit";
+import {
+  useCurrentAccount,
+  useCurrentClient,
+  useDAppKit,
+} from "@mysten/dapp-kit-react";
 import * as plinko from "../../generated/plinko/plinko";
 
-const client = new SuiClient({
-  url: process.env.NEXT_PUBLIC_SUI_NETWORK!,
-});
+type CoreEvent = { json?: Record<string, unknown> | null; eventType?: string };
 
-type EventWithParsedJson = { parsedJson?: unknown; type?: string };
-
-function extractGameId(events?: EventWithParsedJson[]): string | undefined {
+function extractGameId(events?: CoreEvent[]): string | undefined {
   if (!events?.length) return undefined;
 
   const hit = events.find(
     (e) =>
-      typeof e?.parsedJson === "object" &&
-      e.parsedJson !== null &&
-      "game_id" in (e.parsedJson as Record<string, unknown>)
-  ) as { parsedJson: { game_id?: string } } | undefined;
+      typeof e?.json === "object" &&
+      e.json !== null &&
+      "game_id" in e.json
+  );
 
-  if (hit?.parsedJson?.game_id) return hit.parsedJson.game_id;
+  if (hit?.json?.game_id) return hit.json.game_id as string;
 
-  const pj = events[0]?.parsedJson;
+  const pj = events[0]?.json;
   if (typeof pj === "object" && pj !== null) {
-    const maybe = (pj as Record<string, unknown>).game_id;
+    const maybe = pj.game_id;
     if (typeof maybe === "string") return maybe;
   }
   return undefined;
@@ -43,7 +42,8 @@ export const useCreateGame = () => {
   const currentAccount = useCurrentAccount();
   const sender = currentAccount?.address;
 
-  const { mutateAsync: signTransaction } = useSignTransaction();
+  const client = useCurrentClient();
+  const dAppKit = useDAppKit();
 
   const { finalPaths, setFinalPaths, setTxDigest, showError } =
     usePlayContext();
@@ -103,7 +103,7 @@ export const useCreateGame = () => {
         (await sponsorResp.json()) as { bytes: string; digest: string };
 
       // 3) Sign the sponsored TxBytes
-      const { signature } = await signTransaction({
+      const { signature } = await dAppKit.signTransaction({
         transaction: sponsoredBytes,
       });
 
@@ -124,30 +124,34 @@ export const useCreateGame = () => {
         digest: string;
       };
 
-      await client.waitForTransaction({
+      await client.core.waitForTransaction({
         digest: executedDigest,
         timeout: 10_000,
       });
 
-      const txResult: SuiTransactionBlockResponse =
-        await client.getTransactionBlock({
-          digest: executedDigest,
-          options: {
-            showEffects: true,
-            showEvents: true,
-            showObjectChanges: false,
-          },
-        });
+      const txResult = await client.core.getTransaction({
+        digest: executedDigest,
+        include: {
+          effects: true,
+          events: true,
+        },
+      });
 
-      if (txResult.effects?.status.status === "failure") {
-        console.error("TX failed:", txResult.effects?.status);
-        showError(txResult.effects?.status.error ?? "Transaction failed.");
+      const txData = txResult.Transaction ?? txResult.FailedTransaction;
+      if (!txData) {
+        showError("Transaction result not found.");
+        return;
+      }
+
+      if (!txData.effects.status.success) {
+        console.error("TX failed:", txData.effects.status);
+        showError(txData.effects.status.error ?? "Transaction failed.");
         return;
       }
 
       // Extract game_id from events
       const game_id = extractGameId(
-        txResult.events as EventWithParsedJson[] | undefined
+        txData.events as CoreEvent[] | undefined
       );
 
       if (!game_id) {
