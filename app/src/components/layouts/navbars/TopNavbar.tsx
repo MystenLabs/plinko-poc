@@ -6,7 +6,7 @@ import { UserProfileMenu } from "@/components/general/UserProfileMenu";
 import { Balance } from "@/components/general/Balance";
 
 import useScroll from "@/lib/hooks/use-scroll";
-import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import { InfoIcon } from "../InfoIcon";
 
 export const TopNavbar = () => {

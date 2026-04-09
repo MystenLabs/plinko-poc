@@ -12,18 +12,9 @@ import React from "react";
 import { Toaster } from "react-hot-toast";
 import backgroundImage from "../../public/Tablebackground.svg";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  createNetworkConfig,
-  SuiClientProvider,
-  WalletProvider,
-} from "@mysten/dapp-kit";
-import { RegisterEnokiWallets } from "@/contexts/RegisterEnokiWallets";
+import { DAppKitProvider } from "@mysten/dapp-kit-react";
+import { dAppKit } from "@/dapp-kit";
 const queryClient = new QueryClient();
-const { networkConfig } = createNetworkConfig({
-  [process.env.NEXT_PUBLIC_SUI_NETWORK_NAME!]: {
-    url: process.env.NEXT_PUBLIC_SUI_NETWORK!,
-  },
-});
 
 export const ProvidersAndLayout = ({ children }: ChildrenProps) => {
   const _ = useRegisterServiceWorker();
@@ -31,34 +22,28 @@ export const ProvidersAndLayout = ({ children }: ChildrenProps) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SuiClientProvider
-        networks={networkConfig}
-        defaultNetwork={process.env.NEXT_PUBLIC_SUI_NETWORK_NAME!}
-      >
-        <RegisterEnokiWallets />
-        <WalletProvider autoConnect slushWallet={{ name: "Plinko PoC" }}>
-          <BalanceProvider>
-            <main
-              className={`min-h-screen w-full overflow-hidden bg-black`}
-              style={{
-                backgroundImage: `url(${backgroundImage.src})`,
-                backgroundPosition: "center",
-                backgroundSize: "cover",
-                backgroundRepeat: "no-repeat",
+      <DAppKitProvider dAppKit={dAppKit}>
+        <BalanceProvider>
+          <main
+            className={`min-h-screen w-full overflow-hidden bg-black`}
+            style={{
+              backgroundImage: `url(${backgroundImage.src})`,
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+            }}
+          >
+            {!!isMobile && <MobileLayout>{children}</MobileLayout>}
+            {!isMobile && <LargeScreenLayout>{children}</LargeScreenLayout>}
+            <Toaster
+              position="bottom-center"
+              toastOptions={{
+                duration: 5000,
               }}
-            >
-              {!!isMobile && <MobileLayout>{children}</MobileLayout>}
-              {!isMobile && <LargeScreenLayout>{children}</LargeScreenLayout>}
-              <Toaster
-                position="bottom-center"
-                toastOptions={{
-                  duration: 5000,
-                }}
-              />
-            </main>
-          </BalanceProvider>
-        </WalletProvider>
-      </SuiClientProvider>
+            />
+          </main>
+        </BalanceProvider>
+      </DAppKitProvider>
     </QueryClientProvider>
   );
 };

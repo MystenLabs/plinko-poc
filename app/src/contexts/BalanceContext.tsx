@@ -11,7 +11,7 @@ import { ChildrenProps } from "@/types/ChildrenProps";
 import BigNumber from "bignumber.js";
 import { MIST_PER_SUI } from "@mysten/sui/utils";
 import { useSui } from "@/hooks/useSui";
-import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useCurrentAccount } from "@mysten/dapp-kit-react";
 
 export const useBalance = () => {
   const context = useContext(BalanceContext);
@@ -51,14 +51,14 @@ export const BalanceProvider = ({ children }: ChildrenProps) => {
   const handleRefreshBalance = useCallback(async () => {
     if (!address) return;
     setIsLoading(true);
-    await suiClient
+    await suiClient.core
       .getBalance({
         owner: address,
       })
       .then((resp) => {
         setIsLoading(false);
         setFetchedBalance(
-          BigNumber(resp.totalBalance).dividedBy(
+          BigNumber(resp.balance.balance).dividedBy(
             BigNumber(Number(MIST_PER_SUI))
           )
         );

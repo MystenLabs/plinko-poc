@@ -2,19 +2,25 @@
 // SPDX-License-Identifier: Apache-2.0
 import "server-only";
 
-import { SuiClient } from "@mysten/sui/client";
+import { SuiGrpcClient } from "@mysten/sui/grpc";
 import { Ed25519Keypair } from "@mysten/sui/keypairs/ed25519";
 import { fromBase64 } from "@mysten/sui/utils";
+
+const networkName = (process.env.NEXT_PUBLIC_SUI_NETWORK_NAME ?? "testnet") as
+  | "mainnet"
+  | "testnet"
+  | "devnet";
 
 class SuiService {
   private signer: Ed25519Keypair;
 
-  private _client: SuiClient;
+  private _client: SuiGrpcClient;
   private _keypair: Ed25519Keypair;
 
   constructor() {
-    this._client = new SuiClient({
-      url: process.env.NEXT_PUBLIC_SUI_NETWORK!,
+    this._client = new SuiGrpcClient({
+      baseUrl: process.env.NEXT_PUBLIC_SUI_NETWORK!,
+      network: networkName,
     });
 
     this._keypair = SuiService.getKeyPair(
@@ -37,15 +43,15 @@ class SuiService {
     return houseSigner;
   }
 
-  public getClient(): SuiClient {
+  public getClient(): SuiGrpcClient {
     return this._client;
   }
 
   public async getObject(objectId: string) {
-    return this.client.getObject({
-      id: objectId,
-      options: {
-        showContent: true,
+    return this.client.core.getObject({
+      objectId,
+      include: {
+        content: true,
       },
     });
   }

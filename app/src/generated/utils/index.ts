@@ -63,7 +63,7 @@ export function getPureBcsSchema(
 
     if (
       pkg === SUI_FRAMEWORK_ADDRESS &&
-      structTag.module === "Object" &&
+      structTag.module === "object" &&
       structTag.name === "ID"
     ) {
       return bcs.Address;

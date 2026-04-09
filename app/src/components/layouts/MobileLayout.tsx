@@ -5,7 +5,7 @@
 import React from "react";
 import { ChildrenProps } from "@/types/ChildrenProps";
 import { TopNavbar } from "./navbars/TopNavbar";
-import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import { InfoIcon } from "./InfoIcon";
 
 export const MobileLayout = ({ children }: ChildrenProps) => {

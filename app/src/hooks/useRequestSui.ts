@@ -5,12 +5,12 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useSui } from "./useSui";
 import { useBalance } from "@/contexts/BalanceContext";
-import { useWallets } from "@mysten/dapp-kit";
+import { useWallets } from "@mysten/dapp-kit-react";
 import {
   isEnokiWallet,
-  EnokiWallet,
   getSession,
   AuthProvider,
+  getWalletMetadata,
 } from "@mysten/enoki";
 
 export const useRequestSui = () => {
@@ -20,19 +20,21 @@ export const useRequestSui = () => {
   const [jwt, setJwt] = useState<string | null>(null);
   const { handleRefreshBalance } = useBalance();
 
-  const wallets = useWallets().filter(isEnokiWallet);
+  const enokiWallets = useWallets().filter(isEnokiWallet);
 
   useEffect(() => {
     let active = true;
 
     (async () => {
       try {
-        const walletsByProvider = wallets.reduce<
-          Map<AuthProvider, EnokiWallet>
-        >((map, wallet) => {
-          map.set(wallet.provider, wallet);
-          return map;
-        }, new Map<AuthProvider, EnokiWallet>());
+        const walletsByProvider = enokiWallets.reduce(
+          (map, wallet) => {
+            const meta = getWalletMetadata(wallet);
+            if (meta) map.set(meta.provider, wallet);
+            return map;
+          },
+          new Map<AuthProvider, (typeof enokiWallets)[number]>()
+        );
 
         const googleWallet = walletsByProvider.get("google");
         if (!googleWallet) {
@@ -53,7 +55,7 @@ export const useRequestSui = () => {
     return () => {
       active = false;
     };
-  }, [wallets]);
+  }, [enokiWallets]);
 
   const handleRequestSui = useCallback(async () => {
     if (!jwt) {
@@ -73,7 +75,7 @@ export const useRequestSui = () => {
         }
       );
 
-      await suiClient.waitForTransaction({
+      await suiClient.core.waitForTransaction({
         digest: resp.data.txDigest,
       });
 

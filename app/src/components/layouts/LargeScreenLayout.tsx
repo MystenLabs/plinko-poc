@@ -5,7 +5,7 @@
 import { ChildrenProps } from "@/types/ChildrenProps";
 import React from "react";
 import { TopNavbar } from "./navbars/TopNavbar";
-import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useCurrentAccount } from "@mysten/dapp-kit-react";
 import { InfoIcon } from "./InfoIcon";
 
 export const LargeScreenLayout = ({ children }: ChildrenProps) => {

@@ -5,21 +5,26 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  useConnectWallet,
   useCurrentAccount,
   useWallets,
-} from "@mysten/dapp-kit";
-import { isEnokiWallet, EnokiWallet, AuthProvider } from "@mysten/enoki";
+  useDAppKit,
+} from "@mysten/dapp-kit-react";
+import { isEnokiWallet, AuthProvider, getWalletMetadata } from "@mysten/enoki";
 
 export function LoginForm() {
   const currentAccount = useCurrentAccount();
-  const { mutate: connect } = useConnectWallet();
+  const dAppKit = useDAppKit();
 
-  const wallets = useWallets().filter(isEnokiWallet);
+  const allWallets = useWallets();
+  const enokiWallets = allWallets.filter(isEnokiWallet);
 
-  const walletsByProvider = wallets.reduce(
-    (map, wallet) => map.set(wallet.provider, wallet),
-    new Map<AuthProvider, EnokiWallet>()
+  const walletsByProvider = enokiWallets.reduce(
+    (map, wallet) => {
+      const meta = getWalletMetadata(wallet);
+      if (meta) map.set(meta.provider, wallet);
+      return map;
+    },
+    new Map<AuthProvider, (typeof enokiWallets)[number]>()
   );
 
   const googleWallet = walletsByProvider.get("google");
@@ -52,7 +57,7 @@ export function LoginForm() {
           <div className="flex flex-col md:flex-row items-center justify-center">
             {googleWallet && (
               <button
-                onClick={() => connect({ wallet: googleWallet })}
+                onClick={() => dAppKit.connectWallet({ wallet: googleWallet })}
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white w-full md:w-auto rounded-lg shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1"
               >
                 <Image src="/google.svg" alt="Google" width={20} height={20} />

@@ -200,7 +200,12 @@ public fun end_game(scenario: &mut Scenario, game_id: ID, num_balls: u64) {
     scenario.next_tx(SYSTEM_OBJECT);
     sui::random::create_for_testing(scenario.ctx());
     scenario.next_tx(SYSTEM_OBJECT);
-    let random = scenario.take_shared<Random>();
+    let mut random = scenario.take_shared<Random>();
+    random.update_randomness_state_for_testing(
+        0,
+        x"1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F1F",
+        scenario.ctx(),
+    );
     scenario.next_tx(HOUSE);
     let mut house_data = scenario.take_shared<HouseData>();
     plk::finish_game(game_id, &random, &mut house_data, num_balls, scenario.ctx());

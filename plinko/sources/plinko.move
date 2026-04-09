@@ -97,7 +97,7 @@ entry fun finish_game(
         let mut state: u64 = 0;
 
         // Generate 12 random bytes for this ball and process them directly
-        let mut i = 0;
+        let mut i: u64 = 0;
         while (i < 12) {
             let byte = random_generator.generate_u8_in_range(0, 255);
             // Add the byte to the trace vector
