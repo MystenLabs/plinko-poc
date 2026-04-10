@@ -14,7 +14,7 @@ This project is using the [NextJS App Router](https://nextjs.org/docs/app), and 
 
 - `src/`
   - `app/`:
-    - contains all the .tsx files, that are renderred as pages of the UI
+    - contains all the .tsx files, that are rendered as pages of the UI
     - organized in subdirectories based on the desired URL path of each page in the final UI
     - for more details, see: [NextJS App Router: Defining Routes](https://nextjs.org/docs/app/building-your-application/routing/defining-routes)
   - `components/`:
