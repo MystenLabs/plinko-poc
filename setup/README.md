@@ -14,7 +14,7 @@
 
 To initialize the house data after deploying your smart contracts and populating `.env` files, you must run the `src/setupHouseData.ts` file. 
 
-This script configures the necessary parameters like the `multiplier array` for the game, the `public key` of the house, the `house_cap` and the `initial house balace`.
+This script configures the necessary parameters like the `multiplier array` for the game, the `public key` of the house, the `house_cap` and the `initial house balance`.
 
 ### Steps to follow:
 
